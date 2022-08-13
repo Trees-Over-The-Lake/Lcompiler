@@ -86,7 +86,7 @@ declarações.
  
 A seguir, é feita a descrição informal da sintaxe das declarações e comandos da linguagem: 
  
-1. Declaração  de  variáveis:  é  da  forma:    tipo  lista-de-ids    ,  onde  tipo  pode  ser  int,  float, 
+ 1-  Declaração  de  variáveis:  é  da  forma:    tipo  lista-de-ids    ,  onde  tipo  pode  ser  int,  float, 
 string,  boolean  ou  char  e  lista-de-ids  é  uma  série  de  1  ou  mais  identificadores, 
 separados  por  vírgulas.  Cada  variáveis  pode  ser  opcionalmente  inicializadas  na  forma: 
 id  :=  valor  ,  onde  id  é  um  identificador.  Para  inteiros  e  reais,  valor  é  uma  constante 
@@ -103,22 +103,28 @@ Identificadores de variáveis reais podem receber números inteiros. Fora isso, 
 atribuição só pode ser realizada para tipos idênticos. 
  
 4. Comando de repetição pode assumir duas formas:  
- 
+
+```
 while (expressão) comando 
 while (expressão) { comandos } 
- 
+``` 
+
 onde  expressão  é  do  tipo  lógico.  A  repetição  do  comando  ou  bloco  de  comandos  será 
 feita enquanto a expressão for verdadeira.  
  
 5. Comando de teste: pode assumir as formas, onde expressão é do tipo lógico:  
  
+```
 if   (expressão)  comando1 
 if   (expressão) comando1 else comando2   
+```
  
 comando1  e/ou comando2  são comandos da linguagem que podem ser 
 independentemente substituídos por blocos da forma: 
  
+```
 if   (expressão) { lista_comandos1 } else { lista_comandos2 }   
+```
  
 onde as listas são sequências de comandos. 
  
@@ -135,7 +141,3 @@ lista_expressões)    ,  onde  lista_expressões  é  uma  lista  de  uma  ou  m
 numéricas,  caracteres  ou  strings,  separadas  por  vírgulas.  A  última  forma,  quando 
 executada, causa a quebra de linha após a impressão. 
  
- 
-
-
-
