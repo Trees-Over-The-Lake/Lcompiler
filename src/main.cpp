@@ -3,6 +3,6 @@
 
 int main(int argc, char* argv[]) {
 
-    std::cout << "Hello " << DEFAULT_EXIT_FILE << std::endl;
+    std::cout << "Hello " << DEFAULT_OUTPUT_FILE << std::endl;
     return 0;
 }
