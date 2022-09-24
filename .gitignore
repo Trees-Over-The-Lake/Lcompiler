@@ -49,3 +49,5 @@ _deps
 
 build/*
 !build/build.xml
+
+**/.vscode/

@@ -1,8 +1,8 @@
-#include<fmt/core.h>
+#include<iostream>
+#include"utils/constants.hpp"
 
 int main(int argc, char* argv[]) {
 
-    fmt::print("The answer is {}\n", 42);
-
+    std::cout << "Hello " << DEFAULT_EXIT_FILE << std::endl;
     return 0;
 }
