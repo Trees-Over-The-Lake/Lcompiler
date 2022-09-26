@@ -18,7 +18,6 @@ enum TokenID
     WRITE,              // write
     WRITELN,            // writeln
     READLN,             // readln
-    DIV,                // /
     NEGACAO,            // !
     ATRIBUICAO,         // =
     IGUAL,              // ==
@@ -34,7 +33,7 @@ enum TokenID
     MULTIPLICACAO,      // *
     DIVISAO,            // /
     PONTO_VIRGULA,      // ;
-    ABRE_PARABTESES,    // (
+    ABRE_PARANTESES,    // (
     FECHA_PARANTESES,   // )
     ABRE_CHAVES,        // {
     FECHA_CHAVES,       // }
