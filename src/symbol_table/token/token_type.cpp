@@ -7,7 +7,7 @@ enum TokenType
     REAL,
     INTEIRO,
     LOGICO,
-    STRING,
+    TEXTO,
     HEXADECIMAL,
     NAO_DEFINIDO,
 };

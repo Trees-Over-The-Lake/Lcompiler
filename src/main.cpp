@@ -1,8 +1,10 @@
 #include<iostream>
-#include"utils/constants.hpp"
+#include"symbol_table/symbol_table.cpp"
 
 int main(int argc, char* argv[]) {
 
-    std::cout << "Hello " << DEFAULT_OUTPUT_FILE << std::endl;
+    SymbolTable st = SymbolTable();
+
+    std::cout << st.to_string() << std::endl;
     return 0;
 }
