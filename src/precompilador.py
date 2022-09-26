@@ -10,7 +10,6 @@
         MrNaru300:
             GitHub: https://github.com/MrNaru300
 
-
     @@@@@@@@@@@@@@@@@`.--::////::--.`@@@@@@@@@@@@@@@@@
     @@@@@@@@@@@@@@./+oooooooooooooooo+/.@@@@@@@@@@@@@@
     @@@@@@@@@@@@@@`+oooooooooooooooooo+`@@@@@@@@@@@@@@

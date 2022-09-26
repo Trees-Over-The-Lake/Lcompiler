@@ -5,7 +5,7 @@
 #include<string>
 #include"token/token_id.cpp"
 
-static const std::map<TokenID,std::string> LEXEMES = {
+const std::map<TokenID,std::string> LEXEMES = {
     {TokenID::CONST, "const"},
     {TokenID::INT, "int"},
     {TokenID::FLOAT, "float"},
@@ -21,7 +21,6 @@ static const std::map<TokenID,std::string> LEXEMES = {
     {TokenID::WRITE, "write"},
     {TokenID::WRITELN, "writeln"},
     {TokenID::READLN, "readln"},
-    {TokenID::DIV, "/"},
     {TokenID::NEGACAO, "!"},
     {TokenID::ATRIBUICAO, "="},
     {TokenID::IGUAL, "=="},
