@@ -1,6 +1,8 @@
-echo "Precompilando main.cpp...\n\n"
+echo -e "Precompilando main.cpp...\n\n"
 ./precompilador.py main.cpp
-echo "Compilando arquivo final...\n\n"
+
+echo -e "Compilando arquivo final...\n\n"
 g++ out.cpp
-echo "Rodando o programa...\n\n"
+
+echo -e "Rodando o programa...\n\n"
 ./a.out

@@ -5,7 +5,7 @@
     Authors:
         Lusantisuper:
             GitHub: https://github.com/lusantisuper
-            Youtube: https://www.youtube.com/user/MrNaru300
+            Youtube: https://www.youtube.com/c/Lusantisuper
 
         MrNaru300:
             GitHub: https://github.com/MrNaru300
