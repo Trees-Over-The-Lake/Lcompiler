@@ -10,15 +10,24 @@ Para rodar o programa, apenas use:
 make
 ```
 
-## Todas as secoes
+## Principais secoes
 
 ``` 
-make clean      # Limpar o ambiente de trabalho
-make compile   # Compilar o programa fonte agrupado
-make run         # Rodar o programa compilado
+make                # Compilar e rodar programa
+make build          # Apenas compilar
+make debug_gdb      # Debugar programa com GDB
+make debug_valgrind # Gerar relatório de memória 
+
 ```
 
 ## Variáveis
 
 * CXX : Compilador utilizado (padrão é o gcc)
+* PUB_IN : Passar entrada padrao para o programa
+* FLAGS : Passar flags para o processo de compilação 
 
+### Como utilizar as variáveis
+
+```
+make PUB_IN="<pub.in"
+```
