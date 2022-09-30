@@ -13,10 +13,10 @@ make
 ## Principais secoes
 
 ``` 
-make                      # Compilar e rodar programa
-make build               # Apenas compilar
-make debug_gdb      # Debugar programa com GDB
-make debug_valgrind # Gerar relatório de memória 
+make                            # Compilar e rodar programa
+make build                     # Apenas compilar
+make debug_gdb            # Debugar programa com GDB
+make debug_valgrind       # Gerar relatório de memória 
 
 ```
 
