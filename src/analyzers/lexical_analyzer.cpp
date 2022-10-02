@@ -1,69 +1,65 @@
 #ifndef LEXICAL_ANALYZER_CPP
 #define LEXICAL_ANALYZER_CPP
 
-int CHAR_COUNT = 0;
-int LINE_COUNT = 1;
-int LABEL_COUNT = 1;
-int SYMBOL_COUNT = 0;
-
-string SOURCE_FILE;
+#include"../file/l_file.cpp"
+#include<cstdint>
+#include<locale>
 
 class LexicalAnalyzer {
     private:
-        /* data */
+        LFile file_to_analyze;
+        uint8_t curr_state;
+
+        const uint8_t END_STATE = 1;
+        const uint8_t FIRST_STATE = 0;
+
     public:
-        LexicalAnalyzer(/* args */);
+        LexicalAnalyzer(LFile* file);
         ~LexicalAnalyzer();
+
+        void analyze();
+        bool is_valid_token();
 };
 
-LexicalAnalyzer::LexicalAnalyzer(/* args */)
-{
+LexicalAnalyzer::LexicalAnalyzer(LFile* file) {
+    this->file_to_analyze = *file;
+    this->curr_sate = 0;
 }
 
-LexicalAnalyzer::~LexicalAnalyzer()
-{
-}
-
-
-// Struct token - puxar do outro arquivo como esta
-// token READ_TOKEN;
-
+LexicalAnalyzer::~LexicalAnalyzer() {}
 
 // Função do Analisador Léxico.
-void analizador_lexico()
+void LexicalAnalyzer::analyze()
 {
-    int state = 0;
+    curr_state = FIRST_STATE;
 
-    char caractere;
+    std::string lexeme;
 
-    string lexeme;
+    while (state != END_STATE) {
 
-    while (state != 1)
-    {
-        if (CHAR_COUNT < SOURCE_FILE.length() && SOURCE_FILE[CHAR_COUNT] == '\r')
-        {
-            CHAR_COUNT++;
+        if (file_to_analyze.is_end_of_file()) 
+            break;
+        
+        auto curr_line = file_to_analyze.get_curr_line();
+
+        std::string line = curr_line.second;
+        int line_number  = curr_line.first;
+
+        for (char const &curr_char : line) {
+
+            std::cout << "curr_char = " << curr_char << "\n";
+            if(!is_valid_token(curr_char)) {
+
+                std::cout << line_number << "\n" << "caractere invalido" << "\n";
+                exit(1);
+            }
         }
-        else
-        {
-            if (CHAR_COUNT < SOURCE_FILE.length())
-            {
-                caractere = SOURCE_FILE[CHAR_COUNT++];
+    }
+}
 
-                if (!isalnum(caractere) && find(VALID_CHAR.rbegin(), VALID_CHAR.rend(), caractere) == VALID_CHAR.rend())
-                {
-                    cout << LINE_COUNT << endl << "caractere invalido." << endl;
-                    exit(1);
-                }
-            }
-            else
-            {
-                caractere = '\0';
-            }
-    
-            // switch (state)
-            // {
-        }}}
+bool LexicalAnalyzer::is_valid_token(const char c) {
+    return !std::isalnum(c);
+}
             
         
 
