@@ -2,7 +2,7 @@
 #include<vector>
 #include<string>
 
-//#include"symbol_table/symbol_table.cpp"
+#include"symbol_table/symbol_table.cpp"
 #include"utils/line_reader.cpp"
 #include"file/l_file.cpp"
 
@@ -10,10 +10,11 @@ LFile get_file_from_stream(int argc, char* argv[]);
 
 int main(int argc, char* argv[]) {
 
-    //SymbolTable st = SymbolTable();
+    SymbolTable st = SymbolTable();
     LFile file = get_file_from_stream(argc,argv);
 
     std::cout << file.to_string() << "\n";
+    std::cout << st.to_string() << "\n";
     
     return 0;
 }

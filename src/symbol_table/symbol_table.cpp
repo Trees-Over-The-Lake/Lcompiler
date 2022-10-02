@@ -83,7 +83,7 @@ std::string SymbolTable::to_string() {
         std::string lexeme = iter->first;
         Token token = iter->second;
 
-        result += "lexeme: " + lexeme + "|token: " + token.to_string() + "\n" ;
+        result += "lexeme: " + lexeme + "\ttoken: " + token.to_string() + "\n" ;
     }
 
     return result;
