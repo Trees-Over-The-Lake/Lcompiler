@@ -5,6 +5,14 @@
 #include<string>
 #include"token/token_id.cpp"
 
+vector<char> VALID_CHAR{
+        ' ', '!', '"', '%', '&', '(', ')', '*', '+', ',', '-', '.', '/', ':', ';', '<', '=', '>', '?', '@', '[', ']', '_', '{', '}', '\'', '\\', '\n'
+};
+
+vector<char> VALID_HEXA{
+        'A', 'B', 'C', 'D', 'E', 'F', 'a', 'b', 'c', 'd', 'e', 'f'
+};
+
 const std::map<TokenID,std::string> LEXEMES = {
     {TokenID::CONST, "const"},
     {TokenID::INT, "int"},
@@ -44,7 +52,6 @@ const std::map<TokenID,std::string> LEXEMES = {
     {TokenID::FECHA_COLCHETES, "]"},
     {TokenID::AND, "&&"},
     {TokenID::OR, "||"},
-
 };
 
 #endif
