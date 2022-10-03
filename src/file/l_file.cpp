@@ -20,6 +20,8 @@ public:
     void read_file_from_vector(std::vector<std::string>* arr);
     std::string to_string();
 
+    int get_num_lines();
+
     line_and_number get_curr_line();
     bool is_end_of_file();
 };
@@ -54,7 +56,7 @@ std::string LFile::to_string() {
 
 line_and_number LFile::get_curr_line() {
 
-    int curr_line_number = this->curr_line;
+    int curr_line_number = this->curr_line++;
     std::string curr_line = *this->curr_line_iterator;
     this->curr_line_iterator++;
 
@@ -63,6 +65,10 @@ line_and_number LFile::get_curr_line() {
 
 bool LFile::is_end_of_file() {
     return this->curr_line_iterator == this->end_iterator;
+}
+
+int LFile::get_num_lines() {
+    return this->num_lines;
 }
 
 #endif

@@ -3,14 +3,57 @@
 
 #include<map>
 #include<string>
+#include<vector>
 #include"token/token_id.cpp"
 
-vector<char> VALID_CHAR{
-        ' ', '!', '"', '%', '&', '(', ')', '*', '+', ',', '-', '.', '/', ':', ';', '<', '=', '>', '?', '@', '[', ']', '_', '{', '}', '\'', '\\', '\n'
+const std::vector<char> VALID_CHARACTERS{
+        ' ',
+        '|',
+        '!', 
+        '"', 
+        '%', 
+        '@',
+        '?',
+        '&', 
+        '(', 
+        ')', 
+        '{', 
+        '}', 
+        '[', 
+        ']', 
+        '*', 
+        '+', 
+        '-', 
+        '/', 
+        ',', 
+        '.', 
+        ':', 
+        ';', 
+        '<', 
+        '>', 
+        '=', 
+        '_', 
+        '\'',
+        '\\', 
+        '\r',
+        '\t',
+        '\n',
+        '\0'
 };
 
-vector<char> VALID_HEXA{
-        'A', 'B', 'C', 'D', 'E', 'F', 'a', 'b', 'c', 'd', 'e', 'f'
+const std::vector<char> VALID_HEXA_SYMBOLS{
+        'A', 
+        'B', 
+        'C', 
+        'D', 
+        'E', 
+        'F', 
+        'a', 
+        'b', 
+        'c', 
+        'd', 
+        'e', 
+        'f'
 };
 
 const std::map<TokenID,std::string> LEXEMES = {
