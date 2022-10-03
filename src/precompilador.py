@@ -42,7 +42,10 @@ import re
 import sys
 import os
 
+BIBLIOTECA_REPETIDA = "/*Biblioteca ja importada*/\n"
 
+bibliotecas = []
+bibliotecas_externas = []
 
 def FormatarCaminho(start: str, relpath: str):
     """
@@ -71,12 +74,36 @@ def AcharLib (linha: str, fp: str) -> str:
     if match:
 
         biblioteca = match.group(1)
+    
+        nome_biblioteca = ""
+        if r"/" in biblioteca:
+            nome_biblioteca = biblioteca.split("/")
+            nome_biblioteca = nome_biblioteca[:len(nome_biblioteca)][-1]
+        else:
+            nome_biblioteca = biblioteca
 
-        caminho = FormatarCaminho(os.path.split(os.path.abspath(fp))[0], biblioteca)
+        if not nome_biblioteca in bibliotecas:
+            caminho = FormatarCaminho(os.path.split(os.path.abspath(fp))[0], biblioteca)
 
-        saida += f"//-----------------------Inicio da lib: {biblioteca}-----------------------//\n"
-        saida += f"{LerArquivo(caminho)}\n"
-        saida += f"//-----------------------Fim da lib: {biblioteca}-----------------------//\n"
+            saida += f"//-----------------------Inicio da lib: {biblioteca}-----------------------//\n"
+            saida += f"{LerArquivo(caminho)}\n"
+            saida += f"//-----------------------Fim da lib: {biblioteca}-----------------------//\n"
+
+            bibliotecas.append(nome_biblioteca)
+        else:
+            saida = BIBLIOTECA_REPETIDA
+
+    else:
+        match = re.match(r"^#\s*include\s*\<(.*)\>", linha)
+
+        if match:
+
+            biblioteca = match.group(1)
+
+            if biblioteca in bibliotecas_externas:
+                saida = BIBLIOTECA_REPETIDA
+            else: 
+                bibliotecas_externas.append(biblioteca)
 
     return saida
 
@@ -97,10 +124,21 @@ def LerArquivo (fp: str) -> str:
         if not arquivo.readable():
             raise IOError(f'O Arquivo {fp} não pode ser lido')
 
-
         for linha in arquivo:
 
-            saida += AcharLib(linha, fp) or linha
+            resultado = AcharLib(linha, fp)
+
+            print(f"resultado = {resultado}")
+            print(f"linha = {linha}")
+
+            if resultado == BIBLIOTECA_REPETIDA:
+                continue
+
+            elif not resultado:
+                saida += linha 
+
+            else:
+                saida += resultado
 
     return saida
 
