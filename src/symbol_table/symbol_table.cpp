@@ -12,6 +12,9 @@
 
 class SymbolTable {
     private:
+
+        static const char valid_caracters [];
+
         static std::unordered_map<std::string,Token> table;
         static bool table_initialized;
 
@@ -28,6 +31,7 @@ class SymbolTable {
 
 bool SymbolTable::table_initialized = false;
 std::unordered_map<std::string,Token> SymbolTable::table;
+const char SymbolTable::valid_caracters [] = "asdas";
 
 SymbolTable::SymbolTable(){
 

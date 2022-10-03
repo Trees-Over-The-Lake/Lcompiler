@@ -14,7 +14,7 @@ int main(int argc, char* argv[]) {
     SymbolTable st = SymbolTable();
     LFile file = get_file_from_stream(argc,argv);
 
-    LexicalAnalyzer la = new LexicalAnalyzer(&file);
+    LexicalAnalyzer la = LexicalAnalyzer(&file);
 
     la.analyze();
     

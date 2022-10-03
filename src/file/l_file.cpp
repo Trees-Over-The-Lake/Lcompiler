@@ -3,13 +3,15 @@
 
 #include<string>
 #include<vector>
-#include<pair>
+#include<utility>
 
 typedef std::pair<int, std::string> line_and_number;
 
 class LFile {
 private:
-    std::string* lines;
+    std::vector<std::string> lines;
+    std::vector<std::string>::iterator curr_line_iterator;
+    std::vector<std::string>::iterator end_iterator;
     int num_lines;
     int curr_line;
 public:
@@ -22,47 +24,45 @@ public:
     bool is_end_of_file();
 };
 
-LFile::LFile(std::vector<std::string>* arr = NULL) {
+LFile::LFile(std::vector<std::string>* arr) {
     if (arr == NULL) {
         num_lines = 0;
-        lines = NULL;
     } else {
         read_file_from_vector(arr);
     }
     curr_line = 1;
 }
 
-LFile::~LFile() {
-    if (lines != NULL)
-        delete[] lines;
-}
+LFile::~LFile() {}
 
 void LFile::read_file_from_vector(std::vector<std::string>* arr) {
 
     this->num_lines = arr->size();
-    this->lines = new std::string[this->num_lines];
-    std::copy(arr->begin(),arr->end(),this->lines);
+    this->lines = *arr;
+    this->curr_line_iterator = this->lines.begin();
+    this->end_iterator = this->lines.end();
 }
 
 std::string LFile::to_string() {
     std::string s = + " num of lines: " + std::to_string(this->num_lines) + '\n';
 
-    for(int i = 0; i < this->num_lines; i++) {
+    for(int i = 0; i < this->num_lines; i++) 
         s += this->lines[i] + "\n";
-    }
+
     return s;
 }
 
 line_and_number LFile::get_curr_line() {
 
     int curr_line_number = this->curr_line;
-    std::string curr_line = this->lines[this->curr_line++] + "\n";
+    std::string curr_line = *this->curr_line_iterator;
+    this->curr_line_iterator++;
 
-    return {curr_line_number, curr_line}
+    return {curr_line_number, curr_line};
 }
 
 bool LFile::is_end_of_file() {
-    return curr_line == num_lines -1;
+    return this->curr_line_iterator == this->end_iterator;
 }
 
 #endif

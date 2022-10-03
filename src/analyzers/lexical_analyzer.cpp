@@ -18,12 +18,12 @@ class LexicalAnalyzer {
         ~LexicalAnalyzer();
 
         void analyze();
-        bool is_valid_token();
+        bool is_valid_token(const char c);
 };
 
 LexicalAnalyzer::LexicalAnalyzer(LFile* file) {
     this->file_to_analyze = *file;
-    this->curr_sate = 0;
+    this->curr_state = 0;
 }
 
 LexicalAnalyzer::~LexicalAnalyzer() {}
@@ -35,7 +35,7 @@ void LexicalAnalyzer::analyze()
 
     std::string lexeme;
 
-    while (state != END_STATE) {
+    while (curr_state != END_STATE) {
 
         if (file_to_analyze.is_end_of_file()) 
             break;
@@ -47,7 +47,6 @@ void LexicalAnalyzer::analyze()
 
         for (char const &curr_char : line) {
 
-            std::cout << "curr_char = " << curr_char << "\n";
             if(!is_valid_token(curr_char)) {
 
                 std::cout << line_number << "\n" << "caractere invalido" << "\n";
