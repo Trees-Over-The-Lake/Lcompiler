@@ -4,7 +4,8 @@
 #include<map>
 #include<unordered_map>
 #include<string>
-#include <stdexcept>
+#include<stdexcept>
+#include<algorithm>
 
 #include"token/token.cpp"
 #include"lexeme.cpp"
@@ -12,8 +13,6 @@
 
 class SymbolTable {
     private:
-
-        static const char valid_caracters [];
 
         static std::unordered_map<std::string,Token> table;
         static bool table_initialized;
@@ -27,11 +26,12 @@ class SymbolTable {
         Token* add_id(std::string lexeme);
         Token* find_lexeme(std::string lexeme);
         std::string to_string();
+
+        bool is_character_valid(const char c);
 };
 
 bool SymbolTable::table_initialized = false;
 std::unordered_map<std::string,Token> SymbolTable::table;
-const char SymbolTable::valid_caracters [] = "asdas";
 
 SymbolTable::SymbolTable(){
 
@@ -77,6 +77,13 @@ Token* SymbolTable::find_lexeme(std::string lexeme) {
     } catch(std::exception e ) {} 
 
     return token;
+}
+
+/**
+ * Dado um certo caractere, verificar se o mesmo eh valido na linguagem
+ */
+bool SymbolTable::is_character_valid(const char c) {
+    return std::find(VALID_CHARACTERS.begin(), VALID_CHARACTERS.end(), c) != VALID_CHARACTERS.end();
 }
 
 std::string SymbolTable::to_string() {

@@ -17,6 +17,8 @@ int main(int argc, char* argv[]) {
     LexicalAnalyzer la = LexicalAnalyzer(&file);
 
     la.analyze();
+
+    std::cout << file.get_num_lines() + 1 << " linhas compiladas." << "\n";
     
     return 0;
 }

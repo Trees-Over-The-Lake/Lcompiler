@@ -2,6 +2,7 @@
 #define LEXICAL_ANALYZER_CPP
 
 #include"../file/l_file.cpp"
+#include"../symbol_table/symbol_table.cpp"
 #include<cstdint>
 #include<locale>
 
@@ -9,6 +10,7 @@ class LexicalAnalyzer {
     private:
         LFile file_to_analyze;
         uint8_t curr_state;
+        SymbolTable symbol_table;
 
         const uint8_t END_STATE = 1;
         const uint8_t FIRST_STATE = 0;
@@ -24,6 +26,7 @@ class LexicalAnalyzer {
 LexicalAnalyzer::LexicalAnalyzer(LFile* file) {
     this->file_to_analyze = *file;
     this->curr_state = 0;
+    this->symbol_table = SymbolTable();
 }
 
 LexicalAnalyzer::~LexicalAnalyzer() {}
@@ -46,10 +49,8 @@ void LexicalAnalyzer::analyze()
         int line_number  = curr_line.first;
 
         for (char const &curr_char : line) {
-
             if(!is_valid_token(curr_char)) {
-
-                std::cout << line_number << "\n" << "caractere invalido" << "\n";
+                std::cout << line_number << "\n" << "caractere invalido." << "\n";
                 exit(1);
             }
         }
@@ -57,7 +58,7 @@ void LexicalAnalyzer::analyze()
 }
 
 bool LexicalAnalyzer::is_valid_token(const char c) {
-    return !std::isalnum(c);
+    return std::isalnum(c) || this->symbol_table.is_character_valid(c);
 }
             
         
