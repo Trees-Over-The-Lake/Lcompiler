@@ -10,6 +10,7 @@
 #include"token/token.cpp"
 #include"lexeme.cpp"
 #include"../utils/string_utils.cpp"
+#include<locale>
 
 class SymbolTable {
     private:
@@ -83,7 +84,8 @@ Token* SymbolTable::find_lexeme(std::string lexeme) {
  * Dado um certo caractere, verificar se o mesmo eh valido na linguagem
  */
 bool SymbolTable::is_character_valid(const char c) {
-    return std::find(VALID_CHARACTERS.begin(), VALID_CHARACTERS.end(), c) != VALID_CHARACTERS.end();
+    return std::isalnum(c) ||
+           std::find(VALID_CHARACTERS.begin(), VALID_CHARACTERS.end(), c) != VALID_CHARACTERS.end();
 }
 
 std::string SymbolTable::to_string() {

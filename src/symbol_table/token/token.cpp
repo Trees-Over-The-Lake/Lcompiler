@@ -38,8 +38,4 @@ std::string Token::to_string() {
             std::to_string(this->tipo) + "| tamanho: " + std::to_string(this->tamanho);
 }
 
-
-
-
-
 #endif

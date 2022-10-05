@@ -3,8 +3,8 @@
 
 #include"../file/l_file.cpp"
 #include"../symbol_table/symbol_table.cpp"
+#include"../error_manager/cerror_manager.cpp"
 #include<cstdint>
-#include<locale>
 
 class LexicalAnalyzer {
     private:
@@ -20,7 +20,6 @@ class LexicalAnalyzer {
         ~LexicalAnalyzer();
 
         void analyze();
-        bool is_valid_token(const char c);
 };
 
 LexicalAnalyzer::LexicalAnalyzer(LFile* file) {
@@ -49,18 +48,12 @@ void LexicalAnalyzer::analyze()
         int line_number  = curr_line.first;
 
         for (char const &curr_char : line) {
-            if(!is_valid_token(curr_char)) {
-                std::cout << line_number << "\n" << "caractere invalido." << "\n";
-                exit(1);
-            }
+            if(!this->symbol_table.is_character_valid(curr_char)) 
+                throw_compiler_error(CErrorType::CaractereInvalido, 
+                                    {std::to_string(line_number)});
+            
         }
     }
-}
-
-bool LexicalAnalyzer::is_valid_token(const char c) {
-    return std::isalnum(c) || this->symbol_table.is_character_valid(c);
-}
-            
-        
+}               
 
 #endif

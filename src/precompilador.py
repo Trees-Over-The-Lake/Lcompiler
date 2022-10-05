@@ -127,10 +127,6 @@ def LerArquivo (fp: str) -> str:
         for linha in arquivo:
 
             resultado = AcharLib(linha, fp)
-
-            print(f"resultado = {resultado}")
-            print(f"linha = {linha}")
-
             if resultado == BIBLIOTECA_REPETIDA:
                 continue
 
