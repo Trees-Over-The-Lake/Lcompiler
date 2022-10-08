@@ -20,17 +20,23 @@ class LexicalAnalyzer {
     public:
         LexicalAnalyzer(LFile* file);
         ~LexicalAnalyzer();
-        char estado0(const char c, iterator* it);
-        char estado2(const char c, iterator* it);
-        char estado3(const char c, iterator* it);
-        char estado4(const char c, iterator* it);
-        char estado5(const char c, iterator* it);
-        char estado7(const char c, iterator* it);
-        char estado8(const char c, iterator* it);
-        char estado9(const char c, iterator* it);
-        char estado10(const char c, iterator* it);
-        char estado11(const char c, iterator* it);
-        char estado12(const char c, iterator* it);
+        bool estado0(const char c, iterator* it);
+        bool estado2(const char c, iterator* it);
+        bool estado3(const char c, iterator* it);
+        bool estado4(const char c, iterator* it);
+        bool estado5(const char c, iterator* it);
+        bool estado6(const char c, iterator* it);
+        bool estado7(const char c, iterator* it);
+        bool estado8(const char c, iterator* it);
+        bool estado9(const char c, iterator* it);
+        bool estado10(const char c, iterator* it);
+        bool estado11(const char c, iterator* it);
+        bool estado12(const char c, iterator* it);
+        bool estado13(const char c, iterator* it);
+        bool estado14(const char c, iterator* it);
+        bool estado15(const char c, iterator* it);
+        bool estado16(const char c, iterator* it);
+        bool estado18(const char c, iterator* it);
 
         void analyze();
 };
@@ -43,7 +49,9 @@ LexicalAnalyzer::LexicalAnalyzer(LFile* file) {
 
 LexicalAnalyzer::~LexicalAnalyzer() {}
 
-char LexicalAnalyzer::estado0(const char c, iterator* it) {
+bool LexicalAnalyzer::estado0(const char c, iterator* it) {
+    bool error_found = false;
+    
     if(c == ' ' || c == '\n') {
         curr_state = 0;
     }
@@ -81,13 +89,13 @@ char LexicalAnalyzer::estado0(const char c, iterator* it) {
         curr_state = 2;
     }
     else {
-        curr_state = 1;
+        error_found = true;
     }
 
-    return c;
+    return error_found;
 }
 
-char LexicalAnalyzer::estado2(const char c, iterator* it) {
+bool LexicalAnalyzer::estado2(const char c, iterator* it) {
     if(c == '*') {
         curr_state = 3;
     }
@@ -95,18 +103,22 @@ char LexicalAnalyzer::estado2(const char c, iterator* it) {
         --*it;
         curr_state = 1;
     }
+
+    return false;
 }
 
-char LexicalAnalyzer::estado3(const char c, iterator* it) {
+bool LexicalAnalyzer::estado3(const char c, iterator* it) {
     if(c == '*') {
         curr_state = 4;
     }
     else {
         curr_state = 3;
     }
+
+    return false;
 }
 
-char LexicalAnalyzer::estado4(const char c, iterator* it) {
+bool LexicalAnalyzer::estado4(const char c, iterator* it) {
     if(c == '*') {
         curr_state = 4;
     }
@@ -116,15 +128,39 @@ char LexicalAnalyzer::estado4(const char c, iterator* it) {
     else {
         curr_state = 3;
     }
+
+    return false;  
 }
 
-char LexicalAnalyzer::estado5(const char c, iterator* it) {
+bool LexicalAnalyzer::estado5(const char c, iterator* it) {
+    bool error_found = false;
+    
     if (c == '=') {
         curr_state = 1;
     }
+    else {
+        error_found = true;
+    }
+
+    return error_found;    
 }
 
-char LexicalAnalyzer::estado7(const char c, iterator* it) {
+bool LexicalAnalyzer::estado6(const char c, iterator* it) {
+    if (c == 'x') {
+        curr_state = 15;
+    }
+    else if (std::isdigit(c)) {
+        curr_state = 18;
+    }
+    else {
+        --*it;
+        curr_state = 1;
+    }
+
+    return false;  
+}
+
+bool LexicalAnalyzer::estado7(const char c, iterator* it) {
     if (c == '=') {
         curr_state = 1;
     }
@@ -132,36 +168,56 @@ char LexicalAnalyzer::estado7(const char c, iterator* it) {
         --*it;
         curr_state = 1;
     }
+
+    return false;  
 }
 
-char LexicalAnalyzer::estado8(const char c, iterator* it) {
+bool LexicalAnalyzer::estado8(const char c, iterator* it) {
+    bool error_found = false;
+    
     if (c == '=') {
         curr_state = 1;
     }
+    else {
+        error_found = true;
+    }
+
+    return error_found;  
 }
 
-char LexicalAnalyzer::estado9(const char c, iterator* it) {
+bool LexicalAnalyzer::estado9(const char c, iterator* it) {
     if (std::isalnum(c)) {
         curr_state = 10;
     }
+
+    return false;  
 }
 
-char LexicalAnalyzer::estado10(const char c, iterator* it) {
+bool LexicalAnalyzer::estado10(const char c, iterator* it) {
+    bool error_found = false;
+    
     if (c == '\'') {
         curr_state = 1;
     }
+    else {
+        error_found = true;
+    }
+
+    return error_found;  
 }
 
-char LexicalAnalyzer::estado11(const char c, iterator* it) {
+bool LexicalAnalyzer::estado11(const char c, iterator* it) {
     if (std::isalnum(c)) {
         curr_state = 11;
     }
     else if (c == '"'){
         curr_state = 1;
     }
+
+    return c;  
 }
 
-char LexicalAnalyzer::estado12(const char c, iterator* it) {
+bool LexicalAnalyzer::estado12(const char c, iterator* it) {
     if (std::isdigit(c) || std::isalpha(c) || c == '_') {
         curr_state = 12;
     }
@@ -169,6 +225,74 @@ char LexicalAnalyzer::estado12(const char c, iterator* it) {
         --*it;        
         curr_state = 1;
     }
+
+    return false;  
+}
+
+bool LexicalAnalyzer::estado13(const char c, iterator* it) {
+    bool error_found = false;
+    
+    if (std::isdigit(c)) {
+        curr_state = 14;
+    }
+    else {
+        error_found = true;
+    }
+
+    return error_found;  
+}
+
+bool LexicalAnalyzer::estado14(const char c, iterator* it) {
+    if (std::isalnum(c)) {
+        curr_state = 14;
+    }
+    else {
+        --*it;        
+        curr_state = 1;   
+    }
+
+    return false;  
+}
+
+bool LexicalAnalyzer::estado15(const char c, iterator* it) {
+    bool error_found = false;
+    
+    if (std::isxdigit(c)) {
+        curr_state = 16;
+    }
+    else {
+        error_found = true;
+    }
+
+    return error_found;  
+}
+
+bool LexicalAnalyzer::estado16(const char c, iterator* it) {
+    bool error_found = false;
+    
+    if (std::isxdigit(c)) {
+        curr_state = 1;
+    }
+    else {
+        error_found = true;
+    }
+
+    return error_found;  
+}
+
+bool LexicalAnalyzer::estado18(const char c, iterator* it) {
+    if (std::isdigit(c)) {
+        curr_state = 18;
+    }
+    else if (c == '.') {
+        curr_state = 14;
+    }
+    else {
+        --*it;        
+        curr_state = 1;
+    }
+
+    return false;  
 }
 
 // Função do Analisador Léxico.
@@ -194,47 +318,75 @@ void LexicalAnalyzer::analyze()
             if(!this->symbol_table.is_character_valid(curr_char)) 
                 throw_compiler_error(CErrorType::CaractereInvalido, 
                                     {std::to_string(line_number)});
+
+            bool error_detected = false;
+
             switch (curr_state)
             {
                 case 0:
-                    lexeme += estado0(curr_char,&it);
+                    error_detected = estado0(curr_char,&it);
                 break;
                 case 2:
-                    lexeme += estado2(curr_char,&it);
+                    error_detected = estado2(curr_char,&it);
                 break;
                 case 3:
-                    lexeme += estado3(curr_char,&it);
+                    error_detected = estado3(curr_char,&it);
                 break;
                 case 4:
-                    lexeme += estado4(curr_char,&it);
+                    error_detected = estado4(curr_char,&it);
                 break;
                 case 5:
-                    lexeme += estado5(curr_char,&it);
+                    error_detected = estado5(curr_char,&it);
                 break;
                 case 7:
-                    lexeme += estado7(curr_char,&it);
+                    error_detected = estado7(curr_char,&it);
                 break;
                 case 11:
-                    lexeme += estado11(curr_char,&it);
+                    error_detected = estado11(curr_char,&it);
                 break;
                 case 8:
-                    lexeme += estado8(curr_char,&it);
+                    error_detected = estado8(curr_char,&it);
                 break;
                 case 12:
-                    lexeme += estado12(curr_char,&it);
+                    error_detected = estado12(curr_char,&it);
                 break;
                 case 9:
-                    lexeme += estado9(curr_char,&it);
+                    error_detected = estado9(curr_char,&it);
                 break;
                 case 10:
-                    lexeme += estado10(curr_char,&it);
+                    error_detected = estado10(curr_char,&it);
                 break;
-
+                case 6:
+                    error_detected = estado6(curr_char,&it);
+                break;
+                case 18:
+                    error_detected = estado18(curr_char,&it);
+                break;
+                case 15:
+                    error_detected = estado15(curr_char,&it);
+                break;
+                case 14:
+                    error_detected = estado14(curr_char,&it);
+                break;
+                case 13:
+                    error_detected = estado13(curr_char,&it);
+                break;
+                case 16:
+                    error_detected = estado16(curr_char,&it);
+                break;
 
                 default:
                 
                 break;
             }
+
+            if(!error_detected){
+                throw_compiler_error(CErrorType::LexemaInvalido, {std::to_string(line_number), lexeme});
+            } 
+            else {
+                lexeme += curr_char;
+            }
+
         }
     }
 }               
