@@ -376,17 +376,15 @@ void LexicalAnalyzer::analyze()
                 break;
 
                 default:
-                
+
                 break;
             }
 
-            if(!error_detected){
+            lexeme += curr_char;
+
+            if(error_detected){
                 throw_compiler_error(CErrorType::LexemaInvalido, {std::to_string(line_number), lexeme});
             } 
-            else {
-                lexeme += curr_char;
-            }
-
         }
     }
 }               
