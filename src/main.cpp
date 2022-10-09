@@ -1,11 +1,14 @@
 #include<iostream>
 #include<vector>
 #include<string>
+#include<string.h>
 
 #include"symbol_table/symbol_table.cpp"
 #include"utils/line_reader.cpp"
 #include"file/l_file.cpp"
 #include"analyzers/lexical_analyzer.cpp"
+
+#define DEFAULT_INPUT "pub.in"
 
 LFile get_file_from_stream(int argc, char* argv[]);
 
@@ -30,22 +33,32 @@ int main(int argc, char* argv[]) {
 LFile get_file_from_stream(int argc, char* argv[]) {
 
     LFile file = LFile();
+    std::vector<std::string> file_lines;
 
     // Ler arquivo direto pelo pub.in
     if (argc == 1) {
-        std::vector<std::string> file_lines;
         file_lines = read_line_until_eof();
-
-        file.read_file_from_vector(&file_lines);
     }
     //Ler arquivo pela path dele 
     else if (argc >= 2) {
 
-        std::string path(argv[2]);
-    } else {
+        std::string file_path;
 
+        // Path do arquivo em branco, tentar encontrar pub.in no cwd
+        if (strlen(argv[1]) == 0) 
+            file_path = DEFAULT_INPUT;
+            
+        else  // Path especificada, ler dela
+            file_path = std::string(argv[2]);
+        
+        file_lines = read_lines_from_file(DEFAULT_INPUT);
+    
+    } else {
+        std::cout << "Error! Impossível ler entrada" << "\n";
         exit(1);
     }
+
+    file.read_file_from_vector(&file_lines);
 
     return file;
 }
