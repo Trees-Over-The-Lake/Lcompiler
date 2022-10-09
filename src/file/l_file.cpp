@@ -57,7 +57,7 @@ std::string LFile::to_string() {
 line_and_number LFile::get_curr_line() {
 
     int curr_line_number = this->curr_line++;
-    std::string curr_line = *this->curr_line_iterator;
+    std::string curr_line = *this->curr_line_iterator + "\n";
     this->curr_line_iterator++;
 
     return {curr_line_number, curr_line};

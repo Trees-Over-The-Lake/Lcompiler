@@ -5,14 +5,17 @@
 #include"../symbol_table/symbol_table.cpp"
 #include"../error_manager/cerror_manager.cpp"
 #include<cstdint>
+#include<regex>
 
 typedef std::string::const_iterator iterator;
 
 class LexicalAnalyzer {
     private:
         LFile file_to_analyze;
-        uint8_t curr_state;
+        int curr_state;
         SymbolTable symbol_table;
+
+        static const std::regex isolate_symbols;
 
         const uint8_t END_STATE = 1;
         const uint8_t FIRST_STATE = 0;
@@ -21,6 +24,7 @@ class LexicalAnalyzer {
         LexicalAnalyzer(LFile* file);
         ~LexicalAnalyzer();
         bool estado0(const char c, iterator* it);
+        void estado1(std::string* lexeme, iterator* it);
         bool estado2(const char c, iterator* it);
         bool estado3(const char c, iterator* it);
         bool estado4(const char c, iterator* it);
@@ -41,6 +45,8 @@ class LexicalAnalyzer {
         void analyze();
 };
 
+const std::regex LexicalAnalyzer::isolate_symbols = std::regex(R"(=|%|,|-|\+|;|\(|\)|\*|\[|\]|\{|\})");
+
 LexicalAnalyzer::LexicalAnalyzer(LFile* file) {
     this->file_to_analyze = *file;
     this->curr_state = 0;
@@ -51,8 +57,10 @@ LexicalAnalyzer::~LexicalAnalyzer() {}
 
 bool LexicalAnalyzer::estado0(const char c, iterator* it) {
     bool error_found = false;
+
+    std::string c_string = std::string(1,c);
     
-    if(c == ' ' || c == '\n') {
+    if(c == ' ' || c == '\n' || c == '\r' || c == '\t') {
         curr_state = 0;
     }
     else if(c == '!') {
@@ -67,7 +75,7 @@ bool LexicalAnalyzer::estado0(const char c, iterator* it) {
     else if(c == '_' || std::isalpha(c)) {
         curr_state = 12;
     }
-    else if(c == '=' || c == '%' || c == '(' || c == ')' || c == '*' || c == '+' || c == ',' || c == '-' || c == ';' || c == '[' || c == ']') {
+    else if(std::regex_match(c_string, LexicalAnalyzer::isolate_symbols)) {
         curr_state = 1;
     }
     else if(c == '0') {
@@ -93,6 +101,12 @@ bool LexicalAnalyzer::estado0(const char c, iterator* it) {
     }
 
     return error_found;
+}
+
+void LexicalAnalyzer::estado1(std::string* lexeme, iterator* it) {
+    *lexeme = "";
+    curr_state = 0;
+    --*it;
 }
 
 bool LexicalAnalyzer::estado2(const char c, iterator* it) {
@@ -207,14 +221,19 @@ bool LexicalAnalyzer::estado10(const char c, iterator* it) {
 }
 
 bool LexicalAnalyzer::estado11(const char c, iterator* it) {
+    bool error_found = false;
+    
     if (std::isalnum(c)) {
         curr_state = 11;
     }
     else if (c == '"'){
         curr_state = 1;
+    } 
+    else if(c == '\n') {
+        error_found = true;
     }
 
-    return c;  
+    return error_found;  
 }
 
 bool LexicalAnalyzer::estado12(const char c, iterator* it) {
@@ -302,10 +321,7 @@ void LexicalAnalyzer::analyze()
 
     std::string lexeme;
 
-    while (curr_state != END_STATE) {
-
-        if (file_to_analyze.is_end_of_file()) 
-            break;
+    while (!file_to_analyze.is_end_of_file()) {
         
         auto curr_line = file_to_analyze.get_curr_line();
 
@@ -321,11 +337,17 @@ void LexicalAnalyzer::analyze()
 
             bool error_detected = false;
 
+            // Automato
             switch (curr_state)
             {
                 case 0:
                     error_detected = estado0(curr_char,&it);
                 break;
+                case 1:
+
+                    estado1(&lexeme,&it);
+                    continue;
+
                 case 2:
                     error_detected = estado2(curr_char,&it);
                 break;
@@ -380,12 +402,13 @@ void LexicalAnalyzer::analyze()
                 break;
             }
 
-            lexeme += curr_char;
-
             if(error_detected){
                 throw_compiler_error(CErrorType::LexemaInvalido, {std::to_string(line_number), lexeme});
             } 
+
+            lexeme += curr_char;
         }
+        lexeme = "";
     }
 }               
 
