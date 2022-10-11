@@ -18,4 +18,15 @@ void symbol_S()
     match_token("fim_arquivo");
 }
 
-
+// A -> (B | D)
+void symbol_A()
+{
+    if (READ_TOKEN.lexeme == "const")
+    {
+        symbol_D();
+    }
+    else
+    {
+        symbol_B();
+    }
+}
