@@ -32,9 +32,6 @@ class LexicalAnalyzer {
         void next_char();
         void update_curr_line();
 
-    public:
-        LexicalAnalyzer(LFile* file);
-        ~LexicalAnalyzer();
         bool estado0(const char c, std::string* lexeme);
         Token estado1(std::string* lexeme);
         bool estado2(const char c, std::string* lexeme);
@@ -54,9 +51,14 @@ class LexicalAnalyzer {
         bool estado16(const char c, std::string* lexeme);
         bool estado18(const char c, std::string* lexeme);
 
-        bool no_more_tokens();
+    public:
+        LexicalAnalyzer(LFile* file);
+        ~LexicalAnalyzer();
+
+        int get_curr_line_number();
 
         Token get_next_token();
+        bool no_more_tokens();
 };
 
 const std::regex LexicalAnalyzer::isolate_symbols = std::regex(R"(=|%|,|-|\+|;|\(|\)|\*|\[|\]|\{|\})");
@@ -96,6 +98,10 @@ void LexicalAnalyzer::next_char() {
 
 bool LexicalAnalyzer::no_more_tokens() {
     return this->file_ended;
+}
+
+int LexicalAnalyzer::get_curr_line_number() {
+    return curr_line_number;
 }
 
 bool LexicalAnalyzer::estado0(const char c, std::string* lexeme) {
@@ -573,7 +579,7 @@ Token LexicalAnalyzer::get_next_token()
 
                 break;
         }
-        
+
         if(error_detected){
 
             if ( this->file_to_analyze->is_end_of_file()) 

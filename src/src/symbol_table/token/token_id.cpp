@@ -4,6 +4,7 @@
 enum TokenID
 {
     CONST,              // const
+    IDENTIFICADOR,      // nome da variavel
     INT,                // int
     FLOAT,              // float
     CHAR,               // char

@@ -1,36 +1,12 @@
-#include<iostream>
-#include<vector>
-#include<string>
+#ifndef FILE_STREAM_READER_CPP
+#define FILE_STREAM_READER_CPP
+
 #include<string.h>
 
-#include"symbol_table/symbol_table.cpp"
-#include"utils/line_reader.cpp"
-#include"file/l_file.cpp"
-#include"analyzers/lexical_analyzer.cpp"
+#include"constants.hpp"
+#include"../file/l_file.cpp"
+#include"line_reader.cpp"
 
-#define DEFAULT_INPUT "pub.in"
-
-LFile get_file_from_stream(int argc, char* argv[]);
-
-int main(int argc, char* argv[]) {
-
-    SymbolTable st = SymbolTable();
-    LFile file = get_file_from_stream(argc,argv);
-
-    LexicalAnalyzer la = LexicalAnalyzer(&file);
-
-    while (!la.no_more_tokens()) {
-        Token t;
-        t = la.get_next_token();
-
-        // TODO: Analisador sintatico vai aqui
-        //std::cout << t.to_string() << std::endl;
-    }
-
-    std::cout << file.get_num_lines() + 1 << " linhas compiladas." << "\n";
-    
-    return 0;
-}
 
 /**
  * Checar de onde esta vindo o arquivo de entrada e 
@@ -68,3 +44,5 @@ LFile get_file_from_stream(int argc, char* argv[]) {
 
     return file;
 }
+
+#endif 
