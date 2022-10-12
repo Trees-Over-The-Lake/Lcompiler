@@ -4,6 +4,12 @@
 enum CErrorType {
     CaractereInvalido,
     LexemaInvalido,
+    TokenNaoEsperado,
+    IdentificadorNaoDeclarado,
+    IdentificadorJaDeclarado,
+    ClasseDeIdentificadorIncompativel,
+    TiposIncompativeis,
+    TamanhoVetorExcedido,
     FimDeArquivoNaoEsperado
 };
 

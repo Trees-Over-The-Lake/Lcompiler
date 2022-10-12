@@ -13,28 +13,32 @@ class Token {
         TokenID id;
         std::string lexema;
         TokenType tipo;
+        TokenClass classe;
         uint8_t tamanho;
     public:
-        Token(TokenID id = TokenID::ATRIBUICAO, std::string lexema = "", TokenType tipo = TokenType::NAO_DEFINIDO, uint8_t tamanho = 1);
+        Token(TokenID id = TokenID::ATRIBUICAO, std::string lexema = "", TokenType tipo = TokenType::NAO_DEFINIDO, TokenClass classe = TokenClass::NENHUM, uint8_t tamanho = 1);
         ~Token();
 
         std::string get_lexema();
         TokenType get_tipo();
+        TokenClass get_classe();
         uint8_t get_tamanho();
         TokenID get_id();
 
         void set_lexema(std::string lexema);
         void set_tipo(TokenType tipo);
+        void set_classe(TokenClass classe);
         void set_tamanho(uint8_t tamanho);
         void set_id(TokenID id);
 
         std::string to_string();
 };
 
-Token::Token(TokenID id, std::string lexema, TokenType tipo, uint8_t tamanho) {
+Token::Token(TokenID id, std::string lexema, TokenType tipo, TokenClass classe, uint8_t tamanho) {
     this->id = id;
     this->lexema = lexema;
     this->tipo = tipo;
+    this->classe = classe;
     this->tamanho = tamanho;
 }
 
@@ -50,6 +54,11 @@ std::string Token::get_lexema() {
 TokenType Token::get_tipo() {
     return this->tipo;
 }
+
+TokenClass Token::get_classe() {
+    return this->classe;
+}
+
 uint8_t Token::get_tamanho() {
     return this->tamanho;
 }
@@ -66,6 +75,10 @@ void Token::set_tipo(TokenType tipo) {
     this->tipo = tipo;
 }
 
+void Token::set_classe(TokenClass classe) {
+    this->classe = classe;
+}
+
 void Token::set_tamanho(uint8_t tamanho) {
     this->tamanho = tamanho;
 }
@@ -76,7 +89,7 @@ void Token::set_id(TokenID id) {
 
 std::string Token::to_string() {
     return "token_id: " + std::to_string(this->id) + "| lexema: " + this->lexema + "| tipo: " + \
-            std::to_string(this->tipo) + "| tamanho: " + std::to_string(this->tamanho);
+            std::to_string(this->tipo) + "| classe: " + std::to_string(this->classe) + "| tamanho: " + std::to_string(this->tamanho);
 }
 
 #endif
