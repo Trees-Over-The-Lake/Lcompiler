@@ -11,9 +11,9 @@ class LFile {
 private:
     std::vector<std::string> lines;
     std::vector<std::string>::iterator curr_line_iterator;
-    std::vector<std::string>::iterator end_iterator;
     int num_lines;
     int curr_line;
+    bool file_ended;
 public:
     LFile(std::vector<std::string>* arr = NULL);
     ~LFile();
@@ -42,7 +42,7 @@ void LFile::read_file_from_vector(std::vector<std::string>* arr) {
     this->num_lines = arr->size();
     this->lines = *arr;
     this->curr_line_iterator = this->lines.begin();
-    this->end_iterator = this->lines.end();
+    this->file_ended = false;
 }
 
 std::string LFile::to_string() {
@@ -57,14 +57,25 @@ std::string LFile::to_string() {
 line_and_number LFile::get_curr_line() {
 
     int curr_line_number = this->curr_line++;
-    std::string curr_line = *this->curr_line_iterator + "\n";
+
+    std::string curr_line = *this->curr_line_iterator;
+        
+    curr_line += '\0';
+    
     this->curr_line_iterator++;
+
+    //std::cout << "--> curr_line: " << this->curr_line << " num_lines: " << num_lines << "\n";
+    if (this->curr_line > num_lines) {
+        file_ended = true;
+    }
+    
 
     return {curr_line_number, curr_line};
 }
 
 bool LFile::is_end_of_file() {
-    return this->curr_line_iterator == this->end_iterator;
+    //std::cout << "file ended: " << (file_ended == true ? "TRUE" : "FALSE") << "\n";
+    return file_ended;
 }
 
 int LFile::get_num_lines() {

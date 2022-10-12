@@ -53,3 +53,5 @@ build/*
 **/.vscode/
 
 out.cpp
+
+**/entrada_saida/

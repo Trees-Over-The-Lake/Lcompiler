@@ -19,7 +19,13 @@ int main(int argc, char* argv[]) {
 
     LexicalAnalyzer la = LexicalAnalyzer(&file);
 
-    la.analyze();
+    while (!la.no_more_tokens()) {
+        Token t;
+        t = la.get_next_token();
+
+        // TODO: Analisador sintatico vai aqui
+        //std::cout << t.to_string() << std::endl;
+    }
 
     std::cout << file.get_num_lines() + 1 << " linhas compiladas." << "\n";
     

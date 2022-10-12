@@ -21,7 +21,11 @@ void throw_compiler_error(CErrorType error_type, std::vector<std::string> error_
         case CaractereInvalido:
             error_information = "caractere invalido.";
             break;
-        
+
+        case FimDeArquivoNaoEsperado:
+            error_information = "fim de arquivo nao esperado.";
+            break;        
+
         case LexemaInvalido:
         {
             std::string lexema = error_content[ERROR_DETAIL];

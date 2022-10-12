@@ -3,7 +3,8 @@
 
 enum CErrorType {
     CaractereInvalido,
-    LexemaInvalido
+    LexemaInvalido,
+    FimDeArquivoNaoEsperado
 };
 
 

@@ -12,6 +12,8 @@ std::vector<std::string> read_line_until_eof() {
     std::string curr_line = "";
 
     while (std::getline(std::cin, curr_line)) lines.push_back(curr_line);
+
+    //lines.push_back("");
    
     return lines;
 }
@@ -31,6 +33,8 @@ std::vector<std::string> read_lines_from_file(std::string file_path) {
         std::cout << "Erro! Arquivo " << file_path << " não existe!" << "\n";
         exit(1);
     }
+
+    //lines.push_back("");
 
     return lines;
 }
