@@ -69,6 +69,7 @@ const std::map<TokenID,std::string> LEXEMES = {
     {TokenID::ELSE, "else"},
     {TokenID::WHILE, "while"},
     {TokenID::MOD, "mod"},
+    {TokenID::DIV, "div"},
     {TokenID::WRITE, "write"},
     {TokenID::WRITELN, "writeln"},
     {TokenID::READLN, "readln"},
@@ -95,6 +96,7 @@ const std::map<TokenID,std::string> LEXEMES = {
     {TokenID::FECHA_COLCHETES, "]"},
     {TokenID::AND, "&&"},
     {TokenID::OR, "||"},
+    {TokenID::FIM_DE_ARQUIVO, "\0"}
 };
 
 #endif

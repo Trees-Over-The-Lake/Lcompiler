@@ -55,3 +55,6 @@ build/*
 out.cpp
 
 **/entrada_saida/
+
+
+**/unit_testing/
