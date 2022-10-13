@@ -88,8 +88,8 @@ void Token::set_id(TokenID id) {
 }
 
 std::string Token::to_string() {
-    return "token_id: " + std::to_string(this->id) + "| lexema: " + this->lexema + "| tipo: " + \
-            std::to_string(this->tipo) + "| classe: " + std::to_string(this->classe) + "| tamanho: " + std::to_string(this->tamanho);
+    return "token_id: " + token_id_to_string(this->id) + "\t lexema: " + this->lexema + "\t tipo: " + \
+            token_type_to_string(this->tipo) + "\t classe: " + token_class_to_string(this->classe) + "\t tamanho: " + std::to_string(this->tamanho);
 }
 
 #endif

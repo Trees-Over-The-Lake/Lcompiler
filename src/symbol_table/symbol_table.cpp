@@ -57,11 +57,16 @@ Token* SymbolTable::add_id(std::string lexeme) {
     Token* token = NULL;
 
     try {
-        token = &(this->table[lexeme]);
+        token = &(this->table[lowered_lexeme]);
+        if (token->get_lexema().empty() && token->get_id() != FIM_DE_ARQUIVO) {
+            token = new Token(TokenID::IDENTIFICADOR, lowered_lexeme);
+            this->table.insert({lowered_lexeme, *token});
+        }
     
     } catch(std::exception e ) {
-        token = new Token(TokenID::ATRIBUICAO, lexeme);
-        this->table.insert({lexeme, *token});
+
+        token = new Token(TokenID::IDENTIFICADOR, lowered_lexeme);
+        this->table.insert({lowered_lexeme, *token});
 
     } 
 
@@ -96,7 +101,7 @@ std::string SymbolTable::to_string() {
         std::string lexeme = iter->first;
         Token token = iter->second;
 
-        result += "lexeme: " + lexeme + "\ttoken: " + token.to_string() + "\n" ;
+        result += "lexeme: " + lexeme + "\ttoken: \n" + token.to_string() + "\n\n" ;
     }
 
     return result;
