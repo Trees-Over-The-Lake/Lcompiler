@@ -1,6 +1,8 @@
 #ifndef TOKEN_ID_CPP
 #define TOKEN_ID_CPP
 
+#include<string>
+
 enum TokenID
 {
     CONST,              // const

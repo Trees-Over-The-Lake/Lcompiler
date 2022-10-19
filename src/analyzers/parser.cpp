@@ -25,7 +25,8 @@ public:
     Parser(LexicalAnalyzer* la);
     ~Parser();
     void set_curr_token(Token curr_token, int curr_line);
-    void casa_token(TokenID curr_token_id);
+    void casa_token(TokenID token_id);
+    bool tokens_are_a_match(const TokenID* token_id);
     void producaoS();
     void producaoA();
     void producaoB();
@@ -61,9 +62,9 @@ Parser::~Parser()
 
 void Parser::casa_token(TokenID token_id) {
 
-    if (curr_token_id == token_id || (curr_token_id == TRUE && token_id == CONST))
+    if (tokens_are_a_match(&token_id))
     {
-        if(curr_class == TokenClass::VARIAVEL || curr_class == TokenClass::CONSTANTE) {
+        if(curr_class == VARIAVEL || curr_class == CONSTANTE) {
             prev_token = curr_token;
         }
         
@@ -77,13 +78,17 @@ void Parser::casa_token(TokenID token_id) {
     else {
 
         if(curr_token.get_id() == FIM_DE_ARQUIVO) 
-            throw_compiler_error(CErrorType::FimDeArquivoNaoEsperado, 
+            throw_compiler_error(FimDeArquivoNaoEsperado, 
                             {curr_line});
         else 
-            throw_compiler_error(CErrorType::TokenNaoEsperado,
+            throw_compiler_error(TokenNaoEsperado,
                                 {curr_line, curr_token.get_lexema()});
     }
     
+}
+
+bool Parser::tokens_are_a_match(const TokenID* token_id) {
+    return *token_id == curr_token_id || (*token_id == CONST && (curr_token_id == TRUE || curr_token_id == FALSE));
 }
 
 void Parser::set_curr_token(Token curr_token, int curr_line) {
@@ -198,16 +203,16 @@ void Parser::producaoC() {
 
 void Parser::producaoD() {
 
-    casa_token(TokenID::CONST);
-    casa_token(TokenID::IDENTIFICADOR);
-    casa_token(TokenID::ATRIBUICAO);
+    casa_token(CONST);
+    casa_token(IDENTIFICADOR);
+    casa_token(ATRIBUICAO);
 
     if(curr_token_id == SUBTRACAO) {
         casa_token(curr_token_id);
     }
 
-    casa_token(TokenID::CONST);
-    casa_token(TokenID::PONTO_VIRGULA);
+    casa_token(CONST);
+    casa_token(PONTO_VIRGULA);
 }
 
 void Parser::producaoE() {
@@ -244,7 +249,7 @@ void Parser::producaoE() {
 
 void Parser::producaoF(){
 
-    casa_token(TokenID::IDENTIFICADOR);
+    casa_token(IDENTIFICADOR);
 
     if(curr_token_id == ABRE_COLCHETES) {
         casa_token(curr_token_id);
