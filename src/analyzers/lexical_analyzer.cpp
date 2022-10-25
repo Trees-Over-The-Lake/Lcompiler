@@ -33,7 +33,7 @@ class LexicalAnalyzer {
         void update_curr_line();
 
         bool estado0(const char c, std::string* lexeme, Token* token);
-        Token* estado1(std::string* lexeme, Token* token);
+        Token estado1(std::string* lexeme, Token* token);
         bool estado2(const char c, std::string* lexeme, Token* token);
         bool estado3(const char c, std::string* lexeme, Token* token);
         bool estado4(const char c, std::string* lexeme, Token* token);
@@ -178,19 +178,21 @@ bool LexicalAnalyzer::estado0(const char c, std::string* lexeme, Token* token) {
     return error_found;
 }
 
-Token* LexicalAnalyzer::estado1(std::string* lexeme, Token* token) {
+Token LexicalAnalyzer::estado1(std::string* lexeme, Token* token) {
 
-    if (token->get_classe() == CONSTANTE) {
-        token->set_id(TokenID::CONST);
-        token->set_lexema(*lexeme);
+    Token t = token->clone();
+
+    if (t.get_classe() == CONSTANTE) {
+        t.set_id(TokenID::CONST);
+        t.set_lexema(*lexeme);
         
     } else {
-        token = this->symbol_table.add_id(*lexeme);
+        t = *this->symbol_table.add_id(*lexeme);
     }
 
     *lexeme = "";
 
-    return token;
+    return t;
 }
 
 bool LexicalAnalyzer::estado2(const char c, std::string* lexeme, Token* token) {
@@ -528,7 +530,7 @@ Token LexicalAnalyzer::get_next_token()
 
             if(this->file_to_analyze->is_end_of_file()){
                 next_token.set_lexema("\0");
-                next_token = *estado1(&lexeme,&next_token);
+                next_token = estado1(&lexeme,&next_token);
                 file_ended = true;
                 curr_state == END_STATE;
                 break;
@@ -636,7 +638,7 @@ Token LexicalAnalyzer::get_next_token()
         next_char();
 
         if(curr_state == END_STATE) {
-            next_token = *estado1(&lexeme,&next_token);
+            next_token = estado1(&lexeme,&next_token);
         }
     }
 
