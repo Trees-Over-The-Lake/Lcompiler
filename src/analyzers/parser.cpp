@@ -181,19 +181,19 @@ void Parser::producaoC() {
     switch (curr_token_id)
     {
         case INT:
-            casa_token(TokenID::INT);
+            casa_token(INT);
             break;
         case FLOAT:
-            casa_token(TokenID::FLOAT);
+            casa_token(FLOAT);
             break;
         case CHAR:
-            casa_token(TokenID::CHAR);
+            casa_token(CHAR);
             break;
         case STRING:
-            casa_token(TokenID::STRING);
+            casa_token(STRING);
             break;
         case BOOLEAN:
-            casa_token(TokenID::BOOLEAN);
+            casa_token(BOOLEAN);
             break;
         default:
             break;
@@ -240,8 +240,6 @@ void Parser::producaoE() {
 
             default:
                 producaoF();
-                //std::cout << "curr_token: " << curr_token.to_string() << "\n";
-                //producaoS();
                 break;
         }
 
@@ -279,7 +277,7 @@ void Parser::producaoH(){
     if (curr_token_id == ABRE_CHAVES) {
         casa_token(curr_token_id);
 
-        while(curr_token_id != FECHA_CHAVES && curr_token_id != FIM_DE_ARQUIVO) {
+        while(curr_token_id != FECHA_CHAVES) {
             producaoE();
         }
 
@@ -291,10 +289,34 @@ void Parser::producaoH(){
 
 }
 void Parser::producaoI(){
-    //TODO: producao
+    
+    casa_token(IF);
+
+    casa_token(ABRE_PARANTESES);
+
+    producaoM();
+    
+    casa_token(FECHA_PARANTESES);
+
+    producaoJ();
+
+    if (curr_token_id == ELSE) {
+        casa_token(ELSE);
+        producaoJ();
+    }
 }
 void Parser::producaoJ(){
-    //TODO: producao
+    if (curr_token_id == ABRE_CHAVES) {
+        
+        casa_token(ABRE_CHAVES);
+
+        while (curr_token_id != FECHA_CHAVES) 
+            producaoE();
+    
+        casa_token(FECHA_CHAVES);
+    } else 
+        producaoE();
+    
 }
 void Parser::producaoK(){
 

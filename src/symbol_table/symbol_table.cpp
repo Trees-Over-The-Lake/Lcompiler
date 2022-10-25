@@ -59,13 +59,13 @@ Token* SymbolTable::add_id(std::string lexeme) {
     try {
         token = &(this->table[lowered_lexeme]);
         if (token->get_lexema().empty() && token->get_id() != FIM_DE_ARQUIVO) {
-            token = new Token(TokenID::IDENTIFICADOR, lowered_lexeme);
+            token = new Token(IDENTIFICADOR, lowered_lexeme);
             this->table.insert({lowered_lexeme, *token});
         }
     
     } catch(std::exception e ) {
 
-        token = new Token(TokenID::IDENTIFICADOR, lowered_lexeme);
+        token = new Token(IDENTIFICADOR, lowered_lexeme);
         this->table.insert({lowered_lexeme, *token});
 
     } 
@@ -85,9 +85,6 @@ Token* SymbolTable::find_lexeme(std::string lexeme) {
     return token;
 }
 
-/**
- * Dado um certo caractere, verificar se o mesmo eh valido na linguagem
- */
 bool SymbolTable::is_character_valid(const char c) {
     return std::isalnum(c) ||
            std::find(VALID_CHARACTERS.begin(), VALID_CHARACTERS.end(), c) != VALID_CHARACTERS.end();
