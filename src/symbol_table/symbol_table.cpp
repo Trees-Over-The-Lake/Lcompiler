@@ -59,11 +59,11 @@ SymbolTable::~SymbolTable(){}
 Token_pointer SymbolTable::add_id(std::string lexeme) {
 
     auto lowered_lexeme = to_lower(lexeme);
-    Token_pointer token = std::make_shared<Token>();
+    Token_pointer token = nullptr;
 
     try {
         token = this->table[lowered_lexeme];
-        if (token == nullptr || (token->get_lexema().empty() && token->get_id() != FIM_DE_ARQUIVO)) {
+        if (token == nullptr) {
             token = std::make_shared<Token>(IDENTIFICADOR, lowered_lexeme);
             this->table.insert({lowered_lexeme, token});
         }
@@ -80,7 +80,7 @@ Token_pointer SymbolTable::add_id(std::string lexeme) {
 
 Token_pointer SymbolTable::find_lexeme(std::string lexeme) {
     
-    Token_pointer token = std::make_shared<Token>();
+    Token_pointer token = nullptr;
 
     try {
         token = this->table[lexeme];
