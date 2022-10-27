@@ -25,6 +25,8 @@ class Token {
         uint8_t get_tamanho();
         TokenID get_id();
 
+        Token clone();
+
         void set_lexema(std::string lexema);
         void set_tipo(TokenType tipo);
         void set_classe(TokenClass classe);
@@ -85,6 +87,17 @@ void Token::set_tamanho(uint8_t tamanho) {
 
 void Token::set_id(TokenID id) {
     this->id = id;
+}
+
+Token Token::clone() {
+    Token c;
+    c.classe = this->classe;
+    c.id = this->id;
+    c.lexema = this->lexema;
+    c.tipo = this->tipo;
+    c.tamanho = this->tamanho;
+
+    return c;
 }
 
 std::string Token::to_string() {

@@ -19,12 +19,10 @@ int main(int argc, char* argv[]) {
     LexicalAnalyzer la = LexicalAnalyzer(&file);
     Parser p = Parser(&la);
 
-
     Token t;
     t = la.get_next_token();
 
     p.set_curr_token(t,la.get_curr_line_number());
-
     p.producaoS();
 
     std::cout << file.get_num_lines() + 1 << " linhas compiladas." << "\n";
