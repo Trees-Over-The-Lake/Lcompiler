@@ -1,25 +1,26 @@
 #include<iostream>
-#include<vector>
 #include<string>
-#include<string.h>
 
 #include"utils/file_stream_reader.cpp"
 #include"symbol_table/symbol_table.cpp"
 #include"file/l_file.cpp"
 #include"analyzers/lexical_analyzer.cpp"
 #include"analyzers/parser.cpp"
+#include"generator/code_generator.cpp"
 
 LFile get_file_from_stream(int argc, char* argv[]);
 
 int main(int argc, char* argv[]) {
 
+    CodeGenerator cg("saida.asm");
+
     SymbolTable st = SymbolTable();
     LFile file = get_file_from_stream(argc,argv);
 
-    LexicalAnalyzer la = LexicalAnalyzer(&file);
+    LexicalAnalyzer la(&file);
     Parser p = Parser(&la);
 
-    Token t;
+    Token_pointer t;
     t = la.get_next_token();
 
     p.set_curr_token(t,la.get_curr_line_number());

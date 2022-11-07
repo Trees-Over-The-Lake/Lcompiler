@@ -15,8 +15,10 @@ class Token {
         TokenType tipo;
         TokenClass classe;
         uint8_t tamanho;
+        long endereco;
+
     public:
-        Token(TokenID id = TokenID::ATRIBUICAO, std::string lexema = "", TokenType tipo = TokenType::NAO_DEFINIDO, TokenClass classe = TokenClass::NENHUM, uint8_t tamanho = 1);
+        Token(TokenID id = TokenID::ATRIBUICAO, std::string lexema = "", TokenType tipo = TokenType::NAO_DEFINIDO, TokenClass classe = TokenClass::NENHUM, uint8_t tamanho = 1, long endereco = 0x0);
         ~Token();
 
         std::string get_lexema();
@@ -24,6 +26,7 @@ class Token {
         TokenClass get_classe();
         uint8_t get_tamanho();
         TokenID get_id();
+        long get_endereco();
 
         Token clone();
 
@@ -32,16 +35,18 @@ class Token {
         void set_classe(TokenClass classe);
         void set_tamanho(uint8_t tamanho);
         void set_id(TokenID id);
+        void set_endereco(long endereco);
 
         std::string to_string();
 };
 
-Token::Token(TokenID id, std::string lexema, TokenType tipo, TokenClass classe, uint8_t tamanho) {
+Token::Token(TokenID id, std::string lexema, TokenType tipo, TokenClass classe, uint8_t tamanho, long endereco) {
     this->id = id;
     this->lexema = lexema;
     this->tipo = tipo;
     this->classe = classe;
     this->tamanho = tamanho;
+    this->endereco = endereco;
 }
 
 Token::~Token()
@@ -69,6 +74,10 @@ TokenID Token::get_id() {
     return this->id;
 }
 
+long Token::get_endereco() {
+    return this->endereco;
+}
+
 void Token::set_lexema(std::string lexema) {
     this->lexema = lexema;
 }
@@ -87,6 +96,10 @@ void Token::set_tamanho(uint8_t tamanho) {
 
 void Token::set_id(TokenID id) {
     this->id = id;
+}
+
+void Token::set_endereco(long endereco) {
+    this->endereco = endereco;
 }
 
 Token Token::clone() {
