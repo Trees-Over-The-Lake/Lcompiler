@@ -3,11 +3,11 @@
 
 enum TokenType 
 {
-    CARACTERE,
-    REAL,
     INTEIRO,
     LOGICO,
     TEXTO,
+    REAL,
+    CARACTERE,
     HEXADECIMAL,
     NAO_DEFINIDO,
 };
