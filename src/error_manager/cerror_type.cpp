@@ -10,7 +10,8 @@ enum CErrorType {
     ClasseDeIdentificadorIncompativel,
     TiposIncompativeis,
     TamanhoVetorExcedido,
-    FimDeArquivoNaoEsperado
+    FimDeArquivoNaoEsperado,
+    NenhumErro
 };
 
 

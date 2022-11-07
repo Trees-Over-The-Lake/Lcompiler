@@ -9,7 +9,7 @@ class Parser
 {
 private:
     SymbolTable symbol_table;
-    Token curr_token;
+    Token_pointer curr_token;
     TokenID curr_token_id;
     TokenClass curr_class;
 
@@ -18,13 +18,13 @@ private:
     std::string error_information;
     std::string curr_line;
     
-    Token prev_token;
+    Token_pointer prev_token;
 
     LexicalAnalyzer* la;
 public:
     Parser(LexicalAnalyzer* la);
     ~Parser();
-    void set_curr_token(Token curr_token, int curr_line);
+    void set_curr_token(Token_pointer curr_token, int curr_line);
     void casa_token(TokenID token_id);
     bool tokens_are_a_match(const TokenID* token_id);
     void producaoS();
@@ -72,17 +72,17 @@ void Parser::casa_token(TokenID token_id) {
             throw_compiler_error(cerror_type,{curr_line, error_information});
         }
 
-        Token t = la->get_next_token();
+        Token_pointer t = la->get_next_token();
         set_curr_token(t,la->get_curr_line_number());
     }
     else {
 
-        if(curr_token.get_id() == FIM_DE_ARQUIVO) 
+        if(curr_token->get_id() == FIM_DE_ARQUIVO) 
             throw_compiler_error(FimDeArquivoNaoEsperado, 
                             {curr_line});
         else 
             throw_compiler_error(TokenNaoEsperado,
-                                {curr_line, curr_token.get_lexema()});
+                                {curr_line, curr_token->get_lexema()});
     }
     
 }
@@ -91,10 +91,10 @@ bool Parser::tokens_are_a_match(const TokenID* token_id) {
     return *token_id == curr_token_id || (*token_id == CONST && (curr_token_id == TRUE || curr_token_id == FALSE));
 }
 
-void Parser::set_curr_token(Token curr_token, int curr_line) {
+void Parser::set_curr_token(Token_pointer curr_token, int curr_line) {
     this->curr_token = curr_token;
-    this->curr_class = this->curr_token.get_classe();
-    this->curr_token_id = this->curr_token.get_id();
+    this->curr_class = this->curr_token->get_classe();
+    this->curr_token_id = this->curr_token->get_id();
     this->curr_line = std::to_string(curr_line);
 }
 
