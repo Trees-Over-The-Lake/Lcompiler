@@ -26,7 +26,7 @@ run_gdb:a.out
 	gdb a.out
 
 run_valgrind:a.out 
-	valgrind --leak-check="full" --log-file="log-valgrind.log" ./a.out $(PUB_IN)
+	valgrind --leak-check=full --log-file="log-valgrind.log" ./a.out $(PUB_IN)
 
 clean:
 	@echo -e "Limpando...\n\n"

@@ -4,6 +4,7 @@
 #include"../symbol_table/symbol_table.cpp"
 #include"../error_manager/cerror_manager.cpp"
 #include"lexical_analyzer.cpp"
+#include"semantic_analyzer.cpp"
 
 class Parser
 {
@@ -140,9 +141,15 @@ void Parser::producaoA() {
 
 void Parser::producaoB() {
 
+    CErrorType error = NenhumErro;
+
     producaoC();
 
     casa_token(IDENTIFICADOR);
+
+    error = SemanticAnalyzer_verify_token_identification(curr_token,VARIAVEL);
+    if (error != NenhumErro) 
+        throw_compiler_error(error,{curr_line,curr_token->get_lexema()});
 
     if(curr_token_id == ATRIBUICAO || curr_token_id == WALRUS) {
 
@@ -160,6 +167,9 @@ void Parser::producaoB() {
         casa_token(VIRGULA);
 
         casa_token(IDENTIFICADOR);
+        error = SemanticAnalyzer_verify_token_identification(curr_token,VARIAVEL);
+        if (error != NenhumErro) 
+            throw_compiler_error(error,{curr_line,curr_token->get_lexema()});
 
         if( curr_token_id == ATRIBUICAO || curr_token_id == WALRUS) {
 
@@ -203,8 +213,15 @@ void Parser::producaoC() {
 
 void Parser::producaoD() {
 
+    CErrorType error = NenhumErro;
+
     casa_token(CONST);
     casa_token(IDENTIFICADOR);
+
+    error = SemanticAnalyzer_verify_token_identification(curr_token,CONSTANTE);
+    if (error != NenhumErro) 
+        throw_compiler_error(error,{curr_line,curr_token->get_lexema()});
+
     casa_token(ATRIBUICAO);
 
     if(curr_token_id == SUBTRACAO) {
@@ -424,6 +441,7 @@ void Parser::producaoR(){
         casa_token(FECHA_PARANTESES);
     } else if( curr_token_id == CONST) {
         casa_token(curr_token_id);
+
     } else {
 
         casa_token(IDENTIFICADOR);

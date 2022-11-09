@@ -37,7 +37,8 @@ void throw_compiler_error(CErrorType error_type, std::vector<std::string> error_
             std::string token = error_content[ERROR_DETAIL];
             error_information = "token nao esperado [" + token + "].";
             break;
-        } default:
+        } 
+        default:
             break;
     }  
 

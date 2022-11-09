@@ -32,25 +32,25 @@ class LexicalAnalyzer {
         void next_char();
         void update_curr_line();
 
-        bool estado0(const char c, std::string* lexeme, Token_pointer token);
-        Token_pointer estado1(std::string* lexeme, Token_pointer token);
-        bool estado2(const char c, std::string* lexeme, Token_pointer token);
-        bool estado3(const char c, std::string* lexeme, Token_pointer token);
-        bool estado4(const char c, std::string* lexeme, Token_pointer token);
-        bool estado5(const char c, std::string* lexeme, Token_pointer token);
-        bool estado6(const char c, std::string* lexeme, Token_pointer token);
-        bool estado7(const char c, std::string* lexeme, Token_pointer token);
-        bool estado8(const char c, std::string* lexeme, Token_pointer token);
-        bool estado9(const char c, std::string* lexeme, Token_pointer token);
-        bool estado10(const char c, std::string* lexeme, Token_pointer token);
-        bool estado11(const char c, std::string* lexeme, Token_pointer token);
-        bool estado12(const char c, std::string* lexeme, Token_pointer token);
-        bool estado13(const char c, std::string* lexeme, Token_pointer token);
-        bool estado14(const char c, std::string* lexeme, Token_pointer token);
-        bool estado15(const char c, std::string* lexeme, Token_pointer token);
-        bool estado16(const char c, std::string* lexeme, Token_pointer token);
-        bool estado17(const char c, std::string* lexeme, Token_pointer token);
-        bool estado18(const char c, std::string* lexeme, Token_pointer token);
+        bool estado0(const char c, std::string* lexeme, Token_pointer& token);
+        Token_pointer estado1(std::string* lexeme, Token_pointer& token);
+        bool estado2(const char c, std::string* lexeme, Token_pointer& token);
+        bool estado3(const char c, std::string* lexeme, Token_pointer& token);
+        bool estado4(const char c, std::string* lexeme, Token_pointer& token);
+        bool estado5(const char c, std::string* lexeme, Token_pointer& token);
+        bool estado6(const char c, std::string* lexeme, Token_pointer& token);
+        bool estado7(const char c, std::string* lexeme, Token_pointer& token);
+        bool estado8(const char c, std::string* lexeme, Token_pointer& token);
+        bool estado9(const char c, std::string* lexeme, Token_pointer& token);
+        bool estado10(const char c, std::string* lexeme, Token_pointer& token);
+        bool estado11(const char c, std::string* lexeme, Token_pointer& token);
+        bool estado12(const char c, std::string* lexeme, Token_pointer& token);
+        bool estado13(const char c, std::string* lexeme, Token_pointer& token);
+        bool estado14(const char c, std::string* lexeme, Token_pointer& token);
+        bool estado15(const char c, std::string* lexeme, Token_pointer& token);
+        bool estado16(const char c, std::string* lexeme, Token_pointer& token);
+        bool estado17(const char c, std::string* lexeme, Token_pointer& token);
+        bool estado18(const char c, std::string* lexeme, Token_pointer& token);
 
     public:
         LexicalAnalyzer(LFile* file);
@@ -105,7 +105,7 @@ int LexicalAnalyzer::get_curr_line_number() {
     return curr_line_number;
 }
 
-bool LexicalAnalyzer::estado0(const char c, std::string* lexeme, Token_pointer token) {
+bool LexicalAnalyzer::estado0(const char c, std::string* lexeme, Token_pointer& token) {
     bool error_found = false;
 
     std::string c_string = std::string(1,c);
@@ -178,7 +178,7 @@ bool LexicalAnalyzer::estado0(const char c, std::string* lexeme, Token_pointer t
     return error_found;
 }
 
-Token_pointer LexicalAnalyzer::estado1(std::string* lexeme, Token_pointer token) {
+Token_pointer LexicalAnalyzer::estado1(std::string* lexeme, Token_pointer& token) {
 
     if (token->get_classe() == CONSTANTE) {
         token->set_id(TokenID::CONST);
@@ -192,7 +192,7 @@ Token_pointer LexicalAnalyzer::estado1(std::string* lexeme, Token_pointer token)
     return token;
 }
 
-bool LexicalAnalyzer::estado2(const char c, std::string* lexeme, Token_pointer token) {
+bool LexicalAnalyzer::estado2(const char c, std::string* lexeme, Token_pointer& token) {
 
     bool error_found = false;
 
@@ -211,7 +211,7 @@ bool LexicalAnalyzer::estado2(const char c, std::string* lexeme, Token_pointer t
     return error_found;
 }
 
-bool LexicalAnalyzer::estado3(const char c, std::string* lexeme, Token_pointer token) {
+bool LexicalAnalyzer::estado3(const char c, std::string* lexeme, Token_pointer& token) {
 
     if(c == '*') {
         curr_state = 4;
@@ -223,7 +223,7 @@ bool LexicalAnalyzer::estado3(const char c, std::string* lexeme, Token_pointer t
     return false;
 }
 
-bool LexicalAnalyzer::estado4(const char c, std::string* lexeme, Token_pointer token) {
+bool LexicalAnalyzer::estado4(const char c, std::string* lexeme, Token_pointer& token) {
 
     bool error_found = false;
 
@@ -243,7 +243,7 @@ bool LexicalAnalyzer::estado4(const char c, std::string* lexeme, Token_pointer t
     return error_found;  
 }
 
-bool LexicalAnalyzer::estado5(const char c, std::string* lexeme, Token_pointer token) {
+bool LexicalAnalyzer::estado5(const char c, std::string* lexeme, Token_pointer& token) {
 
     bool error_found = false;
 
@@ -261,7 +261,7 @@ bool LexicalAnalyzer::estado5(const char c, std::string* lexeme, Token_pointer t
     return error_found;    
 }
 
-bool LexicalAnalyzer::estado6(const char c, std::string* lexeme, Token_pointer token) {
+bool LexicalAnalyzer::estado6(const char c, std::string* lexeme, Token_pointer& token) {
 
     bool error_found = false;
 
@@ -287,7 +287,7 @@ bool LexicalAnalyzer::estado6(const char c, std::string* lexeme, Token_pointer t
     return error_found;  
 }
 
-bool LexicalAnalyzer::estado7(const char c, std::string* lexeme, Token_pointer token) {
+bool LexicalAnalyzer::estado7(const char c, std::string* lexeme, Token_pointer& token) {
 
     bool error_found = false;
 
@@ -306,7 +306,7 @@ bool LexicalAnalyzer::estado7(const char c, std::string* lexeme, Token_pointer t
     return error_found;  
 }
 
-bool LexicalAnalyzer::estado8(const char c, std::string* lexeme, Token_pointer token) {
+bool LexicalAnalyzer::estado8(const char c, std::string* lexeme, Token_pointer& token) {
 
     bool error_found = false;
 
@@ -324,7 +324,7 @@ bool LexicalAnalyzer::estado8(const char c, std::string* lexeme, Token_pointer t
     return error_found;  
 }
 
-bool LexicalAnalyzer::estado9(const char c, std::string* lexeme, Token_pointer token) {
+bool LexicalAnalyzer::estado9(const char c, std::string* lexeme, Token_pointer& token) {
 
     bool error_found = false;
 
@@ -339,7 +339,7 @@ bool LexicalAnalyzer::estado9(const char c, std::string* lexeme, Token_pointer t
     return error_found;  
 }
 
-bool LexicalAnalyzer::estado10(const char c, std::string* lexeme, Token_pointer token) {
+bool LexicalAnalyzer::estado10(const char c, std::string* lexeme, Token_pointer& token) {
 
     bool error_found = false;
 
@@ -357,7 +357,7 @@ bool LexicalAnalyzer::estado10(const char c, std::string* lexeme, Token_pointer 
     return error_found;  
 }
 
-bool LexicalAnalyzer::estado11(const char c, std::string* lexeme, Token_pointer token) {
+bool LexicalAnalyzer::estado11(const char c, std::string* lexeme, Token_pointer& token) {
 
 
     bool error_found = false;
@@ -379,7 +379,7 @@ bool LexicalAnalyzer::estado11(const char c, std::string* lexeme, Token_pointer 
     return error_found;  
 }
 
-bool LexicalAnalyzer::estado12(const char c, std::string* lexeme, Token_pointer token) {
+bool LexicalAnalyzer::estado12(const char c, std::string* lexeme, Token_pointer& token) {
 
     bool error_found = false;
 
@@ -398,7 +398,7 @@ bool LexicalAnalyzer::estado12(const char c, std::string* lexeme, Token_pointer 
     return error_found;  
 }
 
-bool LexicalAnalyzer::estado13(const char c, std::string* lexeme, Token_pointer token) {
+bool LexicalAnalyzer::estado13(const char c, std::string* lexeme, Token_pointer& token) {
 
     bool error_found = false;
 
@@ -416,7 +416,7 @@ bool LexicalAnalyzer::estado13(const char c, std::string* lexeme, Token_pointer 
     return error_found;  
 }
 
-bool LexicalAnalyzer::estado14(const char c, std::string* lexeme, Token_pointer token) {
+bool LexicalAnalyzer::estado14(const char c, std::string* lexeme, Token_pointer& token) {
 
     bool error_found = false;
 
@@ -435,7 +435,7 @@ bool LexicalAnalyzer::estado14(const char c, std::string* lexeme, Token_pointer 
     return error_found;  
 }
 
-bool LexicalAnalyzer::estado15(const char c, std::string* lexeme, Token_pointer token) {
+bool LexicalAnalyzer::estado15(const char c, std::string* lexeme, Token_pointer& token) {
 
     bool error_found = false;
 
@@ -453,7 +453,7 @@ bool LexicalAnalyzer::estado15(const char c, std::string* lexeme, Token_pointer 
     return error_found;  
 }
 
-bool LexicalAnalyzer::estado16(const char c, std::string* lexeme, Token_pointer token) {
+bool LexicalAnalyzer::estado16(const char c, std::string* lexeme, Token_pointer& token) {
 
     bool error_found = false;
 
@@ -471,7 +471,7 @@ bool LexicalAnalyzer::estado16(const char c, std::string* lexeme, Token_pointer 
     return error_found;  
 }
 
-bool LexicalAnalyzer::estado17(const char c, std::string* lexeme, Token_pointer token) {
+bool LexicalAnalyzer::estado17(const char c, std::string* lexeme, Token_pointer& token) {
 
     bool error_found = false;
 
@@ -494,7 +494,7 @@ bool LexicalAnalyzer::estado17(const char c, std::string* lexeme, Token_pointer 
     return error_found;  
 }
 
-bool LexicalAnalyzer::estado18(const char c, std::string* lexeme, Token_pointer token) {
+bool LexicalAnalyzer::estado18(const char c, std::string* lexeme, Token_pointer& token) {
     bool error_found = false;
 
     if (c == '|') {
@@ -527,7 +527,7 @@ Token_pointer LexicalAnalyzer::get_next_token()
 
             if(this->file_to_analyze->is_end_of_file()){
                 next_token->set_lexema("\0");
-                next_token = estado1(&lexeme,next_token);
+                estado1(&lexeme,next_token);
                 file_ended = true;
                 curr_state == END_STATE;
                 break;
@@ -622,6 +622,8 @@ Token_pointer LexicalAnalyzer::get_next_token()
                 break;
         }
 
+        
+
         if(error_detected){
 
             if (this->file_to_analyze->is_end_of_file()) 
@@ -635,7 +637,7 @@ Token_pointer LexicalAnalyzer::get_next_token()
         next_char();
 
         if(curr_state == END_STATE) {
-            next_token = estado1(&lexeme,next_token);
+            estado1(&lexeme,next_token);
         }
     }
 
