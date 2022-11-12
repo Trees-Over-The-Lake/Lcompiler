@@ -1,5 +1,5 @@
-#ifndef ANALYZERS_SEMANTIC_ANALYZER
-#define ANALYZERS_SEMANTIC_ANALYZER
+#ifndef SEMANTIC_ANALYZER
+#define SEMANTIC_ANALYZER
 
 #include"../symbol_table/symbol_table.cpp"
 #include"../error_manager/cerror_manager.cpp"
@@ -13,6 +13,16 @@ CErrorType SemanticAnalyzer_verify_token_identification(Token_pointer& t, TokenC
 
     else 
         erro = IdentificadorJaDeclarado;
+
+    return erro;
+}
+
+CErrorType SemanticAnalyzer_verify_if_token_already_initialized(Token_pointer& t) {
+
+    CErrorType erro = NenhumErro;
+
+    if (t->get_classe() == NENHUM) 
+        erro = IdentificadorNaoDeclarado;
 
     return erro;
 }

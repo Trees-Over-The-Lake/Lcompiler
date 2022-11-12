@@ -1,7 +1,6 @@
 #ifndef SYMBOLS_TABLE_CPP
 #define SYMBOLS_TABLE_CPP
 
-#include<map>
 #include<unordered_map>
 #include<string>
 #include<stdexcept>
@@ -28,7 +27,7 @@ class SymbolTable {
         ~SymbolTable();
 
         Token_pointer add_id(std::string lexeme);
-        Token_pointer find_lexeme(std::string lexeme);
+        Token_pointer find_by_lexeme(std::string lexeme);
         std::string to_string();
 
         bool is_character_valid(const char c);
@@ -43,50 +42,43 @@ SymbolTable::SymbolTable(){
         initiate_symbol_table();
 }
 
+SymbolTable::~SymbolTable(){}
+
 void SymbolTable::initiate_symbol_table() {
+    
     for(auto iter = LEXEMES.begin(); iter != LEXEMES.end(); ++iter) {
         TokenID id = iter->first;
         std::string lexeme = iter->second;
 
-        Token_pointer token = std::make_shared<Token>(id,lexeme);
+        auto token = std::make_shared<Token>(id,lexeme);
 
         SymbolTable::table.insert({lexeme, token});
     }
 }
 
-SymbolTable::~SymbolTable(){}
-
 Token_pointer SymbolTable::add_id(std::string lexeme) {
 
     auto lowered_lexeme = to_lower(lexeme);
-    Token_pointer token = nullptr;
 
-    try {
-        token = this->table[lowered_lexeme];
-        if (token == nullptr) {
-            token = std::make_shared<Token>(IDENTIFICADOR, lowered_lexeme);
-            this->table.insert({lowered_lexeme, token});
-        }
-    
-    } catch(std::exception e ) {
+    Token_pointer token = find_by_lexeme(lexeme);
 
-        token = std::make_shared<Token>(IDENTIFICADOR, lowered_lexeme);
-        this->table.insert({lowered_lexeme, token});
+    if (token == nullptr) {
 
-    } 
+        this->table.insert(std::make_pair(lowered_lexeme, 
+                            std::make_shared<Token>(IDENTIFICADOR, lowered_lexeme)));
+        token = this->table.find(lowered_lexeme)->second;
+    }
 
     return token;
 }
 
-Token_pointer SymbolTable::find_lexeme(std::string lexeme) {
+Token_pointer SymbolTable::find_by_lexeme(std::string lexeme) {
     
     Token_pointer token = nullptr;
 
-    try {
-        token = this->table[lexeme];
-
-    } catch(std::exception e ) {} 
-
+    if (this->table.find(lexeme) != this->table.end())
+        token = this->table.at(lexeme);
+    
     return token;
 }
 
@@ -101,9 +93,12 @@ std::string SymbolTable::to_string() {
 
     for(auto iter = SymbolTable::table.begin(); iter != SymbolTable::table.end(); ++iter) {
         std::string lexeme = iter->first;
-        Token_pointer token = iter->second;
+        auto token = iter->second;
 
-        result += "lexeme: " + lexeme + "\ttoken: \n" + token->to_string() + "\n\n" ;
+        if (token != nullptr)
+            result += "lexeme: " + lexeme + "\ttoken: \n" + token->to_string() + "\n\n" ;
+        else 
+            result += "ERROR! Found null token\n\n";
     }
 
     return result;

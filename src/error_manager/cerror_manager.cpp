@@ -34,12 +34,43 @@ void throw_compiler_error(CErrorType error_type, std::vector<std::string> error_
         }
         case TokenNaoEsperado:
         {
-            std::string token = error_content[ERROR_DETAIL];
-            error_information = "token nao esperado [" + token + "].";
+            std::string lexema = error_content[ERROR_DETAIL];
+            error_information = "token nao esperado [" + lexema + "].";
             break;
         } 
-        default:
+        case IdentificadorNaoDeclarado:
+        {
+            std::string lexema = error_content[ERROR_DETAIL];
+            error_information = "identificador nao declarado [" + lexema + "].";
             break;
+        }
+        case IdentificadorJaDeclarado:
+        {
+            std::string lexema = error_content[ERROR_DETAIL];
+            error_information = "identificador ja declarado [" + lexema + "].";
+            break;        
+        }
+        case ClasseDeIdentificadorIncompativel:
+        {
+            std::string lexema = error_content[ERROR_DETAIL];
+            error_information = "classe de identificador incompativel [" + lexema + "].";
+            break;
+        }
+        case TiposIncompativeis:
+        {
+            error_information = "tipos incompativeis";
+            break;
+        } 
+        case TamanhoVetorExcedido:
+        {
+            error_information = "tamanho de vetor excedido";
+            break;
+        }
+        default:
+        {
+            error_information = "erro não informado";
+            break;
+        }
     }  
 
     CError error = CError(line_error, error_information);

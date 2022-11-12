@@ -1,6 +1,7 @@
 /* Exemplo de Programa na linguagem L **/
 
 int n:=.1;
+int n:=2;
 string nome:=TRue;
 const MAXITER=0x1a;
 n[-1||2]:=0;

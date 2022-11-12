@@ -19,7 +19,7 @@ private:
     std::string error_information;
     std::string curr_line;
     
-    Token_pointer prev_token;
+    Token prev_token;
 
     LexicalAnalyzer* la;
 public:
@@ -54,6 +54,7 @@ Parser::Parser(LexicalAnalyzer* la)
     this->la = la;
     this->symbol_table = SymbolTable();
     this->token_error = false;
+    this->prev_token = Token();
 }
 
 Parser::~Parser()
@@ -66,7 +67,7 @@ void Parser::casa_token(TokenID token_id) {
     if (tokens_are_a_match(&token_id))
     {
         if(curr_class == VARIAVEL || curr_class == CONSTANTE) {
-            prev_token = curr_token;
+            prev_token = curr_token->clone();
         }
         
         if(token_error) {
@@ -145,11 +146,11 @@ void Parser::producaoB() {
 
     producaoC();
 
-    casa_token(IDENTIFICADOR);
-
     error = SemanticAnalyzer_verify_token_identification(curr_token,VARIAVEL);
     if (error != NenhumErro) 
         throw_compiler_error(error,{curr_line,curr_token->get_lexema()});
+
+    casa_token(IDENTIFICADOR);
 
     if(curr_token_id == ATRIBUICAO || curr_token_id == WALRUS) {
 
@@ -166,10 +167,11 @@ void Parser::producaoB() {
 
         casa_token(VIRGULA);
 
-        casa_token(IDENTIFICADOR);
         error = SemanticAnalyzer_verify_token_identification(curr_token,VARIAVEL);
         if (error != NenhumErro) 
             throw_compiler_error(error,{curr_line,curr_token->get_lexema()});
+            
+        casa_token(IDENTIFICADOR);
 
         if( curr_token_id == ATRIBUICAO || curr_token_id == WALRUS) {
 
@@ -216,11 +218,12 @@ void Parser::producaoD() {
     CErrorType error = NenhumErro;
 
     casa_token(CONST);
-    casa_token(IDENTIFICADOR);
-
+    
     error = SemanticAnalyzer_verify_token_identification(curr_token,CONSTANTE);
     if (error != NenhumErro) 
         throw_compiler_error(error,{curr_line,curr_token->get_lexema()});
+
+    casa_token(IDENTIFICADOR);
 
     casa_token(ATRIBUICAO);
 
@@ -263,6 +266,16 @@ void Parser::producaoE() {
 }
 
 void Parser::producaoF(){
+
+    CErrorType error = NenhumErro;
+
+    error = SemanticAnalyzer_verify_if_token_already_initialized(curr_token);
+    if (error != NenhumErro) 
+        throw_compiler_error(error,{curr_line,curr_token->get_lexema()});
+
+    error = SemanticAnalyzer_verify_class_Compatibility(curr_token, VARIAVEL);
+    if (error != NenhumErro) 
+        throw_compiler_error(error,{curr_line,curr_token->get_lexema()});
 
     casa_token(IDENTIFICADOR);
 
