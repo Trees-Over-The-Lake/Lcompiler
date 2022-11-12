@@ -1,5 +1,5 @@
-#ifndef PARSER_CPP
-#define PARSER_CPP
+#ifndef ANALYZERS_PARSER_CPP
+#define ANALYZERS_PARSER_CPP
 
 #include"../symbol_table/symbol_table.cpp"
 #include"../error_manager/cerror_manager.cpp"

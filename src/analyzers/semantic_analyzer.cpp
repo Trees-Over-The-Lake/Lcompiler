@@ -1,5 +1,5 @@
-#ifndef SEMANTIC_ANALYZER
-#define SEMANTIC_ANALYZER
+#ifndef ANALYZERS_SEMANTIC_ANALYZER
+#define ANALYZERS_SEMANTIC_ANALYZER
 
 #include"../symbol_table/symbol_table.cpp"
 #include"../error_manager/cerror_manager.cpp"

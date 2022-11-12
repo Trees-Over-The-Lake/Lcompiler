@@ -1,5 +1,5 @@
-#ifndef FILE_STREAM_READER_CPP
-#define FILE_STREAM_READER_CPP
+#ifndef UTIL_FILE_STREAM_READER_CPP
+#define UTIL_FILE_STREAM_READER_CPP
 
 #include<string.h>
 

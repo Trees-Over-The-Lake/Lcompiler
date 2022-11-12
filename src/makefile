@@ -2,6 +2,13 @@ CXX?=g++
 PUB_IN?=""
 FLAGS?=-g
 
+NASM=nasm
+NASM_FLAGS=-g -w-zeroing -f elf64
+NASM_INPUT_FILE=saida.asm
+NASM_OUTPUT_FILE=saida.o
+
+LINKER=ld
+
 build_and_run:build run 
 
 build:clean precompile compile
@@ -31,3 +38,12 @@ run_valgrind:a.out
 clean:
 	@echo -e "Limpando...\n\n"
 	rm -f *.out
+	rm -f *.o
+	rm -f saida.asm
+
+nasm:
+	@echo -e "Compilando assembly...\n\n"
+	$(NASM) $(NASM_INPUT_FILE) -o $(NASM_OUTPUT_FILE)
+
+	@echo -e "Linkando programa...\n\n"
+	$(LINKER) $(NASM_OUTPUT_FILE) -o a.out

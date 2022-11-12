@@ -1,5 +1,5 @@
-#ifndef CERROR_MANAGER_CPP
-#define CERROR_MANAGER_CPP
+#ifndef ERROR_MANAGER_CERROR_MANAGER_CPP
+#define ERROR_MANAGER_CERROR_MANAGER_CPP
 
 #include<string>
 #include<vector>

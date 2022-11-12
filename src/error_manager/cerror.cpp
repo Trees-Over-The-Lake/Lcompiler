@@ -1,5 +1,5 @@
-#ifndef CERROR_CPP
-#define CERROR_CPP
+#ifndef ERROR_MANAGER_CERROR_HPP
+#define ERROR_MANAGER_CERROR_HPP
 
 #include<cstdint>
 #include<string>

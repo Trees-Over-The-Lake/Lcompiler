@@ -1,5 +1,5 @@
-#ifndef TOKEN_CPP
-#define TOKEN_CPP
+#ifndef SYMBOL_TABLE_TOKEN_CPP
+#define SYMBOL_TABLE_TOKEN_CPP
  
 #include "token_type.cpp"
 #include "token_class.cpp"
@@ -9,35 +9,35 @@
 #include <cstdint>
 
 class Token {
-    private:
-        TokenID id;
-        std::string lexema;
-        TokenType tipo;
-        TokenClass classe;
-        uint8_t tamanho;
-        long endereco;
+private:
+    TokenID id;
+    std::string lexema;
+    TokenType tipo;
+    TokenClass classe;
+    uint8_t tamanho;
+    long endereco;
 
-    public:
-        Token(TokenID id = TokenID::ATRIBUICAO, std::string lexema = "", TokenType tipo = TokenType::NAO_DEFINIDO, TokenClass classe = TokenClass::NENHUM, uint8_t tamanho = 1, long endereco = 0x0);
-        ~Token();
+public:
+    Token(TokenID id = TokenID::ATRIBUICAO, std::string lexema = "", TokenType tipo = TokenType::NAO_DEFINIDO, TokenClass classe = TokenClass::NENHUM, uint8_t tamanho = 1, long endereco = 0x0);
+    ~Token();
 
-        std::string get_lexema();
-        TokenType get_tipo();
-        TokenClass get_classe();
-        uint8_t get_tamanho();
-        TokenID get_id();
-        long get_endereco();
+    std::string get_lexema();
+    TokenType get_tipo();
+    TokenClass get_classe();
+    uint8_t get_tamanho();
+    TokenID get_id();
+    long get_endereco();
 
-        Token clone();
+    Token clone();
 
-        void set_lexema(std::string lexema);
-        void set_tipo(TokenType tipo);
-        void set_classe(TokenClass classe);
-        void set_tamanho(uint8_t tamanho);
-        void set_id(TokenID id);
-        void set_endereco(long endereco);
+    void set_lexema(std::string lexema);
+    void set_tipo(TokenType tipo);
+    void set_classe(TokenClass classe);
+    void set_tamanho(uint8_t tamanho);
+    void set_id(TokenID id);
+    void set_endereco(long endereco);
 
-        std::string to_string();
+    std::string to_string();
 };
 
 Token::Token(TokenID id, std::string lexema, TokenType tipo, TokenClass classe, uint8_t tamanho, long endereco) {

@@ -1,9 +1,10 @@
-#ifndef CODE_GENERATOR_CPP
-#define CODE_GENERATOR_CPP
+#ifndef GENERATOR_CODE_GENERATOR_CPP
+#define GENERATOR_CODE_GENERATOR_CPP
 
 #include<string>
 #include<fstream>
 #include"../utils/constants.hpp"
+#include"bin_constants.hpp"
 
 class CodeGenerator {
     private:
@@ -24,9 +25,9 @@ CodeGenerator::CodeGenerator(std::string asm_file_path)
     this->asm_file_path = asm_file_path;
     this->asm_file.open(asm_file_path);
 
-    this->memory_counter = 0x10000;
+    this->memory_counter = MAX_BIN_SIZE;
     this->temporary_counter = 0x0;
-    this->write_into_file("global _start\nsection .data\nM:\nresb 10000h\nsection .text\n_start:\n");
+    this->write_into_file(std::string(ELF_HEADER));
 }
 
 CodeGenerator::~CodeGenerator()

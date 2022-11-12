@@ -1,5 +1,5 @@
-#ifndef TOKEN_TYPE_CPP
-#define TOKEN_TYPE_CPP
+#ifndef SYMBOL_TABLE_TOKEN_TYPE_CPP
+#define SYMBOL_TABLE_TOKEN_TYPE_CPP
 
 enum TokenType 
 {

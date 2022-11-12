@@ -1,5 +1,5 @@
-#ifndef STRING_UTILS_CPP
-#define STRING_UTILS_CPP
+#ifndef UTIL_STRING_UTILS_CPP
+#define UTIL_STRING_UTILS_CPP
 
 #include<string>
 #include <algorithm>

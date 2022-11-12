@@ -1,5 +1,5 @@
-#ifndef TOKEN_ID_CPP
-#define TOKEN_ID_CPP
+#ifndef SYMBOL_TABLE_TOKEN_ID_CPP
+#define SYMBOL_TABLE_TOKEN_ID_CPP
 
 #include<string>
 

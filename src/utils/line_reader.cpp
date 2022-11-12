@@ -1,5 +1,5 @@
-#ifndef LINE_READER_CPP
-#define LINE_READER_CPP
+#ifndef UTIL_LINE_READER_CPP
+#define UTIL_LINE_READER_CPP
 
 #include<iostream>
 #include<vector>

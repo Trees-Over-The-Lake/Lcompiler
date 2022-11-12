@@ -1,5 +1,5 @@
-#ifndef LEXEME_CPP
-#define LEXEME_CPP
+#ifndef SYMBOL_TABLE_LEXEME_CPP
+#define SYMBOL_TABLE_LEXEME_CPP
 
 #include<map>
 #include<string>

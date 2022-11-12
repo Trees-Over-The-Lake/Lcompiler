@@ -1,5 +1,5 @@
-#ifndef CERROR_TYPE_CPP
-#define CERROR_TYPE_CPP
+#ifndef ERROR_MANAGER_CERROR_TYPE_CPP
+#define ERROR_MANAGER_CERROR_TYPE_CPP
 
 enum CErrorType {
     CaractereInvalido,

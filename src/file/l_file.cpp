@@ -1,5 +1,5 @@
-#ifndef L_FILE_CPP
-#define L_FILE_CPP
+#ifndef FILE_L_FILE_CPP
+#define FILE_L_FILE_CPP
 
 #include<string>
 #include<vector>

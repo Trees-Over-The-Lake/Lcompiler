@@ -1,5 +1,5 @@
-#ifndef LEXICAL_ANALYZER_CPP
-#define LEXICAL_ANALYZER_CPP
+#ifndef ANALYZERS_LEXICAL_ANALYZER
+#define ANALYZERS_LEXICAL_ANALYZER
 
 #include"../file/l_file.cpp"
 #include"../symbol_table/symbol_table.cpp"

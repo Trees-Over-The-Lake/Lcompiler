@@ -1,5 +1,5 @@
-#ifndef TOKEN_CLASS_CPP
-#define TOKEN_CLASS_CPP
+#ifndef SYMBOL_TABLE_TOKEN_CLASS_CPP
+#define SYMBOL_TABLE_TOKEN_CLASS_CPP
 
 enum TokenClass
 {
