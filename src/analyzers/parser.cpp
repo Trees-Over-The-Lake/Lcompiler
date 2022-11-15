@@ -41,12 +41,12 @@ public:
     void producaoJ();
     void producaoK();
     void producaoL();
-    void producaoM();
-    void producaoN();
-    void producaoO();
-    void producaoP();
-    void producaoQ();
-    void producaoR();
+    void producaoM(Token_pointer& index);
+    void producaoN(Token_pointer& index);
+    void producaoO(Token_pointer& index);
+    void producaoP(Token_pointer& index);
+    void producaoQ(Token_pointer& index);
+    void producaoR(Token_pointer& index);
 };
 
 Parser::Parser(LexicalAnalyzer* la)
@@ -157,7 +157,15 @@ void Parser::producaoB() {
         casa_token(curr_token_id);
 
         if(curr_token_id == SUBTRACAO) {
+            
             casa_token(curr_token_id);
+            
+            error = SemanticAnalyzer_atribute_compatibility(curr_token);
+
+            if(error != NenhumErro){
+                throw_compiler_error(error,{curr_line,curr_token->get_lexema()});
+            }
+
         }
 
         casa_token(CONST);
@@ -173,15 +181,23 @@ void Parser::producaoB() {
             
         casa_token(IDENTIFICADOR);
 
-        if( curr_token_id == ATRIBUICAO || curr_token_id == WALRUS) {
+        if(curr_token_id == ATRIBUICAO || curr_token_id == WALRUS) {
 
             casa_token(curr_token_id);
 
             if(curr_token_id == SUBTRACAO) {
+                
                 casa_token(curr_token_id);
+                
+                error = SemanticAnalyzer_atribute_compatibility(curr_token);
+
+                if(error != NenhumErro){
+                    throw_compiler_error(error,{curr_line,curr_token->get_lexema()});
+                }
+
             }
 
-            casa_token(CONST);            
+            casa_token(CONST);
         }
     }
 
@@ -194,18 +210,23 @@ void Parser::producaoC() {
     {
         case INT:
             casa_token(INT);
+            SemanticAnalyzer_atribute_new_type(curr_token,INTEIRO);
             break;
         case FLOAT:
             casa_token(FLOAT);
+            SemanticAnalyzer_atribute_new_type(curr_token,REAL);
             break;
         case CHAR:
             casa_token(CHAR);
+            SemanticAnalyzer_atribute_new_type(curr_token,CARACTERE);
             break;
         case STRING:
             casa_token(STRING);
+            SemanticAnalyzer_atribute_new_type(curr_token,TEXTO);
             break;
         case BOOLEAN:
             casa_token(BOOLEAN);
+            SemanticAnalyzer_atribute_new_type(curr_token,LOGICO);
             break;
         default:
             break;
@@ -228,7 +249,15 @@ void Parser::producaoD() {
     casa_token(ATRIBUICAO);
 
     if(curr_token_id == SUBTRACAO) {
+                
         casa_token(curr_token_id);
+        
+        error = SemanticAnalyzer_atribute_compatibility(curr_token);
+
+        if(error != NenhumErro){
+            throw_compiler_error(error,{curr_line,curr_token->get_lexema()});
+        }
+
     }
 
     casa_token(CONST);
@@ -267,6 +296,7 @@ void Parser::producaoE() {
 
 void Parser::producaoF(){
 
+    Token_pointer index = std::make_shared <Token>();
     CErrorType error = NenhumErro;
 
     error = SemanticAnalyzer_verify_if_token_already_initialized(curr_token);
@@ -277,27 +307,43 @@ void Parser::producaoF(){
     if (error != NenhumErro) 
         throw_compiler_error(error,{curr_line,curr_token->get_lexema()});
 
+    error = SemanticAnalyzer_verify_type_compatibility(curr_token, TEXTO);
+    if (error != NenhumErro) 
+        throw_compiler_error(error,{curr_line,curr_token->get_lexema()});
+
     casa_token(IDENTIFICADOR);
 
     if(curr_token_id == ABRE_COLCHETES) {
+        
         casa_token(curr_token_id);
 
-        producaoM();
+        producaoM(index);
+
+        error = SemanticAnalyzer_verify_type_compatibility(index, INTEIRO);
+        if (error != NenhumErro) 
+            throw_compiler_error(error,{curr_line,index->get_lexema()});
 
         casa_token(FECHA_COLCHETES);
     }
 
     casa_token(WALRUS);
 
-    producaoM();
+    producaoM(index);
+
+    /*
+    error = SemanticAnalyzer_verify_type_compatibility(index, INTEIRO);
+    if (error != NenhumErro) 
+        throw_compiler_error(error,{curr_line,index->get_lexema()});
+    */
 
     casa_token(PONTO_VIRGULA);
 }
 void Parser::producaoG(){
+    Token_pointer index = std::make_shared <Token>();
 
     casa_token(WHILE);
 
-    producaoM();
+    producaoM(index);
 
     producaoH();
 
@@ -319,12 +365,13 @@ void Parser::producaoH(){
 
 }
 void Parser::producaoI(){
-    
+    Token_pointer index = std::make_shared <Token>();
+
     casa_token(IF);
 
     casa_token(ABRE_PARANTESES);
 
-    producaoM();
+    producaoM(index);
     
     casa_token(FECHA_PARANTESES);
 
@@ -361,7 +408,8 @@ void Parser::producaoK(){
     casa_token(PONTO_VIRGULA);
 }
 void Parser::producaoL(){
-    
+    Token_pointer index = std::make_shared <Token>();
+
     if (curr_token_id == WRITE) {
         casa_token(curr_token_id);
     } else {
@@ -370,89 +418,91 @@ void Parser::producaoL(){
 
     casa_token(ABRE_PARANTESES);
 
-    producaoM();
+    producaoM(index);
 
     while(curr_token_id == VIRGULA) {
         casa_token(curr_token_id);
 
-        producaoM();
+        producaoM(index);
     }
 
     casa_token(FECHA_PARANTESES);
     casa_token(PONTO_VIRGULA);
 }
-void Parser::producaoM(){
+void Parser::producaoM(Token_pointer& index){
 
-    producaoN();
+    producaoN(index);
 
     while(curr_token_id == IGUAL || curr_token_id == DIFERENTE || curr_token_id == MENOR || curr_token_id == MENOR_IGUAL || curr_token_id == MAIOR || curr_token_id == MAIOR_IGUAL) {
 
         casa_token(curr_token_id);
         
-        producaoN();
+        producaoN(index);
     }
 
 }
-void Parser::producaoN(){
+void Parser::producaoN(Token_pointer& index){
 
     if(curr_token_id == SOMA || curr_token_id == SUBTRACAO) {
         casa_token(curr_token_id);
     }
 
-    producaoO();
+    producaoO(index);
 
     while(curr_token_id == SOMA || curr_token_id == SUBTRACAO || curr_token_id == OR) {
 
         casa_token(curr_token_id);
-        producaoO();
+        producaoO(index);
     }
 
 }
-void Parser::producaoO(){
+void Parser::producaoO(Token_pointer& index){
 
-    producaoP();
+    producaoP(index);
 
     while(curr_token_id == MULTIPLICACAO || curr_token_id == DIVISAO || curr_token_id == MOD || curr_token_id == DIVISAO || curr_token_id == DIV) {
 
         casa_token(curr_token_id);
 
-        producaoP();
+        producaoP(index);
     }
 
 }
-void Parser::producaoP(){
+void Parser::producaoP(Token_pointer& index){
 
     if (curr_token_id == NEGACAO) {
         casa_token(curr_token_id);
     } 
 
-    producaoQ();
+    producaoQ(index);
 }
-void Parser::producaoQ(){
+void Parser::producaoQ(Token_pointer& index){
 
     if (curr_token_id == FLOAT || curr_token_id == INT) {
 
         casa_token(curr_token_id);
         casa_token(ABRE_PARANTESES);
 
-        producaoM();
+        producaoM(index);
 
         casa_token(FECHA_PARANTESES);
     } else {
 
-        producaoR();
+        producaoR(index);
     }
 }
-void Parser::producaoR(){
+void Parser::producaoR(Token_pointer& index){
 
     if (curr_token_id == ABRE_PARANTESES) {
         
         casa_token(curr_token_id);
 
-        producaoM();
+        producaoM(index);
 
         casa_token(FECHA_PARANTESES);
     } else if( curr_token_id == CONST) {
+        //index = curr_token;
+        
         casa_token(curr_token_id);
 
     } else {
@@ -463,7 +513,9 @@ void Parser::producaoR(){
 
             casa_token(curr_token_id);
 
-            producaoM();
+            //index = curr_token;
+
+            producaoM(index);
 
             casa_token(FECHA_COLCHETES);
         }

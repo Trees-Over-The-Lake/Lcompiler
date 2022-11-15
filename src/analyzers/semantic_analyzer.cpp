@@ -47,4 +47,19 @@ CErrorType SemanticAnalyzer_verify_class_Compatibility(Token_pointer& t, TokenCl
     return erro;
 }
 
+void SemanticAnalyzer_atribute_new_type(Token_pointer& t, TokenType new_type) {
+    t->set_tipo(new_type);
+}
+
+CErrorType SemanticAnalyzer_atribute_compatibility(Token_pointer& t) {
+
+    CErrorType erro = NenhumErro;
+
+    if (t->get_tipo() != INTEIRO && t->get_tipo() != REAL)
+        erro = TiposIncompativeis;
+
+    return erro;
+}
+
+
 #endif
