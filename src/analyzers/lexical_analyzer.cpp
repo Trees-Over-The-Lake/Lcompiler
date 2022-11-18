@@ -483,6 +483,7 @@ bool LexicalAnalyzer::estado17(const char c, std::string* lexeme, Token_pointer&
         *lexeme += c;
     }
     else if (c == '.') {
+        token->set_tipo(REAL);
         curr_state = 14;
         *lexeme += c;
     }
@@ -621,9 +622,7 @@ Token_pointer LexicalAnalyzer::get_next_token()
             default:
                 break;
         }
-
         
-
         if(error_detected){
 
             if (this->file_to_analyze->is_end_of_file()) 

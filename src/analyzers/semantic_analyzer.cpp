@@ -4,7 +4,7 @@
 #include"../symbol_table/symbol_table.cpp"
 #include"../error_manager/cerror_manager.cpp"
 
-CErrorType SemanticAnalyzer_verify_token_identification(Token_pointer& t, TokenClass new_token_class) {
+CErrorType verify_token_identification(Token_pointer& t, TokenClass new_token_class) {
 
     CErrorType erro = NenhumErro;
 
@@ -17,7 +17,7 @@ CErrorType SemanticAnalyzer_verify_token_identification(Token_pointer& t, TokenC
     return erro;
 }
 
-CErrorType SemanticAnalyzer_verify_if_token_already_initialized(Token_pointer& t) {
+CErrorType verify_if_token_already_initialized(Token_pointer& t) {
 
     CErrorType erro = NenhumErro;
 
@@ -27,7 +27,7 @@ CErrorType SemanticAnalyzer_verify_if_token_already_initialized(Token_pointer& t
     return erro;
 }
 
-CErrorType SemanticAnalyzer_verify_type_compatibility(Token_pointer& t, TokenType expected_type) {
+CErrorType verify_type_compatibility(Token_pointer& t, TokenType expected_type) {
 
     CErrorType erro = NenhumErro;
 
@@ -37,7 +37,7 @@ CErrorType SemanticAnalyzer_verify_type_compatibility(Token_pointer& t, TokenTyp
     return erro;
 }
 
-CErrorType SemanticAnalyzer_verify_class_Compatibility(Token_pointer& t, TokenClass expected_type) {
+CErrorType verify_class_compatibility(Token_pointer& t, TokenClass expected_type) {
 
     CErrorType erro = NenhumErro;
 
@@ -47,16 +47,26 @@ CErrorType SemanticAnalyzer_verify_class_Compatibility(Token_pointer& t, TokenCl
     return erro;
 }
 
-void SemanticAnalyzer_atribute_new_type(Token_pointer& t, TokenType new_type) {
+void atribute_new_type(Token_pointer& t, TokenType new_type) {
     t->set_tipo(new_type);
 }
 
-CErrorType SemanticAnalyzer_atribute_compatibility(Token_pointer& t) {
+CErrorType verify_atribute_compatibility(Token_pointer& t) {
 
     CErrorType erro = NenhumErro;
 
     if (t->get_tipo() != INTEIRO && t->get_tipo() != REAL)
         erro = TiposIncompativeis;
+
+    return erro;
+}
+
+CErrorType compare_tokens(Token_pointer& t, Token_pointer& t1) {
+    CErrorType erro = NenhumErro;
+
+    if(t->get_tipo() != t1->get_tipo() && (t->get_tipo() == REAL || t1->get_tipo() != INTEIRO)) {
+        erro = TiposIncompativeis;
+    }
 
     return erro;
 }
