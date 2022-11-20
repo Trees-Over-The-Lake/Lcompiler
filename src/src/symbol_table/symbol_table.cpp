@@ -10,6 +10,7 @@
 #include"token/token.cpp"
 #include"lexeme.cpp"
 #include"../utils/string_utils.cpp"
+#include"../generator/bin_constants.hpp"
 #include<locale>
 
 typedef std::shared_ptr<Token> Token_pointer;
@@ -28,6 +29,7 @@ class SymbolTable {
 
         Token_pointer add_id(std::string lexeme);
         Token_pointer find_by_lexeme(std::string lexeme);
+        token_size get_token_type_size(TokenType t,std::string lexeme);
         std::string to_string();
 
         bool is_character_valid(const char c);
@@ -102,6 +104,35 @@ std::string SymbolTable::to_string() {
     }
 
     return result;
+}
+
+token_size SymbolTable::get_token_type_size(TokenType t,std::string lexeme) {
+
+    token_size size = 0;
+
+    switch (t) {
+
+        case INTEIRO:
+            size = L_NUMBER_SIZE;
+            break;
+        case TEXTO:
+            size = (lexeme.length() - 2) + 1; // Remover as aspas e adicionar o \0
+            break;
+        case REAL: 
+            size = L_NUMBER_SIZE;
+            break;
+        case LOGICO:
+            size = L_BOOLEAN_SIZE;
+            break;
+        case CARACTERE:
+            size = L_CHAR_SIZE;
+            break;
+        default:
+            size = 0;
+            break;
+    }
+
+    return size;
 }
 
 #endif

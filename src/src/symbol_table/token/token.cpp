@@ -8,23 +8,25 @@
 #include <string>
 #include <cstdint>
 
+typedef size_t token_size;
+
 class Token {
 private:
     TokenID id;
     std::string lexema;
     TokenType tipo;
     TokenClass classe;
-    uint8_t tamanho;
+    token_size tamanho;
     long endereco;
 
 public:
-    Token(TokenID id = TokenID::ATRIBUICAO, std::string lexema = "", TokenType tipo = TokenType::NAO_DEFINIDO, TokenClass classe = TokenClass::NENHUM, uint8_t tamanho = 1, long endereco = 0x0);
+    Token(TokenID id = TokenID::ATRIBUICAO, std::string lexema = "", TokenType tipo = TokenType::NAO_DEFINIDO, TokenClass classe = TokenClass::NENHUM, token_size tamanho = 1, long endereco = 0x0);
     ~Token();
 
     std::string get_lexema();
     TokenType get_tipo();
     TokenClass get_classe();
-    uint8_t get_tamanho();
+    token_size get_tamanho();
     TokenID get_id();
     long get_endereco();
 
@@ -33,14 +35,14 @@ public:
     void set_lexema(std::string lexema);
     void set_tipo(TokenType tipo);
     void set_classe(TokenClass classe);
-    void set_tamanho(uint8_t tamanho);
+    void set_tamanho(token_size tamanho);
     void set_id(TokenID id);
     void set_endereco(long endereco);
 
     std::string to_string();
 };
 
-Token::Token(TokenID id, std::string lexema, TokenType tipo, TokenClass classe, uint8_t tamanho, long endereco) {
+Token::Token(TokenID id, std::string lexema, TokenType tipo, TokenClass classe, token_size tamanho, long endereco) {
     this->id = id;
     this->lexema = lexema;
     this->tipo = tipo;
@@ -66,7 +68,7 @@ TokenClass Token::get_classe() {
     return this->classe;
 }
 
-uint8_t Token::get_tamanho() {
+token_size Token::get_tamanho() {
     return this->tamanho;
 }
 
@@ -90,7 +92,7 @@ void Token::set_classe(TokenClass classe) {
     this->classe = classe;
 }
 
-void Token::set_tamanho(uint8_t tamanho) {
+void Token::set_tamanho(token_size tamanho) {
     this->tamanho = tamanho;
 }
 

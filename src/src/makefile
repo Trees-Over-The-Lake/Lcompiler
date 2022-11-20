@@ -46,4 +46,4 @@ nasm:
 	$(NASM) $(NASM_INPUT_FILE) -o $(NASM_OUTPUT_FILE)
 
 	@echo -e "Linkando programa...\n\n"
-	$(LINKER) $(NASM_OUTPUT_FILE) -o a.out
+	$(LINKER) $(NASM_OUTPUT_FILE) -o programa.out
