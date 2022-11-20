@@ -28,8 +28,8 @@ enum TokenID
     WALRUS,             // :=
     MAIOR,              // >
     MENOR,              // <
-    MAIOR_IGUAL,        // <=
-    MENOR_IGUAL,        // >=
+    MAIOR_IGUAL,        // >=
+    MENOR_IGUAL,        // <=
     DIFERENTE,          // !=
     VIRGULA,            // ,
     SOMA,               // +

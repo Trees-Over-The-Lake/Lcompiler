@@ -37,6 +37,16 @@ CErrorType verify_type_compatibility(Token_pointer& t, TokenType expected_type) 
     return erro;
 }
 
+CErrorType verify_type_incompatibility(Token_pointer& t, TokenType not_expected_type) {
+
+    CErrorType erro = NenhumErro;
+
+    if (t->get_tipo() == not_expected_type)
+        erro = TiposIncompativeis;
+
+    return erro;
+}
+
 CErrorType verify_class_compatibility(Token_pointer& t, TokenClass expected_type) {
 
     CErrorType erro = NenhumErro;
@@ -51,7 +61,7 @@ void atribute_new_type(Token_pointer& t, TokenType new_type) {
     t->set_tipo(new_type);
 }
 
-CErrorType verify_atribute_compatibility(Token_pointer& t) {
+CErrorType verify_token_is_number(Token_pointer& t) {
 
     CErrorType erro = NenhumErro;
 

@@ -183,6 +183,9 @@ Token_pointer LexicalAnalyzer::estado1(std::string* lexeme, Token_pointer& token
     if (token->get_classe() == CONSTANTE) {
         token->set_id(TokenID::CONST);
         token->set_lexema(*lexeme);
+
+        token_size new_token_size = symbol_table.get_token_type_size(token->get_tipo(),token->get_lexema());
+        token->set_tamanho(new_token_size);
         
     } else {
         token = this->symbol_table.add_id(*lexeme);
