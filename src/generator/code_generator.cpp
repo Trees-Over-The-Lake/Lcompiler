@@ -21,6 +21,9 @@ class CodeGenerator {
 
         void start_data_section();
         void start_text_section();
+
+        long new_temporary(const TokenType t);
+
     public:
     
         CodeGenerator(std::string asm_file_path = DEFAULT_OUTPUT_FILE);
@@ -103,6 +106,35 @@ void CodeGenerator::write(std::string s, int num_tabs) {
     this->asm_file << tabs << s << std::endl;
 }
 
+long CodeGenerator::new_temporary(const TokenType type) {
+
+    long address = this->temporary_counter;
+
+    switch (type) {
+    case TEXTO:
+
+        this->temporary_counter += L_STRING_SIZE;
+        break;
+    
+    case CARACTERE:
+    case LOGICO:
+        
+        this->temporary_counter += L_CHAR_SIZE;
+        break; 
+
+    case INTEIRO:
+    case REAL:
+    
+        this->temporary_counter += L_NUMBER_SIZE;
+        break;
+
+    default:
+        break;
+    }
+
+    return address;
+}
+
 void CodeGenerator::allocate_space_for_token(Token_pointer& t) {
     t->set_endereco(this->memory_counter);
 
@@ -169,7 +201,7 @@ void CodeGenerator::allocate_space_for_const(Token_pointer& identifier, Token_po
         default: 
             this->memory_counter += constant->get_tamanho();
             
-            write(format("dd %s", constant->get_lexema()));
+            write(format("dd %s", constant->get_lexema().c_str()));
 
             break;    
     }
@@ -227,7 +259,7 @@ void CodeGenerator::store_token_on_data_section(Token_pointer& t, Token_pointer&
             break;
 
         default:
-            write(format("mov al, %s", constant->get_lexema()));
+            write(format("mov al, %s", constant->get_lexema().c_str()));
             write(format("mov [qword M + %ld], eax", t->get_endereco()));
             break;
     }
@@ -300,18 +332,16 @@ void CodeGenerator::read_line() {
     temporary_counter += 0x100;
 
     write(format("mov rsi, M + %d", buffer_address));
-    write("mov rdx, 100h ;tamanho do buffer");
-    write("mov rax, 0 ;chamada para leitura");
-    write("mov rdx, 100h ;tamanho do buffer");
-    write("mov rdi, 0 ;leitura do teclado");
+    write("mov rax, 0");
+    write("mov rdi, 0");
+    write("mov rdx, 100h");
 }
 
 void CodeGenerator::write_into_terminal(Token_pointer& t) {
 
     if (t->get_tipo() == REAL) {
 
-        long buffer_address = this->temporary_counter;
-        this->temporary_counter += 0x100;
+        long buffer_address = new_temporary(TEXTO);
 
         int label1 = new_label();
         int label2 = new_label();
@@ -334,11 +364,11 @@ void CodeGenerator::write_into_terminal(Token_pointer& t) {
         write("cvtsi2ss xmm1, rdx ;Converte para real");
         write("mulss xmm0, xmm1 ;Toma módulo");
         write("add rsi, 1 ;incrementa índice");
-        write(format("l%d:", label1));
+        write(format("l%d:", label1),1);
         write("roundss xmm1, xmm0, 0b0011 ;parte inteira xmm1");
         write("subss xmm0, xmm1");
         write("cvtss2si rax, xmm1");
-        write(format("l%d:", label2));
+        write(format("l%d:", label2),1);
         write("add rcx, 1");
         write("cdq");
         write("idiv ebx");
@@ -346,7 +376,7 @@ void CodeGenerator::write_into_terminal(Token_pointer& t) {
         write("cmp eax, 0");
         write(format("jne l%d", label2));
         write("sub rdi, rcx");
-        write(format("l%d:", label3));
+        write(format("l%d:", label3),1);
         write("pop dx");
         write("add dl, '0'");
         write("mov [rsi], dl");
@@ -357,7 +387,7 @@ void CodeGenerator::write_into_terminal(Token_pointer& t) {
         write("mov dl, '.'");
         write("mov [rsi], dl");
         write("add rsi, 1");
-        write(format("l%d:", label4));
+        write(format("l%d:", label4),1);
         write("cmp rdi, 0");
         write(format("jle l%d", label5));
         write("mulss xmm0,xmm2");
@@ -369,7 +399,7 @@ void CodeGenerator::write_into_terminal(Token_pointer& t) {
         write("add rsi, 1");
         write("sub rdi, 1");
         write(format("jmp l%d", label4));
-        write(format("l%d:", label5));
+        write(format("l%d:", label5),1);
         write("mov dl, 0");
         write("mov [rsi], dl");
         write("mov rdx, rsi");
@@ -389,8 +419,7 @@ void CodeGenerator::write_into_terminal(Token_pointer& t) {
         write("mov rdi, 0");
     } else {
 
-        long buffer_address = this->temporary_counter;
-        this->temporary_counter += 0x100;
+        long buffer_address = new_temporary(TEXTO);
 
         int label1 = new_label();
         int label2 = new_label();
@@ -407,9 +436,9 @@ void CodeGenerator::write_into_terminal(Token_pointer& t) {
         write("add rsi, 1");
         write("add rdi, 1");
         write("neg eax");
-        write(format("l%ld:",label1));
+        write(format("l%ld:",label1),1);
         write("mov ebx, 10");
-        write(format("l%ld:",label2));
+        write(format("l%ld:",label2),1);
         write("add rcx, 1");
         write("cdq");
         write("idiv ebx");
@@ -417,7 +446,7 @@ void CodeGenerator::write_into_terminal(Token_pointer& t) {
         write("cmp eax, 0");
         write(format("jne l%d", label2));
         write("add rdi,rcx");
-        write(format("l%ld:",label3));
+        write(format("l%ld:",label3),1);
         write("pop dx");
         write("add dl, '0'");
         write("mov [rsi], dl");
@@ -437,8 +466,7 @@ void CodeGenerator::write_line_break(const bool writeln) {
 
     if (writeln) {
 
-        long line_break = this->temporary_counter;
-        this->temporary_counter += 0x1;
+        long line_break = new_temporary(TEXTO);
 
         write("mov al, 0Ah");
         write(format("mov [qword M + %ld], al", line_break));
@@ -453,9 +481,8 @@ void CodeGenerator::write_line_break(const bool writeln) {
 void CodeGenerator::add_character(Token_pointer& r, Token_pointer& identifier) {
 
     r->set_tipo(CARACTERE);
-    r->set_endereco(this->temporary_counter);
 
-    this->temporary_counter += 0x1;
+    r->set_endereco(new_temporary(CARACTERE));
 
     write(format("mov rax, [qword M + %ld]", r->get_endereco()));
     write(format("mov rax, M + %ld", identifier->get_endereco()));
@@ -467,8 +494,7 @@ void CodeGenerator::int_to_float(Token_pointer& t) {
 
     write(format("mov rax, [qword M + %ld]", t->get_endereco()));
 
-    t->set_endereco(this->temporary_counter);
-    this->temporary_counter += 0x4;
+    t->set_endereco(new_temporary(REAL));
 
     write("cvtsi2ss xmm0, rax");
     write("movss [qword M + %ld], xmm0");
@@ -479,8 +505,7 @@ void CodeGenerator::float_to_int(Token_pointer& t) {
     write(format("movss xmm0, [qword M + %ld]", t->get_endereco()));
     write("cvtsi2ss rax, xmm0");
 
-    t->set_endereco(this->temporary_counter);
-    this->temporary_counter += 0x4;
+    t->set_endereco(new_temporary(INTEIRO));
 
     write("mov [qword M + %ld], rax");
 }
@@ -491,9 +516,7 @@ void CodeGenerator::negate_boolean(Token_pointer& p) {
     write("neg al");
     write("add al, 1");
 
-    p->set_endereco(this->temporary_counter);
-
-    this->temporary_counter += 0x1;
+    p->set_endereco(new_temporary(LOGICO));
 
     write(format("mov [qowrd M + %ld], al", p->get_endereco()));
 }
@@ -504,8 +527,7 @@ void CodeGenerator::and_operation(Token_pointer& p, Token_pointer& o) {
     write(format("mov ebx, [qword M + %ld]", p->get_endereco()));
     write("imul ebx");
 
-    o->set_endereco(this->temporary_counter);
-    this->temporary_counter += 0x1;
+    o->set_endereco(new_temporary(LOGICO));
 
     write(format("mov [qword M + %ld], eax", o->get_endereco()));
 }
@@ -517,8 +539,9 @@ void CodeGenerator::multiple_float(Token_pointer& p, Token_pointer& o) {
         write(format("movss xmm0, [qword M + %ld]", p->get_endereco()));
         write(format("movss xmm1, [qword M + %ld]", o->get_endereco()));
         write("mulss xmm0, xmm1");
-        p->set_endereco(this->temporary_counter);
-        temporary_counter += 0x4;
+
+        p->set_endereco(new_temporary(REAL));
+        
         write(format("movss [qword M + %ld], xmm0", p->get_endereco()));
 
     } else {
@@ -526,8 +549,9 @@ void CodeGenerator::multiple_float(Token_pointer& p, Token_pointer& o) {
         write(format("mov eax, [qword M + %ld]", p->get_endereco()));
         write(format("mov ebx, [qword M + %ld]", o->get_endereco()));
         write("imul ebx");
-        p->set_endereco(this->temporary_counter);
-        temporary_counter += 0x4;
+
+        p->set_endereco(new_temporary(REAL));
+        
         write(format("mov [qword M + %ld], eax", p->get_endereco()));
     }
 }
@@ -537,8 +561,9 @@ void CodeGenerator::divide_float(Token_pointer& p, Token_pointer& o) {
     write(format("movss xmm0, [qword M + %ld]", p->get_endereco()));
     write(format("movss xmm1, [qword M + %ld]", o->get_endereco()));
     write("divss xmm0, xmm1");
-    p->set_endereco(this->temporary_counter);
-    temporary_counter += 0x4;
+
+    p->set_endereco(new_temporary(REAL));
+    
     write(format("movss [qword M + %ld], xmm0", p->get_endereco()));
 
 }
@@ -561,8 +586,9 @@ void CodeGenerator::multiple_numbers(Token_pointer& p, Token_pointer& o) {
     }
 
     write("mulss xmm0, xmm1");
-    p->set_endereco(this->temporary_counter);
-    temporary_counter += 0x4;
+
+    p->set_endereco(new_temporary(REAL));
+
     write(format("movss [qword M + %ld], xmm0", p->get_endereco()));
 }
 
@@ -584,8 +610,7 @@ void CodeGenerator::divide_numbers(Token_pointer& p, Token_pointer& o) {
     }
 
     write("divss xmm0, xmm1");
-    p->set_endereco(this->temporary_counter);
-    temporary_counter += 0x4;
+    p->set_endereco(new_temporary(REAL));
 }
 
 void CodeGenerator::module_or_div(Token_pointer& p, Token_pointer& o, const bool is_module) {
@@ -597,8 +622,7 @@ void CodeGenerator::module_or_div(Token_pointer& p, Token_pointer& o, const bool
     write(format("mov ebx, [qword M + %ld]", o->get_endereco()));
     write("idiv ebx");
 
-    o->set_endereco(temporary_counter);
-    temporary_counter += 0x4;
+    o->set_endereco(new_temporary(REAL));
 
     if (is_module) 
         write(format("mov [qword M + %ld], edx", o->get_endereco()));
@@ -665,9 +689,7 @@ void CodeGenerator::char_operation(Token_pointer& p, Token_pointer& o, const Tok
     write("mov cl, 1");
     write(format("l%d", end_label));
 
-    p->set_endereco(temporary_counter);
-
-    temporary_counter += 0x1;
+    p->set_endereco(new_temporary(CARACTERE));
 
     write(format("mov [qword M + %ld], cl", p->get_endereco()));
 }
@@ -722,9 +744,7 @@ void CodeGenerator::number_operation(Token_pointer& p, Token_pointer& o, const T
     write("mov al, 1");
     write(format("l%d", end_label));
 
-    p->set_endereco(temporary_counter);
-
-    temporary_counter += 0x1;
+    p->set_endereco(new_temporary(LOGICO));
 
     write(format("mov [qword M + %ld], al", p->get_endereco()));
 }
@@ -738,9 +758,7 @@ void CodeGenerator::negate_expression(Token_pointer& p) {
         write("cvtsi2ss xmm1, rax");
         write("mulss xmm0, xmm1");
 
-        p->set_endereco(this->temporary_counter);
-
-        this->temporary_counter += 0x4;
+        p->set_endereco(new_temporary(INTEIRO));
 
         write(format("movss [qword M + %ld], xmm0", p->get_endereco()));
 
@@ -749,9 +767,7 @@ void CodeGenerator::negate_expression(Token_pointer& p) {
         write(format("movss eax, [qword M + %ld]", p->get_endereco()));
         write("neg eax");
 
-        p->set_endereco(this->temporary_counter);
-
-        this->temporary_counter += 0x4;
+        p->set_endereco(new_temporary(INTEIRO));
 
         write(format("mov [qword M + %ld], eax", p->get_endereco()));
     }
@@ -766,9 +782,7 @@ void CodeGenerator::or_operation(Token_pointer& p, Token_pointer& o) {
     write("add ebx, ecx");
     write("sub ebx, eax");
 
-    p->set_endereco(this->temporary_counter);
-
-    temporary_counter += 0x1;
+    p->set_endereco(new_temporary(LOGICO));
 
     write("mov [qword M + %ld], ebx");
 }
@@ -791,12 +805,13 @@ void CodeGenerator::add_operation(Token_pointer& p, Token_pointer& o) {
 
     write("addss xmm1, xmm0");
 
-    p->set_endereco(this->temporary_counter);
-    temporary_counter += 0x4;
+    p->set_endereco(new_temporary(INTEIRO));
+
     write(format("movss [qword M + %ld], xmm1", p->get_endereco()));
 }
 
 void CodeGenerator::sub_operation(Token_pointer& p, Token_pointer& o) {
+
     if(p->get_tipo() == REAL) {
 
         write(format("movss xmm0, [qword M + %ld]", p->get_endereco()));
@@ -814,8 +829,8 @@ void CodeGenerator::sub_operation(Token_pointer& p, Token_pointer& o) {
 
     write("subss xmm1, xmm0");
 
-    p->set_endereco(this->temporary_counter);
-    temporary_counter += 0x4;
+    p->set_endereco(new_temporary(INTEIRO));
+    
     write(format("movss [qword M + %ld], xmm1", p->get_endereco()));
 }
 
