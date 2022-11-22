@@ -9,8 +9,13 @@
 #include"../symbol_table/symbol_table.cpp"
 #include <sstream>
 
+/**
+ * @brief Class for generating x86_64 assembly on linux
+ * 
+ */
 class CodeGenerator {
     private:
+
         std::string asm_file_path;
         std::ofstream asm_file;
 
@@ -28,11 +33,16 @@ class CodeGenerator {
     
         CodeGenerator(std::string asm_file_path = DEFAULT_OUTPUT_FILE);
         ~CodeGenerator();
+
+        // Data allocation
+
         void allocate_space_for_token(Token_pointer& t);
         void allocate_space_for_const(Token_pointer& identifier, Token_pointer& constant);
         void variable_atribution(Token_pointer& identifier, Token_pointer& m, Token_pointer& m1, bool is_string);
         void store_token_on_data_section(Token_pointer& identifier, Token_pointer& constant, bool negate);
+
         void reset_temporary_counter();
+
         void start_while_loop(Token_pointer& t, const int begin, const int end);
         void start_if(Token_pointer& t, const int begin);
         void end_scope(const int begin, const int end);
@@ -135,6 +145,10 @@ long CodeGenerator::new_temporary(const TokenType type) {
     return address;
 }
 
+/**
+ * @brief Alocate the necessary bytes for the token t
+ * @param t is the variable we want to allocate in memory
+ */
 void CodeGenerator::allocate_space_for_token(Token_pointer& t) {
     t->set_endereco(this->memory_counter);
 
@@ -161,14 +175,27 @@ void CodeGenerator::allocate_space_for_token(Token_pointer& t) {
     start_text_section();
 }
 
+/**
+ * @brief Create a new label
+ */
 int CodeGenerator::new_label() {
     return this->label_counter++;
 }
 
+/**
+ * @brief Reset the counter for temporary data on M
+ * 
+ */
 void CodeGenerator::reset_temporary_counter() {
     this->temporary_counter = 0x0;
 }
 
+/**
+ * @brief Alocate data for a constant in the data section
+ * 
+ * @param identifier is the token that is allocating a constant
+ * @param constant is the token with the information of the value we want to store
+ */
 void CodeGenerator::allocate_space_for_const(Token_pointer& identifier, Token_pointer& constant) {
 
     identifier->set_tipo(constant->get_tipo());
@@ -210,6 +237,13 @@ void CodeGenerator::allocate_space_for_const(Token_pointer& identifier, Token_po
 }
 
 
+/**
+ * @brief Store the value of constant into the position of the pointer t
+ * 
+ * @param t is where the value is going to be stored
+ * @param constant is where the value we want to allocate is
+ * @param negate boolean expressing if we need to invert the value in the constant
+ */
 void CodeGenerator::store_token_on_data_section(Token_pointer& t, Token_pointer& constant, bool negate) {
 
     switch (t->get_tipo()) {
@@ -266,6 +300,14 @@ void CodeGenerator::store_token_on_data_section(Token_pointer& t, Token_pointer&
 
 }
 
+/**
+ * @brief Atribute the identifier with a variable
+ * 
+ * @param identifier 
+ * @param m 
+ * @param m1 
+ * @param is_string 
+ */
 void CodeGenerator::variable_atribution(Token_pointer& identifier, Token_pointer& m, Token_pointer& m1, bool is_string) {
 
     if (is_string) {
@@ -299,6 +341,13 @@ void CodeGenerator::variable_atribution(Token_pointer& identifier, Token_pointer
     }
 }
 
+/**
+ * @brief Start a while loop
+ * 
+ * @param t is the token containg the codition for stopping the loop
+ * @param begin is label containing the beggining of the loop
+ * @param end is the label containing the end of the loop
+ */
 void CodeGenerator::start_while_loop(Token_pointer& t, const int begin, const int end) {
 
     write(format("l%d:", begin));
@@ -307,17 +356,36 @@ void CodeGenerator::start_while_loop(Token_pointer& t, const int begin, const in
     write(format("je l%d", end));
 }
 
+/**
+ * @brief Start a if conditioning
+ * 
+ * @param t is the boolean containing the start of the if chain
+ * @param begin is the label containing the beginning of the if chain 
+ */
 void CodeGenerator::start_if(Token_pointer& t, const int begin) {
     write(format("mov al, [qword M + %ld]", t->get_endereco()));
     write("cmp al, 0");
     write(format("je l%d", begin));
 }
 
+/**
+ * @brief End the if chain or while loop
+ * 
+ * @param begin is the begin label for the while/if chain
+ * @param end is the label containing the end of the if chain
+ */
 void CodeGenerator::end_scope(const int begin, const int end) {
     write(format("jmp l%d", begin));
     write(format("l%d:", end));
 }
 
+/**
+ * @brief End if/else chain
+ * 
+ * @param is_else boolean expressing if the chain started was an else if chain
+ * @param begin is the beggining label
+ * @param end is the end label
+ */
 void CodeGenerator::end_conditional_chain(const bool is_else, const int begin, const int end) {
     if (is_else) 
         write(format("l%d:", end));
@@ -326,19 +394,39 @@ void CodeGenerator::end_conditional_chain(const bool is_else, const int begin, c
         write(format("l%d:", begin));
 }
 
+/**
+ * @brief Read user input and store in pointer p
+ * @param p is the token where the variable will be stored into
+ */
 void CodeGenerator::read_line(Token_pointer& p) {
 
-    long temporary_buffer = new_temporary(TEXTO);
-    p->set_endereco(new_temporary(p->get_tipo()));
+    if (p->get_tipo() == TEXTO) {
+        p->set_endereco(new_temporary(TEXTO));
+        write(format("mov rsi, M + %ld", p->get_endereco()));
+        write("mov rax, 0");
+        write("mov rdi, 0");
+        write("mov rdx, 100h");
+        write("syscall");
+        write(format("mov byte [M+%ld+rax-1], 0",p->get_endereco())); // Armazenar \0 na ultima posicao da string
+    }
 
-    write(format("mov rsi, M + %ld", temporary_buffer));
-    write("mov rax, 0");
-    write("mov rdi, 0");
-    write("mov rdx, 100h");
-    write("syscall");
-    write(format("mov byte [M+%ld-1+rax], 0",temporary_buffer));
+    else if ( p->get_tipo() == INTEIRO) {
 
-    if (p->get_tipo() == INTEIRO) {
+        // Criar variavel temporaria
+
+        long temporary_buffer = new_temporary(TEXTO);
+        p->set_endereco(new_temporary(INTEIRO));
+
+        // Ler string do teclado
+        
+        write(format("mov rsi, M + %ld", temporary_buffer));
+        write("mov rax, 0");
+        write("mov rdi, 0");
+        write("mov rdx, 100h");
+        write("syscall");
+        write(format("mov byte [M+%ld-1+rax], 0",temporary_buffer)); // Armazenar \0 na ultima posicao da string
+
+        // Converter String para inteiro
 
         int label1 = new_label();
         int label2 = new_label();
@@ -351,7 +439,7 @@ void CodeGenerator::read_line(Token_pointer& p) {
         write(format("l%d:", label2),1);
         write("movzx rdx, byte [rcx]");
         write("test rdx, rdx");
-        write(format("jz l%d", label3),1);
+        write(format("jz l%d", label3));
         write("inc rcx");
         write("sub rdx, '0'");
         write("add rax, rax");
@@ -359,14 +447,14 @@ void CodeGenerator::read_line(Token_pointer& p) {
         write("add rax, rdx");
         write(format("jmp l%ld", label2));
         write(format("l%d:", label3),1);
-        write(format("mov rcx, M + %ld", p->get_endereco()));
-        write("mov rbx, 10");
-        write("mov [rcx], rbx");
-        write("inc rcx");
-        write(format("mov [M+%ld], rcx", p->get_endereco()));
+        write(format("mov [M+%ld], rax", p->get_endereco()));
     }
 }
 
+/**
+ * @brief Write the content of the pointer t into the terminal
+ * @param t is the variable we want to print on the screen
+ */
 void CodeGenerator::write_into_terminal(Token_pointer& t) {
 
     if (t->get_tipo() == REAL) {
@@ -492,6 +580,11 @@ void CodeGenerator::write_into_terminal(Token_pointer& t) {
     }
 }
 
+/**
+ * @brief Write a line break in the code
+ * 
+ * @param writeln is the expression saying if is really necessary insert a line break
+ */
 void CodeGenerator::write_line_break(const bool writeln) {
 
     if (writeln) {
@@ -508,6 +601,12 @@ void CodeGenerator::write_line_break(const bool writeln) {
     }
 }
 
+/**
+ * @brief Add a character to a register
+ * 
+ * @param r is the register we want to allocate to
+ * @param identifier is the token containing the character we want to add
+ */
 void CodeGenerator::add_character(Token_pointer& r, Token_pointer& identifier) {
 
     r->set_tipo(CARACTERE);
@@ -520,6 +619,11 @@ void CodeGenerator::add_character(Token_pointer& r, Token_pointer& identifier) {
     write(format("mov [qword M + %ld], al", r->get_endereco()));
 }
 
+/**
+ * @brief Convert a token containing an integer into a floating number
+ * 
+ * @param t is the token containing the float
+ */
 void CodeGenerator::int_to_float(Token_pointer& t) {
 
     write(format("mov rax, [qword M + %ld]", t->get_endereco()));
@@ -530,6 +634,11 @@ void CodeGenerator::int_to_float(Token_pointer& t) {
     write("movss [qword M + %ld], xmm0");
 }
 
+/**
+ * @brief Convert a token containing a float into an integer
+ * 
+ * @param t is the token containing the integer
+ */
 void CodeGenerator::float_to_int(Token_pointer& t) {
 
     write(format("movss xmm0, [qword M + %ld]", t->get_endereco()));
@@ -540,6 +649,11 @@ void CodeGenerator::float_to_int(Token_pointer& t) {
     write("mov [qword M + %ld], rax");
 }
 
+/**
+ * @brief Negate a boolean expression
+ * 
+ * @param p is the token containing the boolean
+ */
 void CodeGenerator::negate_boolean(Token_pointer& p) {
 
     write(format("mov al, [qword M + %ld]", p->get_endereco()));
@@ -548,9 +662,16 @@ void CodeGenerator::negate_boolean(Token_pointer& p) {
 
     p->set_endereco(new_temporary(LOGICO));
 
-    write(format("mov [qowrd M + %ld], al", p->get_endereco()));
+    write(format("mov [qword M + %ld], al", p->get_endereco()));
 }
 
+/**
+ * @brief make an and operation with the content of two registers
+ * 
+ * @param p is the content of the second register
+ * @param o is the content of the first register, and the one 
+ * where the variable of the operation is going to be stored 
+ */
 void CodeGenerator::and_operation(Token_pointer& p, Token_pointer& o) {
 
     write(format("mov eax, [qword M + %d]", o->get_endereco()));
@@ -562,6 +683,12 @@ void CodeGenerator::and_operation(Token_pointer& p, Token_pointer& o) {
     write(format("mov [qword M + %ld], eax", o->get_endereco()));
 }
 
+/**
+ * @brief Multiply two floating point numbers
+ * 
+ * @param p is the first token with the register where the variable is going to be stored
+ * @param o is the second token for the operation
+ */
 void CodeGenerator::multiple_float(Token_pointer& p, Token_pointer& o) {
 
     if(p->get_tipo() == REAL) {
@@ -586,6 +713,13 @@ void CodeGenerator::multiple_float(Token_pointer& p, Token_pointer& o) {
     }
 }
 
+/**
+ * @brief Divide the content of two floating point numbers
+ * 
+ * @param p is the first token, and is where the result
+ * of the operation is going to be stored
+ * @param o is the second token for the operation
+ */
 void CodeGenerator::divide_float(Token_pointer& p, Token_pointer& o) {
 
     write(format("movss xmm0, [qword M + %ld]", p->get_endereco()));
@@ -595,9 +729,14 @@ void CodeGenerator::divide_float(Token_pointer& p, Token_pointer& o) {
     p->set_endereco(new_temporary(REAL));
     
     write(format("movss [qword M + %ld], xmm0", p->get_endereco()));
-
 }
 
+/**
+ * @brief Multiply two floating point numbers
+ * 
+ * @param p is the first token with the register where the variable is going to be stored
+ * @param o is the second token for the operation
+ */
 void CodeGenerator::multiple_numbers(Token_pointer& p, Token_pointer& o) {
 
     if(p->get_tipo() == REAL) {
@@ -622,6 +761,13 @@ void CodeGenerator::multiple_numbers(Token_pointer& p, Token_pointer& o) {
     write(format("movss [qword M + %ld], xmm0", p->get_endereco()));
 }
 
+/**
+ * @brief Divide the content of two numbers
+ * 
+ * @param p is the first token, and is where the result
+ * of the operation is going to be stored
+ * @param o is the second token for the operation
+ */
 void CodeGenerator::divide_numbers(Token_pointer& p, Token_pointer& o) {
 
     if(p->get_tipo() == REAL) {
@@ -640,9 +786,20 @@ void CodeGenerator::divide_numbers(Token_pointer& p, Token_pointer& o) {
     }
 
     write("divss xmm0, xmm1");
+
     p->set_endereco(new_temporary(REAL));
+    write(format("movss [qword M + %ld], xmm0", p->get_endereco()));
 }
 
+
+/**
+ * @brief Make a module or a div operation
+ * 
+ * @param p is the first token for the operation
+ * @param o is the second token, and where the result of the
+ * operation is going to be stored
+ * @param is_module boolean expressing if the operation is a module one
+ */
 void CodeGenerator::module_or_div(Token_pointer& p, Token_pointer& o, const bool is_module) {
     
     p->set_tipo(o->get_tipo());
@@ -663,12 +820,25 @@ void CodeGenerator::module_or_div(Token_pointer& p, Token_pointer& o, const bool
 
 }
 
+/**
+ * @brief Compare the content of two strings
+ * 
+ * @param p is the first string
+ * @param o is the second string
+ */
 void CodeGenerator::compare_string(Token_pointer& p, Token_pointer& o) {
     
     p->set_tipo(LOGICO);
     //
 }
 
+/**
+ * @brief Compare the content of two characters
+ * 
+ * @param p is the first character
+ * @param o is the second character
+ * @param operation is the operation that is going to be with the caracthers
+ */
 void CodeGenerator::char_operation(Token_pointer& p, Token_pointer& o, const TokenID operation) {
     
     p->set_tipo(LOGICO);
@@ -724,6 +894,13 @@ void CodeGenerator::char_operation(Token_pointer& p, Token_pointer& o, const Tok
     write(format("mov [qword M + %ld], cl", p->get_endereco()));
 }
 
+/**
+ * @brief Make a operation with the numbers
+ * 
+ * @param p is the first number
+ * @param o is the second number
+ * @param operation is the operation that is going to be made
+ */
 void CodeGenerator::number_operation(Token_pointer& p, Token_pointer& o, const TokenID operation) {
     
     p->set_tipo(LOGICO);
@@ -779,6 +956,11 @@ void CodeGenerator::number_operation(Token_pointer& p, Token_pointer& o, const T
     write(format("mov [qword M + %ld], al", p->get_endereco()));
 }
 
+/**
+ * @brief Negate an entire expression containing inside of a token
+ * 
+ * @param p is the token we need to negate
+ */
 void CodeGenerator::negate_expression(Token_pointer& p) {
 
     if (p->get_tipo() == REAL) {
@@ -803,6 +985,12 @@ void CodeGenerator::negate_expression(Token_pointer& p) {
     }
 }
 
+/**
+ * @brief Make a or operation on two tokens
+ * 
+ * @param p is the first token, and the one that is going to contain the result
+ * @param o is the second token
+ */
 void CodeGenerator::or_operation(Token_pointer& p, Token_pointer& o) {
 
     write(format("mov eax, [qword M + %ld]", p->get_endereco()));
@@ -817,6 +1005,12 @@ void CodeGenerator::or_operation(Token_pointer& p, Token_pointer& o) {
     write("mov [qword M + %ld], ebx");
 }
 
+/**
+ * @brief Make a sum operation on two tokens
+ * 
+ * @param p is the first token, and the one that will containg the result of the operation
+ * @param o is the second token
+ */
 void CodeGenerator::add_operation(Token_pointer& p, Token_pointer& o) {
     if(p->get_tipo() == REAL) {
 
@@ -840,6 +1034,12 @@ void CodeGenerator::add_operation(Token_pointer& p, Token_pointer& o) {
     write(format("movss [qword M + %ld], xmm1", p->get_endereco()));
 }
 
+/**
+ * @brief Make a sum operation on two tokens
+ * 
+ * @param p is the first token, and the one that will containg the result of the operation
+ * @param o is the second token
+ */
 void CodeGenerator::sub_operation(Token_pointer& p, Token_pointer& o) {
 
     if(p->get_tipo() == REAL) {

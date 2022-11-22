@@ -2,4 +2,4 @@
 
 int a := 5;
 readln(a);
-write(a);
+writeln(a);
