@@ -187,13 +187,10 @@ void Parser::producaoB() {
 
     casa_token(CONST);
 
-    std::cout << "identification: " << identification->to_string() << "\n";
-    std::cout << "constant: " << constant->to_string() << "\n";
-
     error = compare_tokens(identification,constant);
-    if(error != NenhumErro)
+    if(error != NenhumErro) {
         throw_compiler_error(error,{curr_line,curr_token->get_lexema()});
-    else
+    } else
 
         cg->store_token_on_data_section(identification,constant,negate);
         
@@ -517,11 +514,11 @@ void Parser::producaoK(){
     if (error != NenhumErro) 
         throw_compiler_error(error,{curr_line,identifier->get_lexema()});
 
-    error = verify_type_compatibility(identifier, LOGICO);
+    error = verify_type_incompatibility(identifier, LOGICO);
     if (error != NenhumErro) 
         throw_compiler_error(error,{curr_line,identifier->get_lexema()});
 
-    cg->read_line();
+    cg->read_line(identifier);
 
     casa_token(FECHA_PARANTESES);
 

@@ -48,7 +48,7 @@ class CodeGenerator {
         void divide_numbers(Token_pointer& p, Token_pointer& o);
         void multiple_float(Token_pointer& p, Token_pointer& o);
         void divide_float(Token_pointer& p, Token_pointer& o);
-        void read_line();
+        void read_line(Token_pointer& p);
         void module_or_div(Token_pointer& p, Token_pointer& o, const bool is_module);
         void compare_string(Token_pointer& p, Token_pointer& o);
         void char_operation(Token_pointer& p, Token_pointer& o, const TokenID operation);
@@ -326,15 +326,45 @@ void CodeGenerator::end_conditional_chain(const bool is_else, const int begin, c
         write(format("l%d:", begin));
 }
 
-void CodeGenerator::read_line() {
+void CodeGenerator::read_line(Token_pointer& p) {
 
-    long buffer_address = this->temporary_counter;
-    temporary_counter += 0x100;
+    long temporary_buffer = new_temporary(TEXTO);
+    p->set_endereco(new_temporary(p->get_tipo()));
 
-    write(format("mov rsi, M + %d", buffer_address));
+    write(format("mov rsi, M + %ld", temporary_buffer));
     write("mov rax, 0");
     write("mov rdi, 0");
     write("mov rdx, 100h");
+    write("syscall");
+    write(format("mov byte [M+%ld-1+rax], 0",temporary_buffer));
+
+    if (p->get_tipo() == INTEIRO) {
+
+        int label1 = new_label();
+        int label2 = new_label();
+        int label3 = new_label();
+
+        write(format("l%d:", label1),1);
+        write("mov rbx, 10");
+        write("xor rax, rax");
+        write(format("mov rcx, M+%ld", temporary_buffer));
+        write(format("l%d:", label2),1);
+        write("movzx rdx, byte [rcx]");
+        write("test rdx, rdx");
+        write(format("jz l%d", label3),1);
+        write("inc rcx");
+        write("sub rdx, '0'");
+        write("add rax, rax");
+        write("lea rax, [rax + rax * 4]");
+        write("add rax, rdx");
+        write(format("jmp l%ld", label2));
+        write(format("l%d:", label3),1);
+        write(format("mov rcx, M + %ld", p->get_endereco()));
+        write("mov rbx, 10");
+        write("mov [rcx], rbx");
+        write("inc rcx");
+        write(format("mov [M+%ld], rcx", p->get_endereco()));
+    }
 }
 
 void CodeGenerator::write_into_terminal(Token_pointer& t) {
