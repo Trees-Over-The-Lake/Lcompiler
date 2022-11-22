@@ -1,4 +1,4 @@
 /* Exemplo de Programa na linguagem L **/
 
-int a = 5;
-writeln(a);
+string a = "ola";
+a := 1;
