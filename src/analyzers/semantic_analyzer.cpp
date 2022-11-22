@@ -4,6 +4,10 @@
 #include"../symbol_table/symbol_table.cpp"
 #include"../error_manager/cerror_manager.cpp"
 
+bool id_is_basic_const(const TokenID id) {
+    return (id == TRUE || id == FALSE);
+}
+
 CErrorType verify_token_identification(Token_pointer& t, TokenClass new_token_class) {
 
     CErrorType erro = NenhumErro;
@@ -37,6 +41,16 @@ CErrorType verify_type_compatibility(Token_pointer& t, TokenType expected_type) 
     return erro;
 }
 
+CErrorType verify_type_incompatibility(Token_pointer& t, TokenType not_expected_type) {
+
+    CErrorType erro = NenhumErro;
+
+    if (t->get_tipo() == not_expected_type)
+        erro = TiposIncompativeis;
+
+    return erro;
+}
+
 CErrorType verify_class_compatibility(Token_pointer& t, TokenClass expected_type) {
 
     CErrorType erro = NenhumErro;
@@ -51,7 +65,7 @@ void atribute_new_type(Token_pointer& t, TokenType new_type) {
     t->set_tipo(new_type);
 }
 
-CErrorType verify_atribute_compatibility(Token_pointer& t) {
+CErrorType verify_token_is_number(Token_pointer& t) {
 
     CErrorType erro = NenhumErro;
 
@@ -64,12 +78,14 @@ CErrorType verify_atribute_compatibility(Token_pointer& t) {
 CErrorType compare_tokens(Token_pointer& t, Token_pointer& t1) {
     CErrorType erro = NenhumErro;
 
-    if(t->get_tipo() != t1->get_tipo() && (t->get_tipo() == REAL || t1->get_tipo() != INTEIRO)) {
-        erro = TiposIncompativeis;
-    }
+    if(t->get_tipo() != t1->get_tipo()) {
+        if(!(t->get_tipo() == REAL && t1->get_tipo() == INTEIRO) 
+        && !(t->get_tipo() == LOGICO && id_is_basic_const(t1->get_id()))) {
+            erro = TiposIncompativeis;
+        }
+    } 
 
     return erro;
 }
-
 
 #endif

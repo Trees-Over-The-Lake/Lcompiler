@@ -27,7 +27,7 @@ int main(int argc, char* argv[]) {
     LFile file = get_file_from_stream(argc,argv);
 
     LexicalAnalyzer la(&file);
-    Parser p = Parser(&la);
+    Parser p = Parser(&la,&cg);
 
     Token_pointer t;
     t = la.get_next_token();
@@ -36,6 +36,8 @@ int main(int argc, char* argv[]) {
     p.producaoS();
 
     std::cout << file.get_num_lines() + 1 << " linhas compiladas." << "\n";
+
+    cg.end_program();
     
     return 0;
 }
