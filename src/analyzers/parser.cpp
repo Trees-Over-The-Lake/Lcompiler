@@ -108,6 +108,7 @@ void Parser::set_curr_token(Token_pointer curr_token, int curr_line) {
     this->curr_line = std::to_string(curr_line);
 }
 
+// S -> {(A | E)}* fim_arquivo
 void Parser::producaoS() {
 
     while(curr_token_id != FIM_DE_ARQUIVO) {
@@ -134,6 +135,7 @@ void Parser::producaoS() {
 
 }
 
+// A -> (B | D)
 void Parser::producaoA() {
     switch (curr_token_id)
     {
@@ -148,6 +150,7 @@ void Parser::producaoA() {
 
 }
 
+//
 void Parser::producaoB() {
 
     CErrorType error = NenhumErro;
@@ -156,6 +159,7 @@ void Parser::producaoB() {
     producaoC();
 
     Token_pointer identification = curr_token;
+    TokenType identificationType = curr_token->get_tipo();
 
     casa_token(IDENTIFICADOR);
 
@@ -165,9 +169,9 @@ void Parser::producaoB() {
 
     cg->allocate_space_for_token(identification);
 
-    if(curr_token_id == ATRIBUICAO || curr_token_id == WALRUS) {
+    if(curr_token_id == WALRUS) {
 
-        casa_token(curr_token_id);
+        casa_token(WALRUS);
 
         Token_pointer constant = std::make_shared <Token>();
 
@@ -193,17 +197,15 @@ void Parser::producaoB() {
         if(error != NenhumErro)
             throw_compiler_error(error,{curr_line,curr_token->get_lexema()});
         else
-
             cg->store_token_on_data_section(identification,constant,negate);
-        
-
     }
-
+        
     while ( curr_token_id == VIRGULA) {
 
         casa_token(VIRGULA);
 
         identification = curr_token;
+        curr_token->set_tipo(identificationType);
             
         casa_token(IDENTIFICADOR);
 
@@ -213,9 +215,9 @@ void Parser::producaoB() {
 
         cg->allocate_space_for_token(identification);
 
-        if(curr_token_id == ATRIBUICAO || curr_token_id == WALRUS) {
+        if(curr_token_id == WALRUS) {
 
-            casa_token(curr_token_id);
+            casa_token(WALRUS);
 
             Token_pointer constant = std::make_shared <Token>();
 
@@ -231,7 +233,6 @@ void Parser::producaoB() {
                 if(error != NenhumErro)
                     throw_compiler_error(error,{curr_line,constant->get_lexema()});
                 
-
             }
 
             constant = curr_token;
@@ -243,14 +244,14 @@ void Parser::producaoB() {
                 throw_compiler_error(error,{curr_line,curr_token->get_lexema()});
 
             else 
-                cg->store_token_on_data_section(identification,constant,negate);
-            
+                cg->store_token_on_data_section(identification,constant,negate);  
         }
     }
 
     casa_token(PONTO_VIRGULA);
 }
 
+//
 void Parser::producaoC() {
 
     switch (curr_token_id)
@@ -281,6 +282,7 @@ void Parser::producaoC() {
 
 }
 
+//
 void Parser::producaoD() {
 
     CErrorType error = NenhumErro;
@@ -295,7 +297,7 @@ void Parser::producaoD() {
     if (error != NenhumErro) 
         throw_compiler_error(error,{curr_line,identifier->get_lexema()});
 
-    casa_token(ATRIBUICAO);
+    casa_token(IGUAL);
 
     Token_pointer constant = std::make_shared <Token>();
 
@@ -320,6 +322,7 @@ void Parser::producaoD() {
     casa_token(PONTO_VIRGULA);
 }
 
+// E -> [(F | G | I | K | L | S)];
 void Parser::producaoE() {
 
 
@@ -350,6 +353,7 @@ void Parser::producaoE() {
 
 }
 
+//
 void Parser::producaoF(){
 
     Token_pointer f_token = std::make_shared <Token>();
@@ -392,7 +396,7 @@ void Parser::producaoF(){
         casa_token(FECHA_COLCHETES);
     }
 
-    casa_token(ATRIBUICAO);
+    casa_token(WALRUS);
 
     f1_token = producaoM();
 
@@ -422,6 +426,8 @@ void Parser::producaoG(){
 
     casa_token(WHILE);
 
+    casa_token(ABRE_PARANTESES);
+
     g_token = producaoM();
 
     int begin = cg->new_label();
@@ -435,9 +441,13 @@ void Parser::producaoG(){
     
     producaoH();
 
+    casa_token(FECHA_PARANTESES);
+
     cg->end_scope(begin, end);
 
 }
+
+// H -> (E | {{E}*})
 void Parser::producaoH(){
 
     if (curr_token_id == ABRE_CHAVES) {
@@ -566,7 +576,7 @@ void Parser::producaoL(){
 
         l_token = producaoM();
 
-        error = verify_type_compatibility(l_token, LOGICO);
+        error = verify_type_incompatibility(l_token, LOGICO);
         if (error != NenhumErro) 
             throw_compiler_error(error,{curr_line,l_token->get_lexema()});
 
@@ -838,7 +848,7 @@ Token_pointer Parser::producaoR(){
 
         casa_token(curr_token_id);
 
-        r_token->set_tipo(constant->get_tipo());
+        r_token = constant;
 
         cg->store_token_on_data_section(r_token,constant,false);
     } else {
@@ -874,8 +884,7 @@ Token_pointer Parser::producaoR(){
             cg->add_character(r_token,identifier);
         
         } else {
-            r_token->set_tipo(identifier->get_tipo());
-            r_token->set_endereco(identifier->get_endereco());
+            r_token = identifier;
         }
 
     }

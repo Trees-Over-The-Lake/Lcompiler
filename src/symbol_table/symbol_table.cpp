@@ -38,14 +38,17 @@ class SymbolTable {
 bool SymbolTable::table_initialized = false;
 std::unordered_map<std::string,Token_pointer> SymbolTable::table;
 
+// Construtor da classe Tabela de Simbolo 
 SymbolTable::SymbolTable(){
 
     if (!table_initialized)
         initiate_symbol_table();
 }
 
+// Desconstrutor da classe Tabela de Simbolo 
 SymbolTable::~SymbolTable(){}
 
+//
 void SymbolTable::initiate_symbol_table() {
     
     for(auto iter = LEXEMES.begin(); iter != LEXEMES.end(); ++iter) {
@@ -58,6 +61,7 @@ void SymbolTable::initiate_symbol_table() {
     }
 }
 
+//
 Token_pointer SymbolTable::add_id(std::string lexeme) {
 
     auto lowered_lexeme = to_lower(lexeme);
@@ -74,6 +78,7 @@ Token_pointer SymbolTable::add_id(std::string lexeme) {
     return token;
 }
 
+//
 Token_pointer SymbolTable::find_by_lexeme(std::string lexeme) {
     
     Token_pointer token = nullptr;
@@ -84,6 +89,7 @@ Token_pointer SymbolTable::find_by_lexeme(std::string lexeme) {
     return token;
 }
 
+// Verificação de que o ...
 bool SymbolTable::is_character_valid(const char c) {
     return std::isalnum(c) ||
            std::find(VALID_CHARACTERS.begin(), VALID_CHARACTERS.end(), c) != VALID_CHARACTERS.end();
@@ -106,6 +112,7 @@ std::string SymbolTable::to_string() {
     return result;
 }
 
+// Retorna o valor de determinado token com base no tipo do mesmo
 token_size SymbolTable::get_token_type_size(TokenType t,std::string lexeme) {
 
     token_size size = 0;
