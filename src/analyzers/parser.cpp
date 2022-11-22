@@ -165,40 +165,38 @@ void Parser::producaoB() {
 
     cg->allocate_space_for_token(identification);
 
-    if(curr_token_id == ATRIBUICAO || curr_token_id == WALRUS) {
+    casa_token(WALRUS);
 
+    Token_pointer constant = std::make_shared <Token>();
+
+    if(curr_token_id == SUBTRACAO) {
+        
         casa_token(curr_token_id);
 
-        Token_pointer constant = std::make_shared <Token>();
-
-        if(curr_token_id == SUBTRACAO) {
-            
-            casa_token(curr_token_id);
-
-            negate = true;
-
-            constant = curr_token;
-            
-            error = verify_token_is_number(constant);
-            if(error != NenhumErro){
-                throw_compiler_error(error,{curr_line,constant->get_lexema()});
-            }
-        }
+        negate = true;
 
         constant = curr_token;
-
-        casa_token(CONST);
-
-        error = compare_tokens(identification,constant);
-        if(error != NenhumErro)
-            throw_compiler_error(error,{curr_line,curr_token->get_lexema()});
-        else
-
-            cg->store_token_on_data_section(identification,constant,negate);
         
-
+        error = verify_token_is_number(constant);
+        if(error != NenhumErro){
+            throw_compiler_error(error,{curr_line,constant->get_lexema()});
+        }
     }
 
+    constant = curr_token;
+
+    casa_token(CONST);
+
+    std::cout << "identification: " << identification->to_string() << "\n";
+    std::cout << "constant: " << constant->to_string() << "\n";
+
+    error = compare_tokens(identification,constant);
+    if(error != NenhumErro)
+        throw_compiler_error(error,{curr_line,curr_token->get_lexema()});
+    else
+
+        cg->store_token_on_data_section(identification,constant,negate);
+        
     while ( curr_token_id == VIRGULA) {
 
         casa_token(VIRGULA);
@@ -213,39 +211,34 @@ void Parser::producaoB() {
 
         cg->allocate_space_for_token(identification);
 
-        if(curr_token_id == ATRIBUICAO || curr_token_id == WALRUS) {
+        casa_token(WALRUS);
 
+        Token_pointer constant = std::make_shared <Token>();
+
+        if(curr_token_id == SUBTRACAO) {
+            
             casa_token(curr_token_id);
 
-            Token_pointer constant = std::make_shared <Token>();
-
-            if(curr_token_id == SUBTRACAO) {
-                
-                casa_token(curr_token_id);
-
-                negate = true;
-                
-                constant = curr_token;
-                
-                error = verify_token_is_number(constant);
-                if(error != NenhumErro)
-                    throw_compiler_error(error,{curr_line,constant->get_lexema()});
-                
-
-            }
-
+            negate = true;
+            
             constant = curr_token;
-
-            casa_token(CONST);
-
-            error = compare_tokens(identification,constant);
+            
+            error = verify_token_is_number(constant);
             if(error != NenhumErro)
-                throw_compiler_error(error,{curr_line,curr_token->get_lexema()});
-
-            else 
-                cg->store_token_on_data_section(identification,constant,negate);
+                throw_compiler_error(error,{curr_line,constant->get_lexema()});
             
         }
+
+        constant = curr_token;
+
+        casa_token(CONST);
+
+        error = compare_tokens(identification,constant);
+        if(error != NenhumErro)
+            throw_compiler_error(error,{curr_line,curr_token->get_lexema()});
+
+        else 
+            cg->store_token_on_data_section(identification,constant,negate);        
     }
 
     casa_token(PONTO_VIRGULA);
@@ -295,7 +288,7 @@ void Parser::producaoD() {
     if (error != NenhumErro) 
         throw_compiler_error(error,{curr_line,identifier->get_lexema()});
 
-    casa_token(ATRIBUICAO);
+    casa_token(IGUAL);
 
     Token_pointer constant = std::make_shared <Token>();
 
@@ -392,7 +385,7 @@ void Parser::producaoF(){
         casa_token(FECHA_COLCHETES);
     }
 
-    casa_token(ATRIBUICAO);
+    casa_token(WALRUS);
 
     f1_token = producaoM();
 

@@ -74,12 +74,17 @@ CErrorType verify_token_is_number(Token_pointer& t) {
 CErrorType compare_tokens(Token_pointer& t, Token_pointer& t1) {
     CErrorType erro = NenhumErro;
 
-    if(t->get_tipo() != t1->get_tipo() && (t->get_tipo() == REAL || t1->get_tipo() != INTEIRO)) {
-        erro = TiposIncompativeis;
-    }
+    if(t->get_tipo() != t1->get_tipo()) {
+
+        if(t->get_tipo() == REAL && t1->get_tipo() == INTEIRO) {
+
+        } else {
+            erro = TiposIncompativeis;
+        }
+
+    } 
 
     return erro;
 }
-
 
 #endif
