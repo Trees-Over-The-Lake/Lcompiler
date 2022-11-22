@@ -4,6 +4,10 @@
 #include"../symbol_table/symbol_table.cpp"
 #include"../error_manager/cerror_manager.cpp"
 
+bool id_is_basic_const(const TokenID id) {
+    return (id == TRUE || id == FALSE);
+}
+
 CErrorType verify_token_identification(Token_pointer& t, TokenClass new_token_class) {
 
     CErrorType erro = NenhumErro;
@@ -75,13 +79,10 @@ CErrorType compare_tokens(Token_pointer& t, Token_pointer& t1) {
     CErrorType erro = NenhumErro;
 
     if(t->get_tipo() != t1->get_tipo()) {
-
-        if(t->get_tipo() == REAL && t1->get_tipo() == INTEIRO) {
-
-        } else {
+        if(!(t->get_tipo() == REAL && t1->get_tipo() == INTEIRO) 
+        && !(t->get_tipo() == LOGICO && id_is_basic_const(t1->get_id()))) {
             erro = TiposIncompativeis;
         }
-
     } 
 
     return erro;

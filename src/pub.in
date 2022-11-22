@@ -1,4 +1,10 @@
 /* Exemplo de Programa na linguagem L **/
 
-string a = "ola";
-a := 1;
+int a:= 5;
+int b:= 3;
+
+if (a > b) {
+    b := b + 10;
+} else {
+    b := b + 253;
+}
