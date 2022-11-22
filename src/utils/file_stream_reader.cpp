@@ -9,34 +9,38 @@
 
 
 /**
- * Checar de onde esta vindo o arquivo de entrada e 
- * separar de forma correta para ser lido futuramente
+ * @brief Through argc and argv check through where the content that needs to be read is 
+ * coming from
+ * 
+ * @param argc is the argument counter 
+ * @param argv is the argument vector
+ * @return LFile is the file containg the file with the L language code
  */
 LFile get_file_from_stream(int argc, char* argv[]) {
 
     LFile file = LFile();
     std::vector<std::string> file_lines;
 
-    // Ler arquivo direto pelo pub.in
+    // Read pub.in
     if (argc == 1) {
         file_lines = read_line_until_eof();
     }
-    //Ler arquivo pela path dele 
+    //Read from path inside argv
     else if (argc >= 2) {
 
         std::string file_path;
 
-        // Path do arquivo em branco, tentar encontrar pub.in no cwd
+        // Path not specified, try to find the DEFAULT_INPUT inside CWD
         if (strlen(argv[1]) == 0) 
             file_path = DEFAULT_INPUT;
             
-        else  // Path especificada, ler dela
+        else  // Path specified, read that
             file_path = std::string(argv[2]);
         
         file_lines = read_lines_from_file(DEFAULT_INPUT);
     
     } else {
-        std::cout << "Error! Impossível ler entrada" << "\n";
+        std::cout << "Error! Impossible to read input" << "\n";
         exit(1);
     }
 
