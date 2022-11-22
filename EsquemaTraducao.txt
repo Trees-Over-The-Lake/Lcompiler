@@ -1,0 +1,883 @@
+[1]
+{
+    se id.classe != vazio
+        erro
+    senao
+        id.classe = classe-var
+}
+[2]
+{
+    se id.classe != vazio
+        erro
+    senao
+        id.classe = classe-const
+}
+[3]
+{
+    se id.classe == vazio
+        erro
+}
+[4]
+{
+    se id.classe != classe-var
+        erro
+}
+[5]
+{
+    C.tipo = token.lex
+}
+[6]
+{
+    id.tipo = C.tipo
+
+    id.end = MEMORY_COUNT
+
+    "section .data"
+
+    se id.tipo == logico ou id.tipo == caractere
+        MEMORY_COUNT += 1
+
+        "resb 1"
+    senao se id.tipo == string
+        MEMORY_COUNT += 100h
+
+        "resb 100h"
+    senao
+        MEMORY_COUNT += 4
+
+        "resd 1"
+
+    "section .text"
+}
+[7]
+{
+    const.flag = 1
+}
+[8]
+{
+    se const.flag == 1 e const.tipo != real e const.tipo != inteiro
+        erro
+}
+[9]
+{
+    se id.tipo != const.tipo e !(id.tipo == real e const.tipo == inteiro)
+        erro
+    senao
+        se id.tipo == real
+            id.end = MEMORY_COUNT
+
+            MEMORY_COUNT += const.tam
+
+            "section .data"
+
+            se const.flag == 1
+                "dd -const.lex"
+            senao
+                "dd const.lex"
+
+            "section .text"
+        senao se id.tipo == logico
+            se const.lex == TRUE
+                "mov al, 1"
+            senao
+                "mov al, 0"
+
+            "mov [qword M + id.end], al"
+        senao se id.tipo == string
+            id.end = MEMORY_COUNT
+
+            MEMORY_COUNT += const.tam + 1
+
+            "section .data"
+            "db const.lex,0"
+            "section .text"
+        senao se id.tipo == inteiro
+            "mov eax, const.lex"
+
+            se const.flag == 1
+                "neg eax"
+
+            "mov [qword M + id.end], eax"
+        senao
+            "mov al, const.lex"
+            "mov [qword M + id.end], al"
+}
+[10]
+{
+    id.tipo = const.tipo
+
+    id.end = MEMORY_COUNT
+
+    "section .data"
+
+    se id.tipo == logico
+        MEMORY_COUNT += const.tam
+
+        se const.lex == "TRUE"
+            "db 1"
+        senao
+            "db 0"
+    senao se id.tipo == string
+        MEMORY_COUNT += const.tam + 1
+
+        "db const.lex,0"
+    senao se id.tipo == caractere
+        MEMORY_COUNT += const.tam
+
+        "db const.lex,const.tam"
+    senao
+        MEMORY_COUNT += const.tam
+
+        "dd const.lex"
+
+    "section .text"
+}
+[11]
+{
+    se id.tipo != string
+        erro
+    senao
+        id.flag = 1
+}
+[12]
+{
+    se M.tipo != inteiro
+        erro
+}
+[13]
+{
+    se id.flag == 1 e M1.tipo != caractere
+        erro
+    senao se id.flag != 1 e id.tipo != M1.tipo e !(id.tipo == real e M1.tipo == inteiro)
+        erro
+    senao
+        se id.flag == 1
+            "mov al, [qword M + M1.end]"
+            "mov rax, [qword M + M.end]"
+            "add rax, id.end"
+            "mov [rax], al"
+        senao se id.tipo == real e M1.tipo == inteiro
+            "mov rax, [qword M + M1.end]"
+            "cvtsi2ss xmm0, rax"
+            "movss [qword M + id.end], xmm0"
+        senao
+            se id.tipo == real
+                "movss xmm0, [qword M + M1.end]"
+                "movss [qword M + id.end], xmm0"
+            senao se id.tipo == logico ou id.tipo == caractere
+                "mov al, [qword M + M1.end]"
+                "mov [qword M + id.end], al"
+            senao se id.tipo == string
+                id.end = MEMORY_COUNT
+                MEMORY_COUNT += const.tam + 1
+                "section .data"
+                "db const.lex,0"
+                "section .text"
+            senao
+                "mov eax, [qword M + M1.end]"
+                "mov [qword M + id.end], eax"
+}
+[14]
+{
+    begin_label = LABEL_COUNT++
+    end_label = LABEL_COUNT++
+
+    se M.tipo != logico
+        erro
+    senao
+        "begin_label:"
+        "mov al, [qword M + M.end]"
+        "cmp al, 0"
+        "je end_label"
+}
+[15]
+{
+    se id.tipo == logico
+        erro
+    senao
+        buffer.end = TEMPORARY_COUNT
+        TEMPORARY_COUNT += 100h
+
+        mov rsi, M+buffer.end
+        mov rdx, 100h ;tamanho do buffer
+        mov rax, 0 ;chamada para leitura
+        mov rdi, 0 ;leitura do teclado
+        syscall
+}
+[16]
+{
+    se M.tipo == logico
+        erro
+    senao
+        se M.tipo == real
+            buffer.end = TEMPORARY_COUNT
+            TEMPORARY_COUNT += 100h
+
+            label_1 = LABEL_COUNT++
+            label_2 = LABEL_COUNT++
+            label_3 = LABEL_COUNT++
+            label_4 = LABEL_COUNT++
+            label_5 = LABEL_COUNT++
+
+            movss xmm0, [qword M+M.end] ;real a ser
+            ;convertido
+            mov rsi, M+buffer.end ;end. temporário
+            mov rcx, 0 ;contador pilha
+            mov rdi, 6 ;precisao 6 casas compart
+            mov rbx, 10 ;divisor
+            cvtsi2ss xmm2, rbx ;divisor real
+            subss xmm1, xmm1 ;zera registrador
+            comiss xmm0, xmm1 ;verifica sinal
+            jae label_1 ;salta se número positivo
+            mov dl, ‘-‘ ;senão, escreve sinal –
+            mov [rsi], dl
+            mov rdx, -1 ;Carrega -1 em RDX
+            cvtsi2ss xmm1, rdx ;Converte para real
+            mulss xmm0, xmm1 ;Toma módulo
+            add rsi, 1 ;incrementa índice
+            label_1:
+            roundss xmm1, xmm0, 0b0011 ;parte inteira xmm1
+            subss xmm0, xmm1 ;parte frac xmm0
+            cvtss2si rax, xmm1 ;convertido para int
+            ;converte parte inteira que está em rax
+            label_2:
+            add rcx, 1 ;incrementa contador
+            cdq ;estende edx:eax p/ div.
+            idiv ebx ;divide edx;eax por ebx
+            push dx ;empilha valor do resto
+            cmp eax, 0 ;verifica se quoc. é 0
+            jne label_2 ;se não é 0, continua
+            sub rdi, rcx ;decrementa precisao
+            ;agora, desemp valores e escreve parte int
+            label_3:
+            pop dx ;desempilha valor
+            add dl, ‘0’ ;transforma em caractere
+            mov [rsi], dl ;escreve caractere
+            add rsi, 1 ;incrementa base
+            sub rcx, 1 ;decrementa contador
+            cmp rcx, 0 ;verifica pilha vazia
+            jne label_3 ;se não pilha vazia, loop
+            mov dl, ‘.’ ;escreve ponto decimal
+            mov [rsi], dl
+            add rsi, 1 ;incrementa base
+            ;converte parte fracionaria que está em xmm0
+            label_4:
+            cmp rdi, 0 ;verifica precisao
+            jle label_5 ;terminou precisao ?
+            mulss xmm0,xmm2 ;desloca para esquerda
+            roundss xmm1,xmm0,0b0011 ;parte inteira xmm1
+            subss xmm0,xmm1 ;atualiza xmm0
+            cvtss2si rdx, xmm1 ;convertido para int
+            add dl, ‘0’ ;transforma em caractere
+            mov [rsi], dl ;escreve caractere
+            add rsi, 1 ;incrementa base
+            sub rdi, 1 ;decrementa precisao
+            jmp label_4
+            ; impressão
+            label_5:
+            mov dl, 0 ;fim string, opcional
+            mov [rsi], dl ;escreve caractere
+            mov rdx, rsi ;calc tam str convertido
+            mov rbx, M+buffer.end
+            sub rdx, rbx ;tam=rsi-M-buffer.end
+            mov rsi, M+buffer.end ; endereço do buffer
+            ;executa interrupção de saída. rsi e rdx já
+            ; foram calculados então usar só as instruções
+            ; para a chamada do kernel.
+            mov rax, 1
+            mov rdi, 1
+            syscall
+        senao se M.tipo == string
+            mov rsi, M+M.end ;ou buffer.end
+            mov rdx, 100h ;ou buffer.tam
+            mov rax, 1 ;chamada para saída
+            mov rdi, 1 ;saída para tela
+            syscall
+        senao
+            buffer.end = TEMPORARY_COUNT
+            TEMPORARY_COUNT += 100h
+
+            label_1 = LABEL_COUNT++
+            label_2 = LABEL_COUNT++
+            label_3 = LABEL_COUNT++
+
+            mov eax, [qword M+M.end];inteiro a ser
+            ;convertido
+            mov rsi, M+buffer.end ;end. string ou temp.
+            mov rcx, 0 ;contador pilha
+            mov rdi, 0 ;tam. string convertido
+            cmp eax, 0 ;verifica sinal
+            jge label_1 ;salta se número positivo
+            mov bl, ‘-‘ ;senão, escreve sinal –
+            mov [rsi], bl
+            add rsi, 1 ;incrementa índice
+            add rdi, 1 ;incrementa tamanho
+            neg eax ;toma módulo do número
+            label_1:
+            mov ebx, 10 ;divisor
+            label_2:
+            add rcx, 1 ;incrementa contador
+            cdq ;estende edx:eax p/ div.
+            idiv ebx ;divide edx;eax por ebx
+            push dx ;empilha valor do resto
+            cmp eax, 0 ;verifica se quoc. é 0
+            jne label_2 ;se não é 0, continua
+            add rdi,rcx ;atualiza tam. string
+            ;agora, desemp. os valores e escreve o string
+            label_3:
+            pop dx ;desempilha valor
+            add dl, ‘0’ ;transforma em caractere
+            mov [rsi], dl ;escreve caractere
+            add rsi, 1 ;incrementa base
+            sub rcx, 1 ;decrementa contador
+            cmp rcx, 0 ;verifica pilha vazia
+            jne label_3 ;se não pilha vazia, loop
+            ;executa interrupção de saída
+            mov rsi, M+buffer.end
+            mov rax, 1
+            mov rdi, 1
+            syscall
+}
+[17]
+{
+    se M1.tipo == logico
+        erro
+}
+[18]
+{
+    R.tipo = const.tipo
+
+    se R.tipo == real ou R.tipo == string
+        R.end = MEMORY_COUNT
+
+        "section .data"
+
+        se R.tipo == real
+            MEMORY_COUNT += const.tam
+
+            "dd const.lex"
+        senao
+            MEMORY_COUNT += const.tam + 1
+
+            "db const.lex,0"
+
+        "section .text"
+    senao
+        R.end = TEMPORARY_COUNT
+
+        se R.tipo == logico ou R.tipo == caractere
+            TEMPORARY_COUNT += 1
+
+            "mov al, const.lex"
+            "mov [qword M + R.end], al"
+        senao
+            TEMPORARY_COUNT += 4
+
+            "mov eax, const.lex"
+            "mov [qword M + R.end], eax"
+}
+[19]
+{
+    se id.flag == 1
+        R.tipo = caractere
+        R.end = TEMPORARY_COUNT
+
+        TEMPORARY_COUNT += 1
+
+        "mov rax, [qword M + M.end]"
+        "add rax, id.end"
+        "mov al, [rax]"
+        "mov [qword M + R.end], al"
+    senao
+        R.tipo = id.tipo
+        R.end = id.end
+}
+[20]
+{
+    R.tipo = M.tipo
+    R.end = M.end
+}
+[21]
+{
+    Q.tipo = R.tipo
+    Q.end = R.end
+}
+[22]
+{
+    se M.tipo != real e M.tipo != inteiro
+        erro
+    senao
+        Q.tipo = real
+        Q.end = M.end
+
+        se M.tipo == inteiro
+            "mov rax, [qword M + Q.end]"
+
+            Q.end = TEMPORARY_COUNT
+
+            TEMPORARY_COUNT += 4
+
+            "cvtsi2ss xmm0, rax"
+            "movss [qword M + Q.end], xmm0"
+}
+[23]
+{
+    se M.tipo != real e M.tipo != inteiro
+        erro
+    senao
+        Q.tipo = inteiro
+        Q.end = M.end
+
+        se M.tipo == real
+            "movss xmm0, [qword M + Q.end]"
+            "cvtss2si rax, xmm0"
+
+            Q.end = TEMPORARY_COUNT
+
+            TEMPORARY_COUNT += 8
+
+            "mov [qword M + Q.end], rax"
+}
+[24]
+{
+    P.tipo = Q.tipo
+    P.end = Q.end
+}
+[25]
+{
+    se Q.tipo != logico
+        erro
+    senao
+        P.tipo = Q.tipo
+
+        "mov al, [qword M + Q.end]"
+        "neg al"
+        "add al, 1"
+
+        P.end = TEMPORARY_COUNT
+
+        TEMPORARY_COUNT += 1
+
+        "mov [qword M + P.end], al"
+}
+[26]
+{
+    O.tipo = P.tipo
+    O.end = P.end
+}
+[27]
+{
+    O.op = token.lex
+}
+[28]
+{
+    se O.op == and
+        se O.tipo != logico ou P1.tipo != logico
+            erro
+        senao
+            "mov eax, [qword M + O.end]"
+            "mov ebx, [qword M + P1.end]"
+            "imul ebx"
+
+            O.end = TEMPORARY_COUNT
+
+            TEMPORARY_COUNT += 1
+
+            "mov [qword M + O.end], eax"
+
+    senao se O.op == * ou O.op == /
+        se (O.tipo != real e O.tipo != inteiro) ou (P1.tipo != real e P1.tipo != inteiro)
+            erro
+        senao
+            se O.tipo != P1.tipo
+                O.tipo = real
+
+                se O.op == *
+                    se P.tipo == real
+                        "movss xmm0, [qword M + O.end]"
+                        "mov eax, [qword M + P1.end]"
+                        "cdqe"
+                        "cvtsi2ss xmm1, rax"
+                    senao
+                        "mov eax, [qword M + O.end]"
+                        "cdqe"
+                        "cvtsi2ss xmm0, rax"
+                        "movss xmm1, [qword M + P1.end]"
+
+                    "mulss xmm0, xmm1"
+                    O.end = TEMPORARY_COUNT
+                    TEMPORARY_COUNT += 4
+                    "movss [qword M + O.end], xmm0"
+
+                senao
+                    se P.tipo == real
+                        "movss xmm0, [qword M + O.end]"
+                        "mov eax, [qword M + P1.end]"
+                        "cdqe"
+                        "cvtsi2ss xmm1, rax"
+                    senao
+                        "mov eax, [qword M + O.end]"
+                        "cdqe"
+                        "cvtsi2ss xmm0, rax"
+                        "movss xmm1, [qword M + P1.end]"
+
+                    "divss xmm0, xmm1"
+                    O.end = TEMPORARY_COUNT
+                    TEMPORARY_COUNT += 4
+                    "movss [qword M + O.end], xmm0"
+            senao
+                se O.tipo == inteiro e O.op == /
+                    erro
+                senao
+                    se O.op == *
+                        se P.tipo == real
+                            "movss xmm0, [qword M + O.end]"
+                            "movss xmm1, [qword M + P1.end]"
+                            "mulss xmm0, xmm1"
+                            O.end = TEMPORARY_COUNT
+                            TEMPORARY_COUNT += 4
+                            "movss [qword M + O.end], xmm0"
+                        senao
+                            "mov eax, [qword M + O.end]"
+                            "mov ebx, [qword M + P1.end]"
+                            "imul ebx"
+                            O.end = TEMPORARY_COUNT
+                            TEMPORARY_COUNT += 4
+                            "movss [qword M + O.end], eax"
+                    senao
+                        "movss xmm0, [qword M + O.end]"
+                        "movss xmm1, [qword M + P1.end]"
+                        "divss xmm0, xmm1"
+                        O.end = TEMPORARY_COUNT
+                        TEMPORARY_COUNT += 4
+                        "movss [qword M + O.end], xmm0"
+
+    senao
+        se O.tipo != inteiro ou P1.tipo != inteiro
+            erro
+        senao
+            O.tipo = P.tipo
+
+            "mov eax, [qword M + O.end]"
+            "cdq"
+            "mov ebx, [qword M + P1.end]"
+            "idiv ebx"
+            O.end = TEMPORARY_COUNT
+            TEMPORARY_COUNT += 4
+
+            se O.op == %
+                "mov [qword M + O.end], edx"
+            senao
+                "mov [qword M + O.end], eax"
+}
+[29]
+{
+    N.flag = 1
+}
+[30]
+{
+    se N.flag == 1 e O.tipo != real e O.tipo != inteiro
+        erro
+    senao
+        N.tipo = O.tipo
+        N.end = O.end
+
+        se N.flag == 1
+            se N.tipo == real
+                "movss xmm0, [qword M + N.end]"
+                "mov rax, -1"
+                "cvtsi2ss xmm1, rax"
+                "mulss xmm0, xmm1"
+
+                N.end = TEMPORARY_COUNT
+
+                TEMPORARY_COUNT += 4
+
+                "movss [qword M + N.end], xmm0"
+            senao
+                "mov eax, [qword M + N.end]"
+                "neg eax"
+
+                N.end = TEMPORARY_COUNT
+
+                TEMPORARY_COUNT += 4
+
+                "mov [qword M + N.end], eax"
+}
+[31]
+{
+    N.op = token.lex
+}
+[32]
+{
+    se N.op == or
+        se N.tipo != logico ou O1.tipo != logico
+            erro
+        senao
+            "mov eax, [qword M + N.end]"
+            "mov ebx, [qword M + N.end]"
+            "mov ecx, [qword M + O1.end]"
+            "imul ecx"
+            "add ebx, ecx"
+            "sub ebx, eax"
+
+            N.end = TEMPORARY_COUNT
+
+            TEMPORARY_COUNT += 1
+
+            "mov [qword M + N.end], ebx"
+
+    senao
+        se (N.tipo != real e N.tipo != inteiro) ou (O1.tipo != real e O1.tipo != inteiro)
+            erro
+        senao
+            se N.tipo != O1.tipo
+                N.tipo = real
+
+                se O1.tipo == real
+                    "movss xmm0, [qword M + O1.end]"
+                    "mov eax, [qword M + N.end]"
+                    "cdqe"
+                    "cvtsi2ss xmm1, rax"
+
+                senao
+                    "movss xmm1, [qword M + N.end]"
+                    "mov eax, [qword M + O1.end]"
+                    "cdqe"
+                    "cvtsi2ss xmm0, rax"
+
+                se N.op == +
+                    "addss xmm1, xmm0"
+                senao
+                    "subss xmm1, xmm0"
+
+                N.end = TEMPORARY_COUNT
+                TEMPORARY_COUNT += 4
+                "movss [qword M + N.end], xmm1"
+
+            senao
+                se N.tipo == real
+                    "movss xmm0, [qword M + N.end]"
+                    "movss xmm1, [qword M + O1.end]"
+
+                    se N.op == +
+                        "addss xmm1, xmm0"
+                    senao
+                        "subss xmm1, xmm0"
+
+                    N.end = TEMPORARY_COUNT
+                    TEMPORARY_COUNT += 4
+                    "movss [qword M + N.end], xmm1"
+                senao
+                    "mov eax, [qword M + N.end]"
+                    "mov ebx, [qword M + O1.end]"
+
+                    se N.op == +
+                        "add eax, ebx"
+                    senao
+                        "sub eax, ebx"
+
+                    N.end = TEMPORARY_COUNT
+                    TEMPORARY_COUNT += 4
+                    "mov [qword M + N.end], eax"
+}
+[33]
+{
+    M.tipo = N.tipo
+    M.end = N.end
+}
+[34]
+{
+    M.op = token.lex
+}
+[35]
+{
+    se M.op == "==" e M.tipo == string e N1.tipo == string
+        M.tipo = logico
+
+        TODO: string == string
+
+    senao se M.tipo == caractere e N1.tipo == caractere
+        M.tipo = logico
+
+        "mov al, [qword M + M.end]"
+        "mov bl, [qword M + N1.end]"
+        "cmp al, bl"
+
+        true_label = LABEL_COUNT++
+
+        se M.op == ==
+            "je true_label"
+        senao se M.op == !=
+            "jne true_label"
+        senao se M.op == <
+            "jl true_label"
+        senao se M.op == <=
+            "jle true_label"
+        senao se M.op == >
+            "jg true_label"
+        senao
+            "jge true_label"
+
+        "mov cl, 0"
+
+        end_label = LABEL_COUNT++
+
+        "jmp end_label"
+        "true_label:"
+        "mov cl, 1"
+        "end_label:"
+
+        M.end = TEMPORARY_COUNT
+
+        TEMPORARY_COUNT += 1
+
+        "mov [qword M + M.end], cl"
+
+    senao se (M.tipo == real ou M.tipo == inteiro) e (N1.tipo == real ou N1.tipo == inteiro)
+        M.tipo = logico
+
+        se N.tipo == N1.tipo
+            se N.tipo == real
+                "movss xmm0, [qword M + M.end]"
+                "movss xmm1, [qword M + N1.end]"
+                "comiss xmm0, xmm1"
+
+                true_label = LABEL_COUNT++
+
+                se M.op == ==
+                    "je true_label"
+                senao se M.op == !=
+                    "jne true_label"
+                senao se M.op == <
+                    "jb true_label"
+                senao se M.op == <=
+                    "jbe true_label"
+                senao se M.op == >
+                    "ja true_label"
+                senao
+                    "jae true_label"
+
+                "mov al, 0"
+
+                end_label = LABEL_COUNT++
+
+                "jmp end_label"
+                "true_label:"
+                "mov al, 1"
+                "end_label:"
+
+                M.end = TEMPORARY_COUNT
+
+                TEMPORARY_COUNT += 1
+
+                "mov [qword M + M.end], al"
+            senao
+                "mov eax, [qword M + M.end]"
+                "mov ebx, [qword M + N1.end]"
+                "cmp eax, ebx"
+
+                true_label = LABEL_COUNT++
+
+                se M.op == ==
+                    "je true_label"
+                senao se M.op == !=
+                    "jne true_label"
+                senao se M.op == <
+                    "jl true_label"
+                senao se M.op == <=
+                    "jle true_label"
+                senao se M.op == >
+                    "jg true_label"
+                senao
+                    "jge true_label"
+
+                "mov al, 0"
+
+                end_label = LABEL_COUNT++
+
+                "jmp end_label"
+                "true_label:"
+                "mov al, 1"
+                "end_label:"
+
+                M.end = TEMPORARY_COUNT
+
+                TEMPORARY_COUNT += 1
+
+                "mov [qword M + M.end], al"
+        senao
+            se N.tipo == real
+                "movss xmm0, [qword M + M.end]"
+                "mov rax, [qword M + N1.end]"
+                "cvtsi2ss xmm1, rax"
+            senao
+                "movss xmm0, [qword M + N1.end]"
+                "mov rax, [qword M + M.end]"
+                "cvtsi2ss xmm1, rax"
+
+            "comiss xmm0, xmm1"
+
+            true_label = LABEL_COUNT++
+
+            se M.op == ==
+                "je true_label"
+            senao se M.op == !=
+                "jne true_label"
+            senao se M.op == <
+                "jb true_label"
+            senao se M.op == <=
+                "jbe true_label"
+            senao se M.op == >
+                "ja true_label"
+            senao
+                "jae true_label"
+
+            "mov al, 0"
+
+            end_label = LABEL_COUNT++
+
+            "jmp end_label"
+            "true_label:"
+            "mov al, 1"
+            "end_label:"
+
+            M.end = TEMPORARY_COUNT
+
+            TEMPORARY_COUNT += 1
+
+            "mov [qword M + M.end], al"
+    senao
+        erro
+}
+[38]
+{
+    I.flag = 1
+
+    "jmp end_label"
+    "false_label:"
+}
+[39]
+{
+    se I.flag == 1
+        "end_label:"
+    senao
+        "false_label:"
+}
+[40]
+{
+    false_label = LABEL_COUNT++
+    end_label = LABEL_COUNT++
+
+    se M.tipo != logico
+            erro
+    senao
+        "mov al, [qword M + M.end]"
+        "cmp al, 0"
+        "je false_label"
+}
+[41]
+{
+    "jmp begin_label"
+    "end_label:"
+}
