@@ -1,3 +1,12 @@
+/*
+ * Compiladores - Trabalho 
+ *
+ * Grupo:
+ * - Gustavo Lopes
+ * - Lucas Fonseca Saliba
+ * - Thiago Henriques Nogueira
+ */
+
 #include<iostream>
 #include<string>
 
