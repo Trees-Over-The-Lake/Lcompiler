@@ -47,26 +47,33 @@ class CodeGenerator {
         void start_if(Token_pointer& t, const int begin);
         void end_scope(const int begin, const int end);
         void end_conditional_chain(const bool is_else, const int begin, const int end);
+
         void write_into_terminal(Token_pointer& t);
         void write_line_break(const bool writeln);
-        void add_character(Token_pointer& r, Token_pointer& identifier);
+        void read_line(Token_pointer& p);
+
         void int_to_float(Token_pointer& t);
         void float_to_int(Token_pointer& t);
-        void negate_boolean(Token_pointer& p);
-        void and_operation(Token_pointer& p, Token_pointer& o);
+        
+        void add_character(Token_pointer& r, Token_pointer& identifier);
+
         void multiple_numbers(Token_pointer& p, Token_pointer& o);
         void divide_numbers(Token_pointer& p, Token_pointer& o);
         void multiple_float(Token_pointer& p, Token_pointer& o);
         void divide_float(Token_pointer& p, Token_pointer& o);
-        void read_line(Token_pointer& p);
+        
+        void add_operation(Token_pointer& p, Token_pointer& q);
+        void sub_operation(Token_pointer& p, Token_pointer& q);
+
         void module_or_div(Token_pointer& p, Token_pointer& o, const bool is_module);
         void compare_string(Token_pointer& p, Token_pointer& o);
         void char_operation(Token_pointer& p, Token_pointer& o, const TokenID operation);
         void number_operation(Token_pointer& p, Token_pointer& o, const TokenID operation);
+
         void negate_expression(Token_pointer& p);
+        void negate_boolean(Token_pointer& p);
         void or_operation(Token_pointer& p, Token_pointer& q);
-        void add_operation(Token_pointer& p, Token_pointer& q);
-        void sub_operation(Token_pointer& p, Token_pointer& q);
+        void and_operation(Token_pointer& p, Token_pointer& o);
         
         void end_program();
 
@@ -401,7 +408,7 @@ void CodeGenerator::end_conditional_chain(const bool is_else, const int begin, c
 void CodeGenerator::read_line(Token_pointer& p) {
 
     if (p->get_tipo() == TEXTO) {
-        p->set_endereco(new_temporary(TEXTO));
+
         write(format("mov rsi, M + %ld", p->get_endereco()));
         write("mov rax, 0");
         write("mov rdi, 0");
@@ -411,6 +418,8 @@ void CodeGenerator::read_line(Token_pointer& p) {
     }
 
     else if ( p->get_tipo() == INTEIRO) {
+
+        std::cout << p->get_endereco() << "\n";
 
         // Criar variavel temporaria
 

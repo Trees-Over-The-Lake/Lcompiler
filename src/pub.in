@@ -1,5 +1,11 @@
 /* Exemplo de Programa na linguagem L **/
 
-int a := 5;
-readln(a);
-writeln(a);
+int a:= 5;
+int b:= 3;
+
+if (a > b) {
+    a := 5 + 10;
+} else {
+    b := 3 + 253;
+}
+
