@@ -1,7 +1,5 @@
 /* Exemplo de Programa na linguagem L **/
 
-
-
-if ((a > c) && (a < b)) {
-  a := FALSE;
-}
+int a := 5;
+readln(a);
+writeln(a);
