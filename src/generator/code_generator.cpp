@@ -205,7 +205,6 @@ void CodeGenerator::reset_temporary_counter() {
  */
 void CodeGenerator::allocate_space_for_const(Token_pointer& identifier, Token_pointer& constant) {
 
-    identifier->set_tipo(constant->get_tipo());
     identifier->set_endereco(this->memory_counter);
 
     start_data_section();

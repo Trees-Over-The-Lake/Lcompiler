@@ -20,7 +20,7 @@ private:
     long endereco;
 
 public:
-    Token(TokenID id = TokenID::IGUAL, std::string lexema = "", TokenType tipo = TokenType::NAO_DEFINIDO, TokenClass classe = TokenClass::NENHUM, token_size tamanho = 1, long endereco = 0x0);
+    Token(TokenID id = NENHUM_ID, std::string lexema = "", TokenType tipo = TokenType::NAO_DEFINIDO, TokenClass classe = TokenClass::NENHUM, token_size tamanho = 1, long endereco = 0x0);
     ~Token();
 
     std::string get_lexema();
