@@ -4,10 +4,21 @@
 #include"../symbol_table/symbol_table.cpp"
 #include"../error_manager/cerror_manager.cpp"
 
+/**
+ * @brief Verifies if id is a basicConstant
+ * @param id const TokenID 
+ * @return boolean
+*/
 bool id_is_basic_const(const TokenID id) {
     return (id == TRUE || id == FALSE);
 }
 
+/**
+ * @brief Verifies with a identifier already exist 
+ * @param t Token_pointer& that is being verified
+ * @param new_token_class TokenClass that is being attributed for t
+ * @return CErrorType that represent wich error happend
+*/
 CErrorType verify_token_identification(Token_pointer& t, TokenClass new_token_class) {
 
     CErrorType erro = NenhumErro;
@@ -21,6 +32,11 @@ CErrorType verify_token_identification(Token_pointer& t, TokenClass new_token_cl
     return erro;
 }
 
+/**
+ * @brief Verifies with a identifier wasn't initialized  
+ * @param t Token_pointer& that is being verified
+ * @return CErrorType that represent wich error happend
+*/
 CErrorType verify_if_token_already_initialized(Token_pointer& t) {
 
     CErrorType erro = NenhumErro;
@@ -31,6 +47,11 @@ CErrorType verify_if_token_already_initialized(Token_pointer& t) {
     return erro;
 }
 
+/**
+ * @brief Verifies if a token is compatible with a certain type
+ * @param t Token_pointer& that is being verified
+ * @return CErrorType that represent wich error happend
+*/
 CErrorType verify_type_compatibility(Token_pointer& t, TokenType expected_type) {
 
     CErrorType erro = NenhumErro;
@@ -41,6 +62,12 @@ CErrorType verify_type_compatibility(Token_pointer& t, TokenType expected_type) 
     return erro;
 }
 
+/**
+ * @brief Verifies if a token is incompatible with a certain type
+ * @param t Token_pointer& that is being verified
+ * @param not_expected_type TokenType not expected for t
+ * @return CErrorType that represent wich error happend
+*/
 CErrorType verify_type_incompatibility(Token_pointer& t, TokenType not_expected_type) {
 
     CErrorType erro = NenhumErro;
@@ -51,6 +78,12 @@ CErrorType verify_type_incompatibility(Token_pointer& t, TokenType not_expected_
     return erro;
 }
 
+/**
+ * @brief Verifies if a token is compatible with a certain class
+ * @param t Token_pointer& that is being verified
+ * @param expected_type TokenType expected for t
+ * @return CErrorType that represent wich error happend
+*/
 CErrorType verify_class_compatibility(Token_pointer& t, TokenClass expected_type) {
 
     CErrorType erro = NenhumErro;
@@ -61,10 +94,20 @@ CErrorType verify_class_compatibility(Token_pointer& t, TokenClass expected_type
     return erro;
 }
 
+/**
+ * @brief Sets a new type for the token
+ * @param t Token_pointer& that is being selected
+ * @param new_type TokenType for t
+*/
 void atribute_new_type(Token_pointer& t, TokenType new_type) {
     t->set_tipo(new_type);
 }
 
+/**
+ * @brief Verifies if a token is a number
+ * @param t Token_pointer& that is being verified
+ * @return CErrorType that represent wich error happend
+*/
 CErrorType verify_token_is_number(Token_pointer& t) {
 
     CErrorType erro = NenhumErro;
@@ -75,6 +118,12 @@ CErrorType verify_token_is_number(Token_pointer& t) {
     return erro;
 }
 
+/**
+ * @brief Compare two tokens based on their types
+ * @param t Token_pointer& that is being verified
+ * @param t1 Token_pointer& that is being verified
+ * @return CErrorType that represent wich error happend
+*/
 CErrorType compare_tokens(Token_pointer& t, Token_pointer& t1) {
     CErrorType erro = NenhumErro;
     
@@ -89,6 +138,11 @@ CErrorType compare_tokens(Token_pointer& t, Token_pointer& t1) {
     return erro;
 }
 
+/**
+ * @brief Function that changes the value of destination for source
+ * @param destination Token_pointer& that is going to be changed
+ * @param source Token_pointer& that is going to be the source 
+*/
 void attribute_tokens(Token_pointer& destination, Token_pointer& source) {
     destination->set_tipo(source->get_tipo());
     destination->set_endereco(source->get_endereco());

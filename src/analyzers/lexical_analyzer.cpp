@@ -65,6 +65,10 @@ class LexicalAnalyzer {
 
 const std::regex LexicalAnalyzer::isolate_symbols = std::regex(R"(=|%|,|-|\+|;|\(|\)|\*|\[|\]|\{|\})");
 
+/**
+ * @brief Constructor for LexicalAnalyzer class 
+ * @param file LFile* to be read by analyzer
+*/
 LexicalAnalyzer::LexicalAnalyzer(LFile* file) {
     this->file_to_analyze = file;
     this->curr_state = 0;
@@ -76,8 +80,14 @@ LexicalAnalyzer::LexicalAnalyzer(LFile* file) {
         update_curr_line();
 }
 
+/**
+ * @brief Destructor for LexicalAnalyzer class 
+*/
 LexicalAnalyzer::~LexicalAnalyzer() {}
 
+/**
+ * @brief Changes the line of the file that is being read
+*/
 void LexicalAnalyzer::update_curr_line() {
     auto curr_line = file_to_analyze->get_curr_line();
 
@@ -90,22 +100,41 @@ void LexicalAnalyzer::update_curr_line() {
     this->curr_char = this->line_start;
 }
 
+/**
+ * @brief Returns the char
+*/
 void LexicalAnalyzer::return_char() {
     --curr_char;
 }
 
+/**
+ * @brief Goes for the next char
+*/
 void LexicalAnalyzer::next_char() {
     ++curr_char;
 }
 
+/**
+ * @return End of File (EOF)
+*/
 bool LexicalAnalyzer::no_more_tokens() {
     return this->file_ended;
 }
 
+/**
+ * @return Current line number of the file
+*/
 int LexicalAnalyzer::get_curr_line_number() {
     return curr_line_number;
 }
 
+/**
+ * @brief State 0 (initial state) of the Deterministic Finite Automaton
+ * @param c char to be analyzed 
+ * @param lexeme string* to be analyzed
+ * @param token Token_pointer& to set certain parameters for the token
+ * @return bool to verify if an error has occurred 
+*/
 bool LexicalAnalyzer::estado0(const char c, std::string* lexeme, Token_pointer& token) {
     bool error_found = false;
 
@@ -184,6 +213,12 @@ bool LexicalAnalyzer::estado0(const char c, std::string* lexeme, Token_pointer& 
     return error_found;
 }
 
+/**
+ * @brief State 1 (final state) of the Deterministic Finite Automaton
+ * @param lexeme string* to be analyzed
+ * @param token Token_pointer& to set certain parameters for the token
+ * @return Token_pointer of current Token 
+*/
 Token_pointer LexicalAnalyzer::estado1(std::string* lexeme, Token_pointer& token) {
 
     if (token->get_classe() == CONSTANTE) {
@@ -201,6 +236,13 @@ Token_pointer LexicalAnalyzer::estado1(std::string* lexeme, Token_pointer& token
     return token;
 }
 
+/**
+ * @brief State 2 of the Deterministic Finite Automaton
+ * @param c const char to be analyzed 
+ * @param lexeme string* to be analyzed
+ * @param token Token_pointer& to set certain parameters for the token
+ * @return bool to verify if an error has occurred 
+*/
 bool LexicalAnalyzer::estado2(const char c, std::string* lexeme, Token_pointer& token) {
 
     bool error_found = false;
@@ -220,6 +262,13 @@ bool LexicalAnalyzer::estado2(const char c, std::string* lexeme, Token_pointer& 
     return error_found;
 }
 
+/**
+ * @brief State 3 of the Deterministic Finite Automaton
+ * @param c const char to be analyzed 
+ * @param lexeme string* to be analyzed
+ * @param token Token_pointer& to set certain parameters for the token
+ * @return bool to verify if an error has occurred 
+*/
 bool LexicalAnalyzer::estado3(const char c, std::string* lexeme, Token_pointer& token) {
 
     if(c == '*') {
@@ -232,6 +281,13 @@ bool LexicalAnalyzer::estado3(const char c, std::string* lexeme, Token_pointer& 
     return false;
 }
 
+/**
+ * @brief State 4 of the Deterministic Finite Automaton
+ * @param c const char to be analyzed 
+ * @param lexeme string* to be analyzed
+ * @param token Token_pointer& to set certain parameters for the token
+ * @return bool to verify if an error has occurred 
+*/
 bool LexicalAnalyzer::estado4(const char c, std::string* lexeme, Token_pointer& token) {
 
     bool error_found = false;
@@ -252,6 +308,13 @@ bool LexicalAnalyzer::estado4(const char c, std::string* lexeme, Token_pointer& 
     return error_found;  
 }
 
+/**
+ * @brief State 5 of the Deterministic Finite Automaton
+ * @param c const char to be analyzed 
+ * @param lexeme string* to be analyzed
+ * @param token Token_pointer& to set certain parameters for the token
+ * @return bool to verify if an error has occurred 
+*/
 bool LexicalAnalyzer::estado5(const char c, std::string* lexeme, Token_pointer& token) {
 
     bool error_found = false;
@@ -270,6 +333,13 @@ bool LexicalAnalyzer::estado5(const char c, std::string* lexeme, Token_pointer& 
     return error_found;    
 }
 
+/**
+ * @brief State 6 of the Deterministic Finite Automaton
+ * @param c const char to be analyzed 
+ * @param lexeme string* to be analyzed
+ * @param token Token_pointer& to set certain parameters for the token
+ * @return bool to verify if an error has occurred 
+*/
 bool LexicalAnalyzer::estado6(const char c, std::string* lexeme, Token_pointer& token) {
 
     bool error_found = false;
@@ -296,6 +366,13 @@ bool LexicalAnalyzer::estado6(const char c, std::string* lexeme, Token_pointer& 
     return error_found;  
 }
 
+/**
+ * @brief State 7 of the Deterministic Finite Automaton
+ * @param c const char to be analyzed 
+ * @param lexeme string* to be analyzed
+ * @param token Token_pointer& to set certain parameters for the token
+ * @return bool to verify if an error has occurred 
+*/
 bool LexicalAnalyzer::estado7(const char c, std::string* lexeme, Token_pointer& token) {
 
     bool error_found = false;
@@ -315,6 +392,13 @@ bool LexicalAnalyzer::estado7(const char c, std::string* lexeme, Token_pointer& 
     return error_found;  
 }
 
+/**
+ * @brief State 8 of the Deterministic Finite Automaton
+ * @param c const char to be analyzed 
+ * @param lexeme string* to be analyzed
+ * @param token Token_pointer& to set certain parameters for the token
+ * @return bool to verify if an error has occurred 
+*/
 bool LexicalAnalyzer::estado8(const char c, std::string* lexeme, Token_pointer& token) {
 
     bool error_found = false;
@@ -333,6 +417,13 @@ bool LexicalAnalyzer::estado8(const char c, std::string* lexeme, Token_pointer& 
     return error_found;  
 }
 
+/**
+ * @brief State 9 of the Deterministic Finite Automaton
+ * @param c const char to be analyzed 
+ * @param lexeme string* to be analyzed
+ * @param token Token_pointer& to set certain parameters for the token
+ * @return bool to verify if an error has occurred 
+*/
 bool LexicalAnalyzer::estado9(const char c, std::string* lexeme, Token_pointer& token) {
 
     bool error_found = false;
@@ -348,6 +439,13 @@ bool LexicalAnalyzer::estado9(const char c, std::string* lexeme, Token_pointer& 
     return error_found;  
 }
 
+/**
+ * @brief State 10 of the Deterministic Finite Automaton
+ * @param c const char to be analyzed 
+ * @param lexeme string* to be analyzed
+ * @param token Token_pointer& to set certain parameters for the token
+ * @return bool to verify if an error has occurred 
+*/
 bool LexicalAnalyzer::estado10(const char c, std::string* lexeme, Token_pointer& token) {
 
     bool error_found = false;
@@ -366,6 +464,13 @@ bool LexicalAnalyzer::estado10(const char c, std::string* lexeme, Token_pointer&
     return error_found;  
 }
 
+/**
+ * @brief State 11 of the Deterministic Finite Automaton
+ * @param c const char to be analyzed 
+ * @param lexeme string* to be analyzed
+ * @param token Token_pointer& to set certain parameters for the token
+ * @return bool to verify if an error has occurred 
+*/
 bool LexicalAnalyzer::estado11(const char c, std::string* lexeme, Token_pointer& token) {
 
 
@@ -388,6 +493,13 @@ bool LexicalAnalyzer::estado11(const char c, std::string* lexeme, Token_pointer&
     return error_found;  
 }
 
+/**
+ * @brief State 12 of the Deterministic Finite Automaton
+ * @param c const char to be analyzed 
+ * @param lexeme string* to be analyzed
+ * @param token Token_pointer& to set certain parameters for the token
+ * @return bool to verify if an error has occurred 
+*/
 bool LexicalAnalyzer::estado12(const char c, std::string* lexeme, Token_pointer& token) {
 
     bool error_found = false;
@@ -407,6 +519,13 @@ bool LexicalAnalyzer::estado12(const char c, std::string* lexeme, Token_pointer&
     return error_found;  
 }
 
+/**
+ * @brief State 13 of the Deterministic Finite Automaton
+ * @param c const char to be analyzed 
+ * @param lexeme string* to be analyzed
+ * @param token Token_pointer& to set certain parameters for the token
+ * @return bool to verify if an error has occurred 
+*/
 bool LexicalAnalyzer::estado13(const char c, std::string* lexeme, Token_pointer& token) {
 
     bool error_found = false;
@@ -425,6 +544,13 @@ bool LexicalAnalyzer::estado13(const char c, std::string* lexeme, Token_pointer&
     return error_found;  
 }
 
+/**
+ * @brief State 14 of the Deterministic Finite Automaton
+ * @param c const char to be analyzed 
+ * @param lexeme string* to be analyzed
+ * @param token Token_pointer& to set certain parameters for the token
+ * @return bool to verify if an error has occurred 
+*/
 bool LexicalAnalyzer::estado14(const char c, std::string* lexeme, Token_pointer& token) {
 
     bool error_found = false;
@@ -444,6 +570,13 @@ bool LexicalAnalyzer::estado14(const char c, std::string* lexeme, Token_pointer&
     return error_found;  
 }
 
+/**
+ * @brief State 15 of the Deterministic Finite Automaton
+ * @param c const char to be analyzed 
+ * @param lexeme string* to be analyzed
+ * @param token Token_pointer& to set certain parameters for the token
+ * @return bool to verify if an error has occurred 
+*/
 bool LexicalAnalyzer::estado15(const char c, std::string* lexeme, Token_pointer& token) {
 
     bool error_found = false;
@@ -462,6 +595,13 @@ bool LexicalAnalyzer::estado15(const char c, std::string* lexeme, Token_pointer&
     return error_found;  
 }
 
+/**
+ * @brief State 16 of the Deterministic Finite Automaton
+ * @param c const char to be analyzed 
+ * @param lexeme string* to be analyzed
+ * @param token Token_pointer& to set certain parameters for the token
+ * @return bool to verify if an error has occurred 
+*/
 bool LexicalAnalyzer::estado16(const char c, std::string* lexeme, Token_pointer& token) {
 
     bool error_found = false;
@@ -480,6 +620,13 @@ bool LexicalAnalyzer::estado16(const char c, std::string* lexeme, Token_pointer&
     return error_found;  
 }
 
+/**
+ * @brief State 17 of the Deterministic Finite Automaton
+ * @param c const char to be analyzed 
+ * @param lexeme string* to be analyzed
+ * @param token Token_pointer& to set certain parameters for the token
+ * @return bool to verify if an error has occurred 
+*/
 bool LexicalAnalyzer::estado17(const char c, std::string* lexeme, Token_pointer& token) {
 
     bool error_found = false;
@@ -504,6 +651,13 @@ bool LexicalAnalyzer::estado17(const char c, std::string* lexeme, Token_pointer&
     return error_found;  
 }
 
+/**
+ * @brief State 18 of the Deterministic Finite Automaton
+ * @param c const char to be analyzed 
+ * @param lexeme string* to be analyzed
+ * @param token Token_pointer& to set certain parameters for the token
+ * @return bool to verify if an error has occurred 
+*/
 bool LexicalAnalyzer::estado18(const char c, std::string* lexeme, Token_pointer& token) {
     bool error_found = false;
 
@@ -517,6 +671,13 @@ bool LexicalAnalyzer::estado18(const char c, std::string* lexeme, Token_pointer&
     return error_found;
 }
 
+/**
+ * @brief State 19 of the Deterministic Finite Automaton
+ * @param c const char to be analyzed 
+ * @param lexeme string* to be analyzed
+ * @param token Token_pointer& to set certain parameters for the token
+ * @return bool to verify if an error has occurred 
+*/
 bool LexicalAnalyzer::estado19(const char c, std::string* lexeme, Token_pointer& token) {
     bool error_found = false;
 
@@ -530,7 +691,10 @@ bool LexicalAnalyzer::estado19(const char c, std::string* lexeme, Token_pointer&
     return error_found;
 }
 
-// Função do Analisador Léxico.
+/**
+ * @brief Lexical Analyser function
+ * @return Token_pointer of the next token
+*/
 Token_pointer LexicalAnalyzer::get_next_token()
 {
     Token_pointer next_token = std::make_shared<Token>();
