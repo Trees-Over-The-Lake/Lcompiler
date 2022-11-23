@@ -827,6 +827,7 @@ Token_pointer Parser::producaoO(){
 
         p1_token = producaoP();
 
+        
         // [28]
         switch (operation) {
             case AND:
@@ -940,7 +941,8 @@ Token_pointer Parser::producaoQ(){
         }
 
         casa_token(FECHA_PARANTESES);
-    } if (curr_token_id == INT) {
+
+    } else if (curr_token_id == INT) {
 
         casa_token(INT);
         casa_token(ABRE_PARANTESES);
