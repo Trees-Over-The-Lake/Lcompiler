@@ -6,10 +6,11 @@ NASM=nasm
 NASM_FLAGS=-g -w-zeroing -f elf64
 NASM_INPUT_FILE=saida.asm
 NASM_OUTPUT_FILE=saida.o
+LINKER_OUTPUT_FILE=saida
 
 LINKER=ld
 
-build_and_run:build run 
+build_and_run:build run
 
 build:clean precompile compile
 
@@ -43,7 +44,8 @@ clean:
 
 nasm:
 	@echo -e "Compilando assembly...\n\n"
-	$(NASM) $(NASM_INPUT_FILE) -o $(NASM_OUTPUT_FILE)
+	$(NASM) $(NASM_INPUT_FILE) -g -w-zeroing -f elf64 -o $(NASM_OUTPUT_FILE)
 
 	@echo -e "Linkando programa...\n\n"
-	$(LINKER) $(NASM_OUTPUT_FILE) -o programa.out
+	$(LINKER) $(NASM_OUTPUT_FILE) -o $(LINKER_OUTPUT_FILE)
+	rm $(NASM_OUTPUT_FILE)

@@ -23,8 +23,7 @@ enum TokenID
     WRITELN,            // writeln
     READLN,             // readln
     NEGACAO,            // !
-    ATRIBUICAO,         // =
-    IGUAL,              // ==
+    IGUAL,              // = || ==
     WALRUS,             // :=
     MAIOR,              // >
     MENOR,              // <
@@ -87,10 +86,8 @@ std::string token_id_to_string(TokenID id) {
         return "READLN";      
     case NEGACAO:       
         return "NEGACAO";     
-    case ATRIBUICAO:    
-        return "ATRIBUICAO";      
-    case IGUAL:         
-        return "IGUAL";      
+    case IGUAL:    
+        return "IGUAL";          
     case WALRUS:            
         return "WALRUS";      
     case MAIOR:         

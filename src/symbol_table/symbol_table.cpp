@@ -49,6 +49,7 @@ SymbolTable::SymbolTable(){
         initiate_symbol_table();
 }
 
+// Desconstrutor da classe Tabela de Simbolo 
 SymbolTable::~SymbolTable(){}
 
 /**
