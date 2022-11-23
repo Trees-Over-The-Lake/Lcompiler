@@ -88,4 +88,10 @@ CErrorType compare_tokens(Token_pointer& t, Token_pointer& t1) {
     return erro;
 }
 
+void attribute_tokens(Token_pointer& destination, Token_pointer& source) {
+    destination->set_tipo(source->get_tipo());
+    destination->set_endereco(source->get_endereco());
+    destination->set_id(source->get_id());
+}
+
 #endif
