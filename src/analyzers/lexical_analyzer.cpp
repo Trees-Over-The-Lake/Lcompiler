@@ -51,6 +51,7 @@ class LexicalAnalyzer {
         bool estado16(const char c, std::string* lexeme, Token_pointer& token);
         bool estado17(const char c, std::string* lexeme, Token_pointer& token);
         bool estado18(const char c, std::string* lexeme, Token_pointer& token);
+        bool estado19(const char c, std::string* lexeme, Token_pointer& token);
 
     public:
         LexicalAnalyzer(LFile* file);
@@ -169,6 +170,11 @@ bool LexicalAnalyzer::estado0(const char c, std::string* lexeme, Token_pointer& 
     else if (c == '|') {
         token->set_tipo(LOGICO);
         curr_state = 18;
+        *lexeme += c;
+    }
+    else if (c == '&') {
+        token->set_tipo(LOGICO);
+        curr_state = 19;
         *lexeme += c;
     }
     else {
@@ -511,6 +517,19 @@ bool LexicalAnalyzer::estado18(const char c, std::string* lexeme, Token_pointer&
     return error_found;
 }
 
+bool LexicalAnalyzer::estado19(const char c, std::string* lexeme, Token_pointer& token) {
+    bool error_found = false;
+
+    if (c == '&') {
+        curr_state = 1;
+        *lexeme += c;
+    } else {
+        error_found = true;
+    }
+
+    return error_found;
+}
+
 // Função do Analisador Léxico.
 Token_pointer LexicalAnalyzer::get_next_token()
 {
@@ -620,6 +639,10 @@ Token_pointer LexicalAnalyzer::get_next_token()
 
             case 18:
                 error_detected = estado18(c,&lexeme,next_token);
+                break;
+            
+            case 19:
+                error_detected = estado19(c,&lexeme,next_token);
                 break;
 
             default:

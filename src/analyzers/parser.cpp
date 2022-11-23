@@ -795,7 +795,7 @@ Token_pointer Parser::producaoO(){
 
     attribute_tokens(o_token,p_token);
 
-    while(curr_token_id == MULTIPLICACAO || curr_token_id == DIVISAO || curr_token_id == MOD || curr_token_id == DIVISAO || curr_token_id == DIV) {
+    while(curr_token_id == MULTIPLICACAO || curr_token_id == DIVISAO || curr_token_id == MOD || curr_token_id == AND || curr_token_id == DIV) {
 
         operation = curr_token_id;
 
