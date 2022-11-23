@@ -2,7 +2,7 @@
  * Compiladores - Trabalho 
  *
  * Grupo:
- * - Gustavo Lopes
+ * - Gustavo Lopes Rodrigues
  * - Lucas Fonseca Saliba
  * - Thiago Henriques Nogueira
  */
