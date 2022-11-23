@@ -5,8 +5,9 @@
 #include<string>
 
 /**
- * Classe para armazenar logica de erros de compilacao
+ * Class to store compilation error logic
  */
+
 class CError {
     private:
         uint32_t line_error;
@@ -17,6 +18,8 @@ class CError {
 
         std::string to_string();
 };
+
+// function to identify and return line and type error
 
 CError::CError(uint32_t line_error, std::string error_information){
     this->error_information = error_information;
