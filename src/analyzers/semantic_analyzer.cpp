@@ -77,15 +77,22 @@ CErrorType verify_token_is_number(Token_pointer& t) {
 
 CErrorType compare_tokens(Token_pointer& t, Token_pointer& t1) {
     CErrorType erro = NenhumErro;
-
+    
     if(t->get_tipo() != t1->get_tipo()) {
         if(!(t->get_tipo() == REAL && t1->get_tipo() == INTEIRO) 
-        && !(t->get_tipo() == LOGICO && id_is_basic_const(t1->get_id()))) {
+        && !(t->get_tipo() == LOGICO && id_is_basic_const(t1->get_id()))
+        && !(t->get_tipo() == CARACTERE && t1->get_tipo() == HEXADECIMAL) ) {
             erro = TiposIncompativeis;
         }
     } 
 
     return erro;
+}
+
+void attribute_tokens(Token_pointer& destination, Token_pointer& source) {
+    destination->set_tipo(source->get_tipo());
+    destination->set_endereco(source->get_endereco());
+    destination->set_id(source->get_id());
 }
 
 #endif

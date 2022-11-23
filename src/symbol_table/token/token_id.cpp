@@ -45,7 +45,8 @@ enum TokenID
     FECHA_COLCHETES,    // ]
     AND,                // &&
     OR,                 // ||
-    FIM_DE_ARQUIVO      // \0
+    FIM_DE_ARQUIVO,     // \0
+    ID_NULO,            // nulo
 };
 
 std::string token_id_to_string(TokenID id) {
