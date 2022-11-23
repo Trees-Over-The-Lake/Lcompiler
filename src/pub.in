@@ -1,10 +1,10 @@
 /* Exemplo de Programa na linguagem L **/
 
-int a := 5;
-int b := 3;
+int a := 10;
+int b := 5;
 
-while ( a < b ) {
+while ( a > b ) {
     b := b + 1;
 }
 
-writeln(a);
+writeln(b);

@@ -494,6 +494,8 @@ void Parser::producaoG(){
 
     casa_token(ABRE_PARANTESES);
 
+    Token_pointer identifier = curr_token;
+
     m_token = producaoM();
 
     int begin = cg->new_label();
@@ -504,7 +506,7 @@ void Parser::producaoG(){
     if (error != NenhumErro) 
         throw_compiler_error(error,{curr_line,m_token->get_lexema()});
 
-    cg->start_while_loop(m_token, begin, end);
+    cg->start_while_loop(m_token, identifier, begin, end);
     
     casa_token(FECHA_PARANTESES);
 
