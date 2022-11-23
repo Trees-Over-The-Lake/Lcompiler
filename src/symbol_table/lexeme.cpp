@@ -6,6 +6,11 @@
 #include<vector>
 #include"token/token_id.cpp"
 
+/**
+ * 
+ * @brief Characters accepted by the language
+ *  
+*/
 const std::vector<char> VALID_CHARACTERS{
         ' ',
         '|',
@@ -41,6 +46,11 @@ const std::vector<char> VALID_CHARACTERS{
         '\0'
 };
 
+/**
+ * 
+ * @brief Validated symbols for hexadecimal format 
+ *  
+*/
 const std::vector<char> VALID_HEXA_SYMBOLS{
         'A', 
         'B', 
@@ -56,6 +66,11 @@ const std::vector<char> VALID_HEXA_SYMBOLS{
         'f'
 };
 
+/**
+ * 
+ * @brief Lexemes initialized in the symbol table
+ *  
+*/
 const std::map<TokenID,std::string> LEXEMES = {
     {TokenID::CONST, "const"},
     {TokenID::INT, "int"},
