@@ -500,9 +500,9 @@ void Parser::producaoG(){
 
     cg->start_while_loop(m_token, begin, end);
     
-    producaoH();
-
     casa_token(FECHA_PARANTESES);
+
+    producaoH();
 
     cg->end_scope(begin, end);
 
@@ -702,7 +702,7 @@ Token_pointer Parser::producaoM(){
         } else if ((m_token->get_tipo() == REAL || m_token->get_tipo() == INTEIRO) && 
         (n1_token->get_tipo() == REAL || n1_token->get_tipo() == INTEIRO)) {
 
-            cg->number_operation(m_token, n1_token, operation);
+            cg->number_operation(m_token, n_token, n1_token, operation);
 
         } else {
 
@@ -769,10 +769,11 @@ Token_pointer Parser::producaoN(){
                 throw_compiler_error(TiposIncompativeis,{curr_line});
 
             
-            if(operation == SOMA)
+            if(operation == SOMA) {
                 cg->add_operation(n_token,o1_token);
-            else 
+            } else {
                 cg->sub_operation(n_token,o1_token);
+            }
         }
         
     }

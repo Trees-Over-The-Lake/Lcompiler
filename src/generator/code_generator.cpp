@@ -68,7 +68,7 @@ class CodeGenerator {
         void module_or_div(Token_pointer& p, Token_pointer& o, const bool is_module);
         void compare_string(Token_pointer& p, Token_pointer& o);
         void char_operation(Token_pointer& p, Token_pointer& o, const TokenID operation);
-        void number_operation(Token_pointer& p, Token_pointer& o, const TokenID operation);
+        void number_operation(Token_pointer& m, Token_pointer& n1, Token_pointer& n2, const TokenID operation);
 
         void negate_expression(Token_pointer& p);
         void negate_boolean(Token_pointer& p);
@@ -225,6 +225,9 @@ void CodeGenerator::allocate_space_for_const(Token_pointer& identifier, Token_po
 
             this->memory_counter += constant->get_tamanho();
             write(format("db %s,%d", constant->get_lexema().c_str(), constant->get_tamanho()));
+
+            break;
+
         case TEXTO:
 
             this->memory_counter += constant->get_tamanho();
@@ -255,12 +258,18 @@ void CodeGenerator::store_token_on_data_section(Token_pointer& t, Token_pointer&
     switch (t->get_tipo()) {
 
         case REAL: {
+            
             t->set_endereco(this->memory_counter);
             this->memory_counter += constant->get_tamanho();
 
             start_data_section();
 
-            char negate_char = (negate) ? ' ' : '-';
+            char negate_char = (negate) ? '-' : ' ';
+
+            if (constant->get_lexema()[0] == '.') {
+                std::string new_constant = '0' + constant->get_lexema();
+                constant->set_lexema(new_constant);
+            }
 
             write(format("dd%c%s", negate_char, constant->get_lexema().c_str()));
 
@@ -279,26 +288,32 @@ void CodeGenerator::store_token_on_data_section(Token_pointer& t, Token_pointer&
             break;
 
         case TEXTO:
+
             t->set_endereco(this->memory_counter);
             this->memory_counter += constant->get_tamanho();
             
             start_data_section();
      
-            write(format("db %s,0", constant->get_lexema().c_str()));
+            write(format("db %s,%d", constant->get_lexema().c_str(), constant->get_lexema().size()));
 
             start_text_section();
             break;
 
         case INTEIRO:
 
+            t->set_endereco(new_temporary(INTEIRO));
+
             write(format("mov eax, %s", constant->get_lexema().c_str()));
             if (negate) 
                 write("neg eax");
 
-            write(format("mov [qword M + %ld], eax", constant->get_endereco()));
+            write(format("mov [qword M + %ld], eax", t->get_endereco()));
             break;
 
         default:
+
+            t->set_endereco(new_temporary(CARACTERE));
+
             write(format("mov al, %s", constant->get_lexema().c_str()));
             write(format("mov [qword M + %ld], eax", t->get_endereco()));
             break;
@@ -314,15 +329,15 @@ void CodeGenerator::store_token_on_data_section(Token_pointer& t, Token_pointer&
  * @param m1 
  * @param is_string 
  */
-void CodeGenerator::variable_atribution(Token_pointer& identifier, Token_pointer& m, Token_pointer& m1, bool is_string) {
+void CodeGenerator::variable_atribution(Token_pointer& identifier, Token_pointer& m, Token_pointer& m1, bool accessing_string_index) {
 
-    if (is_string) {
+    if (accessing_string_index) {
 
         write(format("mov al, [qword M + %ld]", m1->get_endereco()));
         write(format("mov rax, [qword M + %ld]", m->get_endereco()));
         write(format("add rax, M + %ld", identifier->get_endereco()));
         write("mov [rax], al");
-    } else if (identifier->get_tipo() == REAL || m1->get_tipo() == INTEIRO) {
+    } else if (identifier->get_tipo() == REAL && m1->get_tipo() == INTEIRO) {
 
         write(format("mov rax, [qword M + %ld]", m->get_endereco()));
         write("cvtsi2ss xmm0, rax");
@@ -331,14 +346,16 @@ void CodeGenerator::variable_atribution(Token_pointer& identifier, Token_pointer
 
         if(identifier->get_tipo() == REAL) {
 
-            write(format("mov xmm0, [qword M + %ld]", m1->get_endereco()));
-            write(format("mov [qword M + %ld], xmm0", identifier->get_endereco()));
+            write(format("movss xmm0, [qword M + %ld]", m1->get_endereco()));
+            write(format("movss [qword M + %ld], xmm0", identifier->get_endereco()));
         } else if(identifier->get_tipo() == LOGICO || identifier->get_tipo() == CARACTERE) {
 
             write(format("mov al, [qword M + %ld]", m1->get_endereco()));
             write(format("mov [qword M + %ld], al", identifier->get_endereco()));   
         } else if (identifier->get_tipo() == TEXTO) {
-            // TODO
+
+            write(format("mov rax, M + %ld", m1->get_endereco()));
+            write(format("mov [qword M + %ld], [rax]", identifier->get_endereco()));   
         
         } else {
             write(format("mov eax, [qword M + %ld]", m1->get_endereco()));
@@ -356,7 +373,7 @@ void CodeGenerator::variable_atribution(Token_pointer& identifier, Token_pointer
  */
 void CodeGenerator::start_while_loop(Token_pointer& t, const int begin, const int end) {
 
-    write(format("l%d:", begin));
+    write(format("l%d:", begin),1);
     write(format("mov al, [qword M + %ld]", t->get_endereco()));
     write("cmp al, 0");
     write(format("je l%d", end));
@@ -382,7 +399,7 @@ void CodeGenerator::start_if(Token_pointer& t, const int begin) {
  */
 void CodeGenerator::end_scope(const int begin, const int end) {
     write(format("jmp l%d", begin));
-    write(format("l%d:", end));
+    write(format("l%d:", end),1);
 }
 
 /**
@@ -394,10 +411,10 @@ void CodeGenerator::end_scope(const int begin, const int end) {
  */
 void CodeGenerator::end_conditional_chain(const bool is_else, const int begin, const int end) {
     if (is_else) 
-        write(format("l%d:", end));
+        write(format("l%d:", end),1);
 
     else 
-        write(format("l%d:", begin));
+        write(format("l%d:", begin),1);
 }
 
 /**
@@ -406,7 +423,15 @@ void CodeGenerator::end_conditional_chain(const bool is_else, const int begin, c
  */
 void CodeGenerator::read_line(Token_pointer& p) {
 
-    if (p->get_tipo() == TEXTO) {
+    if (p->get_tipo() == CARACTERE) {
+
+        write(format("mov rsi, M + %ld", p->get_endereco()));
+        write("mov rax, 0");
+        write("mov rdi, 0");
+        write("mov rdx, 1");
+        write("syscall");
+
+    } else if (p->get_tipo() == TEXTO) {
 
         write(format("mov rsi, M + %ld", p->get_endereco()));
         write("mov rax, 0");
@@ -534,13 +559,20 @@ void CodeGenerator::write_into_terminal(Token_pointer& t) {
         write("mov rdi, 1");
         write("syscall");
 
-    } else if (t->get_tipo() == TEXTO || t->get_tipo() == CARACTERE) {
+    } else if (t->get_tipo() == TEXTO ) {
+
+        write(format("mov rsi, M + %d - 1", t->get_endereco()));
+        write("mov rdx, 100h");
+        write("mov rax, 1");
+        write("mov rdi, 1");
+        write("syscall");
+    } else if (t->get_tipo() == CARACTERE){
 
         write(format("mov rsi, M + %d", t->get_endereco()));
-        write("mov rdx, 100h");
-        write("mov rax, 0");
-        write("mov rdx, 100h");
-        write("mov rdi, 0");
+        write("mov rdx, 1");
+        write("mov rax, 1");
+        write("mov rdi, 1");
+        write("syscall");
     } else {
 
         long buffer_address = new_temporary(TEXTO);
@@ -549,7 +581,7 @@ void CodeGenerator::write_into_terminal(Token_pointer& t) {
         int label2 = new_label();
         int label3 = new_label();
 
-        write(format("mov eax, [qword M+%ld]", buffer_address));
+        write(format("mov eax, [qword M+%ld]", t->get_endereco()));
         write(format("mov rsi, M+%ld", buffer_address));
         write("mov rcx, 0");
         write("mov rdi, 0");
@@ -859,27 +891,27 @@ void CodeGenerator::char_operation(Token_pointer& p, Token_pointer& o, const Tok
 
         case IGUAL:
 
-            write(format("je l %ld", label));
+            write(format("je l%ld", label));
             break;
         case DIFERENTE:
 
-            write(format("jne l %ld", label));
+            write(format("jne l%ld", label));
             break;
         case MENOR:
 
-            write(format("jl l %ld", label));
+            write(format("jl l%ld", label));
             break;
         case MENOR_IGUAL:
 
-            write(format("jle l %ld", label));
+            write(format("jle l%ld", label));
             break;
         case MAIOR:
 
-            write(format("jg l %ld", label));
+            write(format("jg l%ld", label));
             break;
         case MAIOR_IGUAL:
 
-            write(format("jge l %ld", label));
+            write(format("jge l%ld", label));
             break;
 
         default:
@@ -891,9 +923,9 @@ void CodeGenerator::char_operation(Token_pointer& p, Token_pointer& o, const Tok
     int end_label = new_label();
 
     write(format("jmp l%d", end_label));
-    write(format("l%d", label));
+    write(format("l%d:", label),1);
     write("mov cl, 1");
-    write(format("l%d", end_label));
+    write(format("l%d:", end_label),1);
 
     p->set_endereco(new_temporary(CARACTERE));
 
@@ -907,13 +939,37 @@ void CodeGenerator::char_operation(Token_pointer& p, Token_pointer& o, const Tok
  * @param o is the second number
  * @param operation is the operation that is going to be made
  */
-void CodeGenerator::number_operation(Token_pointer& p, Token_pointer& o, const TokenID operation) {
+void CodeGenerator::number_operation(Token_pointer& m, Token_pointer& n1, Token_pointer& n2, const TokenID operation) {
     
-    p->set_tipo(LOGICO);
-    
-    write(format("movss xmm0, [qword M + %ld]", p->get_endereco()));
-    write(format("movss xmm1, [qword M + %ld]", o->get_endereco()));
-    write("comiss xmm0, xmm1");
+    m->set_tipo(LOGICO);
+
+    if (n1->get_tipo() == n2->get_tipo() ) {
+
+        if(n1->get_tipo() == INTEIRO) {
+            write(format("mov eax, [qword M + %ld]", m->get_endereco()));
+            write(format("mov ebx, [qword M + %ld]", n2->get_endereco()));
+            write("cmp eax, ebx");
+
+        } else {
+            write(format("movss xmm0, [qword M + %ld]", m->get_endereco()));
+            write(format("movss xmm1, [qword M + %ld]", n2->get_endereco()));
+            write("comiss xmm0, xmm1");
+        }
+    } else {
+
+        if(n1->get_tipo() == INTEIRO) {
+            write(format("movss xmm0, [qword M + %ld]", n2->get_endereco()));
+            write(format("mov rax, [qword M + %ld]", m->get_endereco()));
+            write("cvtsi2ss xmm1, rax");
+
+        } else {
+            write(format("movss xmm0, [qword M + %ld]", m->get_endereco()));
+            write(format("mov rax, [qword M + %ld]", n2->get_endereco()));
+            write("cvtsi2ss xmm1, rax");
+            
+        }
+        write("comiss xmm0, xmm1");
+    }
 
     int label = new_label();
 
@@ -921,27 +977,42 @@ void CodeGenerator::number_operation(Token_pointer& p, Token_pointer& o, const T
 
         case IGUAL:
 
-            write(format("je l %ld", label));
+            write(format("je l%ld", label));
             break;
         case DIFERENTE:
 
-            write(format("jne l %ld", label));
-            break;
-        case MENOR:
-
-            write(format("jb l %ld", label));
-            break;
-        case MENOR_IGUAL:
-
-            write(format("jbe l %ld", label));
+            write(format("jne l%ld", label));
             break;
         case MAIOR:
 
-            write(format("ja l %ld", label));
+            if (n1->get_tipo() == INTEIRO) 
+                write(format("ja l%ld", label));
+            else 
+                write(format("jg l%ld", label));
+            
             break;
         case MAIOR_IGUAL:
 
-            write(format("jae l %ld", label));
+            if (n1->get_tipo() == INTEIRO) 
+                write(format("jge l%ld", label));
+            else 
+                write(format("jae l%ld", label));
+
+            break;
+        case MENOR:
+
+            if (n1->get_tipo() == INTEIRO) 
+                write(format("jl l%ld", label));
+            else 
+                write(format("jb l%ld", label));
+
+            break;
+        case MENOR_IGUAL:
+
+            if (n1->get_tipo() == INTEIRO) 
+                write(format("jle l%ld", label));
+            else 
+                write(format("jbe l%ld", label));
             break;
 
         default:
@@ -953,13 +1024,13 @@ void CodeGenerator::number_operation(Token_pointer& p, Token_pointer& o, const T
     int end_label = new_label();
 
     write(format("jmp l%d", end_label));
-    write(format("l%d", label));
+    write(format("l%d:", label),1);
     write("mov al, 1");
-    write(format("l%d", end_label));
+    write(format("l%d:", end_label),1);
 
-    p->set_endereco(new_temporary(LOGICO));
+    m->set_endereco(new_temporary(LOGICO));
 
-    write(format("mov [qword M + %ld], al", p->get_endereco()));
+    write(format("mov [qword M + %ld], al", m->get_endereco()));
 }
 
 /**
@@ -1018,26 +1089,51 @@ void CodeGenerator::or_operation(Token_pointer& p, Token_pointer& o) {
  * @param o is the second token
  */
 void CodeGenerator::add_operation(Token_pointer& p, Token_pointer& o) {
-    if(p->get_tipo() == REAL) {
+    
+    if(p->get_tipo() != o->get_tipo()) {
 
-        write(format("movss xmm0, [qword M + %ld]", p->get_endereco()));
-        write(format("mov eax, [qword M + %ld]", o->get_endereco()));
-        write("cdqe");
-        write("cvtsi2ss xmm1, rax");
+        if(p->get_tipo() == REAL) {
 
+            write(format("movss xmm0, [qword M + %ld]", p->get_endereco()));
+            write(format("mov eax, [qword M + %ld]", o->get_endereco()));
+            write("cdqe");
+            write("cvtsi2ss xmm1, rax");
+
+        } else {
+
+            write(format("mov eax, [qword M + %ld]", p->get_endereco()));
+            write("cdqe");
+            write("cvtsi2ss xmm0, rax");
+            write(format("movss xmm1, [qword M + %ld]",o->get_endereco()));
+        }
+
+        write("addss xmm1, xmm0");
+
+        p->set_endereco(new_temporary(INTEIRO));
+
+        write(format("movss [qword M + %ld], xmm1", p->get_endereco()));
     } else {
 
-        write(format("mov eax, [qword M + %ld]", p->get_endereco()));
-        write("cdqe");
-        write("cvtsi2ss xmm0, rax");
-        write(format("movss xmm1, [qword M + %ld]",o->get_endereco()));
+        if (p->get_tipo() == REAL) {
+
+            write(format("movss xmm0, [qword M + %ld]", p->get_endereco()));
+            write(format("movss xmm1, [qword M + %ld]", o->get_endereco()));
+            write("addss xmm1, xmm0");
+
+            p->set_endereco(new_temporary(REAL));
+
+            write(format("movss [qword M + %ld], xmm1", p->get_endereco()));
+        } else {
+
+            write(format("mov eax, [qword M + %ld]", p->get_endereco()));
+            write(format("mov ebx, [qword M + %ld]", o->get_endereco()));
+            write("add eax, ebx");
+
+            p->set_endereco(new_temporary(INTEIRO));
+
+            write(format("mov [qword M + %ld], eax", p->get_endereco()));
+        }
     }
-
-    write("addss xmm1, xmm0");
-
-    p->set_endereco(new_temporary(INTEIRO));
-
-    write(format("movss [qword M + %ld], xmm1", p->get_endereco()));
 }
 
 /**
@@ -1048,26 +1144,50 @@ void CodeGenerator::add_operation(Token_pointer& p, Token_pointer& o) {
  */
 void CodeGenerator::sub_operation(Token_pointer& p, Token_pointer& o) {
 
-    if(p->get_tipo() == REAL) {
+    if(p->get_tipo() != o->get_tipo()) {
 
-        write(format("movss xmm0, [qword M + %ld]", p->get_endereco()));
-        write(format("mov eax, [qword M + %ld]", o->get_endereco()));
-        write("cdqe");
-        write("cvtsi2ss xmm1, rax");
+        if(p->get_tipo() == REAL) {
 
+            write(format("movss xmm0, [qword M + %ld]", p->get_endereco()));
+            write(format("mov eax, [qword M + %ld]", o->get_endereco()));
+            write("cdqe");
+            write("cvtsi2ss xmm1, rax");
+
+        } else {
+
+            write(format("mov eax, [qword M + %ld]", p->get_endereco()));
+            write("cdqe");
+            write("cvtsi2ss xmm0, rax");
+            write(format("movss xmm1, [qword M + %ld]",o->get_endereco()));
+        }
+
+        write("subss xmm1, xmm0");
+
+        p->set_endereco(new_temporary(INTEIRO));
+
+        write(format("movss [qword M + %ld], xmm1", p->get_endereco()));
     } else {
 
-        write(format("mov eax, [qword M + %ld]", p->get_endereco()));
-        write("cdqe");
-        write("cvtsi2ss xmm0, rax");
-        write(format("movss xmm1, [qword M + %ld]",o->get_endereco()));
+        if (p->get_tipo() == REAL) {
+
+            write(format("movss xmm0, [qword M + %ld]", p->get_endereco()));
+            write(format("movss xmm1, [qword M + %ld]", o->get_endereco()));
+            write("subss xmm1, xmm0");
+
+            p->set_endereco(new_temporary(REAL));
+
+            write(format("movss [qword M + %ld], xmm1", p->get_endereco()));
+        } else {
+
+            write(format("mov eax, [qword M + %ld]", p->get_endereco()));
+            write(format("mov ebx, [qword M + %ld]", o->get_endereco()));
+            write("sub eax, ebx");
+
+            p->set_endereco(new_temporary(INTEIRO));
+
+            write(format("mov [qword M + %ld], eax", p->get_endereco()));
+        }
     }
-
-    write("subss xmm1, xmm0");
-
-    p->set_endereco(new_temporary(INTEIRO));
-    
-    write(format("movss [qword M + %ld], xmm1", p->get_endereco()));
 }
 
 #endif
