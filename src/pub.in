@@ -1,8 +1,7 @@
 /* Exemplo de Programa na linguagem L **/
 
-boolean a := TRUE;
-boolean b := FALSE;
 
-if (a && b) {
+
+if ((a > c) && (a < b)) {
   a := FALSE;
 }
