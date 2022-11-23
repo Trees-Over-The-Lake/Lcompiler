@@ -38,17 +38,29 @@ class SymbolTable {
 bool SymbolTable::table_initialized = false;
 std::unordered_map<std::string,Token_pointer> SymbolTable::table;
 
-// Construtor da classe Tabela de Simbolo 
+/**
+ * 
+ * @brief Constructor of symbol table that verifies if an instance of it exists.
+ *  
+*/
 SymbolTable::SymbolTable(){
 
     if (!table_initialized)
         initiate_symbol_table();
 }
 
-// Desconstrutor da classe Tabela de Simbolo 
+/**
+ * 
+ * @brief Destructor of symbol table.
+ *  
+*/
 SymbolTable::~SymbolTable(){}
 
-//
+/**
+ * 
+ * @brief Adds all reserved words in the symbol table.
+ *  
+*/
 void SymbolTable::initiate_symbol_table() {
     
     for(auto iter = LEXEMES.begin(); iter != LEXEMES.end(); ++iter) {
@@ -61,7 +73,12 @@ void SymbolTable::initiate_symbol_table() {
     }
 }
 
-//
+/**
+ * 
+ * @brief Adds a new lexeme in the symbol table.
+ * @param lexeme string to be added.
+ *  
+*/
 Token_pointer SymbolTable::add_id(std::string lexeme) {
 
     auto lowered_lexeme = to_lower(lexeme);
@@ -78,7 +95,12 @@ Token_pointer SymbolTable::add_id(std::string lexeme) {
     return token;
 }
 
-//
+/**
+ * 
+ * @brief Finds a token in the symbol table, based on a lexeme
+ * @param lexeme string to be added
+ * 
+*/
 Token_pointer SymbolTable::find_by_lexeme(std::string lexeme) {
     
     Token_pointer token = nullptr;
@@ -89,12 +111,22 @@ Token_pointer SymbolTable::find_by_lexeme(std::string lexeme) {
     return token;
 }
 
-// Verificação de que o ...
+/**
+ * 
+ * @brief Verifies if a certain character is valid
+ * @param c char to be verified
+ *  
+*/
 bool SymbolTable::is_character_valid(const char c) {
     return std::isalnum(c) ||
            std::find(VALID_CHARACTERS.begin(), VALID_CHARACTERS.end(), c) != VALID_CHARACTERS.end();
 }
 
+/**
+ * 
+ * @brief Returns the lexeme and token as a string 
+ *  
+*/
 std::string SymbolTable::to_string() {
 
     std::string result = "";
@@ -112,7 +144,13 @@ std::string SymbolTable::to_string() {
     return result;
 }
 
-// Retorna o valor de determinado token com base no tipo do mesmo
+/**
+ * 
+ * @brief Returns the size of determined token type
+ * @param t token type selected
+ * @param lexeme string necessary to calculate if token type is a string 
+ *  
+*/
 token_size SymbolTable::get_token_type_size(TokenType t,std::string lexeme) {
 
     token_size size = 0;
