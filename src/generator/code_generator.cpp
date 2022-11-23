@@ -43,7 +43,7 @@ class CodeGenerator {
 
         void reset_temporary_counter();
 
-        void start_while_loop(Token_pointer& t, Token_pointer& identifier, const int begin, const int end);
+        void start_while_loop(Token_pointer& t, const int begin, const int end);
         void start_if(Token_pointer& t, const int begin);
         void end_scope(const int begin, const int end);
         void end_conditional_chain(const bool is_else, const int begin, const int end);
@@ -372,13 +372,13 @@ void CodeGenerator::variable_atribution(Token_pointer& identifier, Token_pointer
  * @param begin is label containing the beggining of the loop
  * @param end is the label containing the end of the loop
  */
-void CodeGenerator::start_while_loop(Token_pointer& t, Token_pointer& identifier, const int begin, const int end) {
+void CodeGenerator::start_while_loop(Token_pointer& t, const int begin, const int end) {
 
     write(format("l%d:", begin),1);
     write(format("mov al, [qword M + %ld]", t->get_endereco()));
-    write(format("cmp [qword M + %ld], al", identifier->get_endereco()));
-    write(format("jg l%d", end));
-    write("mov ax, 1");
+    write("cmp al, 0");
+    write(format("je l%d", end));
+    write("mov al, 1");
 }
 
 /**
@@ -988,34 +988,22 @@ void CodeGenerator::number_operation(Token_pointer& m, Token_pointer& n1, Token_
             break;
         case MAIOR:
 
-            if (n1->get_tipo() == INTEIRO) 
-                write(format("jb l%ld", label));
-            else 
-                write(format("jl l%ld", label));
+            write(format("jg l%ld", label));
             
             break;
         case MAIOR_IGUAL:
 
-            if (n1->get_tipo() == INTEIRO) 
-                write(format("jbe l%ld", label));
-            else 
-                write(format("jle l%ld", label));
+            write(format("jge l%ld", label));
 
             break;
         case MENOR:
 
-            if (n1->get_tipo() == INTEIRO) 
-                write(format("jg l%ld", label));
-            else 
-                write(format("ja l%ld", label));
+            write(format("jl l%ld", label));
 
             break;
         case MENOR_IGUAL:
 
-            if (n1->get_tipo() == INTEIRO) 
-                write(format("jge l%ld", label));
-            else 
-                write(format("jae l%ld", label));
+            write(format("jle l%ld", label));
             break;
 
         default:
