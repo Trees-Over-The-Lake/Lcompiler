@@ -1,8 +1,5 @@
 /* Exemplo de Programa na linguagem L **/
 
-boolean a := TRUE;
-boolean b := FALSE;
-
-if (a && b) {
-  a := FALSE;
-}
+int a := 5;
+readln(a);
+writeln(a);

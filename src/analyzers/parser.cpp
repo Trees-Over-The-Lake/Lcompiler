@@ -609,7 +609,7 @@ void Parser::producaoK(){
     if (error != NenhumErro) 
         throw_compiler_error(error,{curr_line,identifier->get_lexema()});
 
-    error = verify_type_compatibility(identifier, LOGICO);
+    error = verify_type_incompatibility(identifier, LOGICO);
     if (error != NenhumErro) 
         throw_compiler_error(error,{curr_line,identifier->get_lexema()});
 
