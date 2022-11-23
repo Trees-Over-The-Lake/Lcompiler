@@ -42,6 +42,17 @@ public:
     std::string to_string();
 };
 
+/**
+ * 
+ * @brief Constructor of Token
+ * @param id TokenID
+ * @param lexema string
+ * @param tipo TokenType
+ * @param classe TokenClass
+ * @param tamanho size_t
+ * @param endereco long
+ *  
+*/
 Token::Token(TokenID id, std::string lexema, TokenType tipo, TokenClass classe, token_size tamanho, long endereco) {
     this->id = id;
     this->lexema = lexema;
@@ -51,59 +62,134 @@ Token::Token(TokenID id, std::string lexema, TokenType tipo, TokenClass classe, 
     this->endereco = endereco;
 }
 
+/**
+ * 
+ * @brief Destructor of Token
+ *  
+*/
 Token::~Token()
 {
 
 }
 
+/**
+ * 
+ * @brief Returns the lexema of the Token
+ *  
+*/
 std::string Token::get_lexema() {
     return this->lexema;
 }
 
+/**
+ * 
+ * @brief Returns the type of the Token
+ *  
+*/
 TokenType Token::get_tipo() {
     return this->tipo;
 }
 
+/**
+ * 
+ * @brief Returns the class of the Token
+ *  
+*/
 TokenClass Token::get_classe() {
     return this->classe;
 }
 
+/**
+ * 
+ * @brief Returns the size of the Token
+ *  
+*/
 token_size Token::get_tamanho() {
     return this->tamanho;
 }
 
+/**
+ * 
+ * @brief Returns the id of the Token
+ *  
+*/
 TokenID Token::get_id() {
     return this->id;
 }
 
+/**
+ * 
+ * @brief Returns the address of the Token
+ *  
+*/
 long Token::get_endereco() {
     return this->endereco;
 }
 
+/**
+ * 
+ * @brief Set a new lexema for the Token
+ * @param lexema string to be set
+ *  
+*/
 void Token::set_lexema(std::string lexema) {
     this->lexema = lexema;
 }
 
+/**
+ * 
+ * @brief Destructor of Token
+ *  
+*/
 void Token::set_tipo(TokenType tipo) {
     this->tipo = tipo;
 }
 
+/**
+ * 
+ * @brief Set a new class for the Token
+ * @param classe TokenClass to be set
+ *  
+*/
 void Token::set_classe(TokenClass classe) {
     this->classe = classe;
 }
 
+/**
+ * 
+ * @brief Set a new size for the Token
+ * @param tamanho size_t to be set
+ *  
+*/
 void Token::set_tamanho(token_size tamanho) {
     this->tamanho = tamanho;
 }
 
+/**
+ * 
+ * @brief Set a new id for the Token
+ * @param id TokenID to be set
+ *  
+*/
 void Token::set_id(TokenID id) {
     this->id = id;
 }
 
+/**
+ * 
+ * @brief Set a new address for the Token
+ * @param endereco long to be set
+ *  
+*/
 void Token::set_endereco(long endereco) {
     this->endereco = endereco;
 }
 
+/**
+ * 
+ * @brief Clone the class Token 
+ *  
+*/
 Token Token::clone() {
     Token c;
     c.classe = this->classe;
@@ -115,6 +201,11 @@ Token Token::clone() {
     return c;
 }
 
+/**
+ * 
+ * @brief Returns the Token variables as a string 
+ *  
+*/
 std::string Token::to_string() {
     return "token_id: " + token_id_to_string(this->id) + "\t lexema: " + this->lexema + "\t tipo: " + \
             token_type_to_string(this->tipo) + "\t classe: " + token_class_to_string(this->classe) + "\t tamanho: " + std::to_string(this->tamanho);

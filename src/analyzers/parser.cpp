@@ -421,10 +421,12 @@ void Parser::producaoF(){
 
     casa_token(IDENTIFICADOR);
 
+    // [3]
     error = verify_if_token_already_initialized(identifier);
     if (error != NenhumErro) 
         throw_compiler_error(error,{curr_line,identifier->get_lexema()});
 
+    // [4]
     error = verify_class_compatibility(identifier, VARIAVEL);
     if (error != NenhumErro) 
         throw_compiler_error(error,{curr_line,identifier->get_lexema()});
@@ -433,6 +435,7 @@ void Parser::producaoF(){
         
         casa_token(curr_token_id);
 
+        // [11]
         error = verify_type_compatibility(identifier, TEXTO);
         if (error != NenhumErro) 
             throw_compiler_error(error,{curr_line,identifier->get_lexema()});
@@ -445,6 +448,7 @@ void Parser::producaoF(){
         
         cg->reset_temporary_counter();
 
+        // [12]
         error = verify_type_compatibility(m_token, INTEIRO);
         if (error != NenhumErro) 
             throw_compiler_error(error,{curr_line,m_token->get_lexema()});
@@ -458,6 +462,7 @@ void Parser::producaoF(){
 
     cg->reset_temporary_counter();
 
+    // [13]
     if (is_accessing_string_index) {
 
         error = verify_type_compatibility(m1_token, CARACTERE);
@@ -494,6 +499,7 @@ void Parser::producaoG(){
     int begin = cg->new_label();
     int end = cg->new_label();
 
+    // [14]
     error = verify_type_compatibility(m_token, LOGICO);
     if (error != NenhumErro) 
         throw_compiler_error(error,{curr_line,m_token->get_lexema()});
@@ -547,6 +553,7 @@ void Parser::producaoI(){
     int begin = cg->new_label();
     int end = cg->new_label();
 
+    // [40]
     error = verify_type_compatibility(m_token, LOGICO);
     if (error != NenhumErro) 
         throw_compiler_error(error,{curr_line,m_token->get_lexema()});
@@ -601,14 +608,17 @@ void Parser::producaoK(){
 
     casa_token(IDENTIFICADOR);
 
+    // [3]
     error = verify_if_token_already_initialized(identifier);
     if (error != NenhumErro) 
         throw_compiler_error(error,{curr_line,identifier->get_lexema()});
 
+    // [4]
     error = verify_class_compatibility(identifier, VARIAVEL);
     if (error != NenhumErro) 
         throw_compiler_error(error,{curr_line,identifier->get_lexema()});
 
+    // [15]
     error = verify_type_incompatibility(identifier, LOGICO);
     if (error != NenhumErro) 
         throw_compiler_error(error,{curr_line,identifier->get_lexema()});
@@ -643,6 +653,7 @@ void Parser::producaoL(){
 
     cg->reset_temporary_counter();
 
+    // [16]
     error = verify_type_incompatibility(m_token, LOGICO);
     if (error != NenhumErro) 
         throw_compiler_error(error,{curr_line,m_token->get_lexema()});
@@ -655,6 +666,7 @@ void Parser::producaoL(){
 
         m_token = producaoM();
 
+        // [17]
         error = verify_type_incompatibility(m_token, LOGICO);
         if (error != NenhumErro) 
             throw_compiler_error(error,{curr_line,m_token->get_lexema()});
@@ -681,16 +693,19 @@ Token_pointer Parser::producaoM(){
 
     n_token = producaoN();
 
+    // [33]
     attribute_tokens(m_token,n_token);
 
     while(curr_token_id == IGUAL || curr_token_id == DIFERENTE || curr_token_id == MENOR || curr_token_id == MENOR_IGUAL || curr_token_id == MAIOR || curr_token_id == MAIOR_IGUAL) {
 
+        // [34]
         operation = curr_token->get_id();
 
         casa_token(curr_token_id);
         
         n1_token = producaoN();
 
+        // [35]
         if (operation == IGUAL && m_token->get_tipo() == TEXTO && n1_token->get_tipo() == TEXTO) {
 
             cg->compare_string(m_token,n1_token);
@@ -727,6 +742,7 @@ Token_pointer Parser::producaoN(){
     bool is_number = false;
     TokenID operation;
     
+    // [29]
     if(curr_token_id == SOMA || curr_token_id == SUBTRACAO) {
         casa_token(curr_token_id);
         
@@ -740,6 +756,7 @@ Token_pointer Parser::producaoN(){
 
     if (is_number) {
 
+        // [30]
         error = verify_token_is_number(o_token);
         if (error != NenhumErro)
             throw_compiler_error(TiposIncompativeis,{curr_line});
@@ -752,11 +769,13 @@ Token_pointer Parser::producaoN(){
 
     while(curr_token_id == SOMA || curr_token_id == SUBTRACAO || curr_token_id == OR) {
 
+        //[31]
         operation = curr_token->get_id();
 
         casa_token(curr_token_id);
         o1_token = producaoO();
 
+        // [32]
         if (operation == OR) {
             if (n_token->get_tipo() != LOGICO || o1_token->get_tipo() != LOGICO) 
                 throw_compiler_error(TiposIncompativeis,{curr_line});
@@ -793,16 +812,19 @@ Token_pointer Parser::producaoO(){
 
     p_token = producaoP();
 
+    // [26]
     attribute_tokens(o_token,p_token);
 
     while(curr_token_id == MULTIPLICACAO || curr_token_id == DIVISAO || curr_token_id == MOD || curr_token_id == AND || curr_token_id == DIV) {
 
+        // [27]
         operation = curr_token_id;
 
         casa_token(curr_token_id);
 
         p1_token = producaoP();
 
+        // [28]
         switch (operation) {
             case AND:
                 if (o_token->get_tipo() != LOGICO || p1_token->get_tipo() != LOGICO) 
@@ -866,8 +888,10 @@ Token_pointer Parser::producaoP(){
         casa_token(curr_token_id);
 
         q_token = producaoQ();
+        // [24]
         attribute_tokens(p_token,q_token);
 
+        // [25]
         error = verify_type_compatibility(q_token,LOGICO);
         if (error != NenhumErro) 
             throw_compiler_error(error,{curr_line});
@@ -897,8 +921,10 @@ Token_pointer Parser::producaoQ(){
         casa_token(ABRE_PARANTESES);
 
         m_token = producaoM();
+        // [21]
         attribute_tokens(q_token,m_token);
 
+        // [22]
         if(q_token->get_tipo() != REAL && q_token->get_tipo() != INTEIRO) {
             throw_compiler_error(TiposIncompativeis,{curr_line});
         } else {
@@ -919,6 +945,7 @@ Token_pointer Parser::producaoQ(){
         m_token = producaoM();
         attribute_tokens(q_token,m_token);
 
+        // [23]
         if(q_token->get_tipo() != REAL && q_token->get_tipo() != INTEIRO) {
             throw_compiler_error(TiposIncompativeis,{curr_line});
         } else {
@@ -959,6 +986,7 @@ Token_pointer Parser::producaoR(){
         casa_token(curr_token_id);
 
         m_token = producaoM();
+        // [20]
         attribute_tokens(r_token,m_token);
 
         casa_token(FECHA_PARANTESES);
@@ -969,6 +997,7 @@ Token_pointer Parser::producaoR(){
 
         casa_token(curr_token_id);
 
+        // [18]
         attribute_tokens(r_token,constant);
 
         cg->store_token_on_data_section(r_token,constant,false);
@@ -978,6 +1007,7 @@ Token_pointer Parser::producaoR(){
 
         casa_token(IDENTIFICADOR);
 
+        // [3]
         error = verify_if_token_already_initialized(identifier);
         if (error != NenhumErro) 
             throw_compiler_error(error,{curr_line,identifier->get_lexema()});
@@ -986,6 +1016,7 @@ Token_pointer Parser::producaoR(){
 
             casa_token(curr_token_id);
 
+            // [11]
             error = verify_type_compatibility(identifier,TEXTO);
             if (error != NenhumErro)
                 throw_compiler_error(error,{curr_line});
@@ -995,6 +1026,7 @@ Token_pointer Parser::producaoR(){
             m_token = producaoM();
             attribute_tokens(r_token,m_token);
 
+            // [12]
             error = verify_type_compatibility(m_token, INTEIRO);
             if (error != NenhumErro) 
                 throw_compiler_error(error,{curr_line,m_token->get_lexema()});
@@ -1002,6 +1034,7 @@ Token_pointer Parser::producaoR(){
             casa_token(FECHA_COLCHETES);
         }
 
+        // [19]
         if(identifier_is_string)
             cg->add_character(r_token,identifier);
         

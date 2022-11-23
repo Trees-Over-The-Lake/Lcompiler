@@ -1,6 +1,11 @@
 #ifndef SYMBOL_TABLE_TOKEN_TYPE_CPP
 #define SYMBOL_TABLE_TOKEN_TYPE_CPP
 
+/**
+ * 
+ * @brief All TokenTypes accepted by the language and enumerations 
+ *  
+*/
 enum TokenType 
 {
     INTEIRO,
@@ -12,6 +17,12 @@ enum TokenType
     NAO_DEFINIDO,
 };
 
+/**
+ * 
+ * @brief Transforms the selected TokenType into a string
+ * @param type TokenType to be converted
+ *  
+*/
 std::string token_type_to_string(TokenType type) {
 
     switch (type)

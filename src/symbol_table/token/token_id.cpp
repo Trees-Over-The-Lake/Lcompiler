@@ -3,6 +3,11 @@
 
 #include<string>
 
+/**
+ * 
+ * @brief All TokenIDs accepted by the language and enumerations 
+ *  
+*/
 enum TokenID
 {
     CONST,              // const
@@ -49,6 +54,12 @@ enum TokenID
     ID_NULO,            // nulo
 };
 
+/**
+ * 
+ * @brief Transforms the selected TokenID into a string
+ * @param id TokenID to be converted
+ *  
+*/
 std::string token_id_to_string(TokenID id) {
 
     switch (id)
