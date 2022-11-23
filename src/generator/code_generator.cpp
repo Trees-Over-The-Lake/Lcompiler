@@ -175,6 +175,7 @@ void CodeGenerator::allocate_space_for_token(Token_pointer& t) {
         case REAL:
             this->memory_counter += L_NUMBER_SIZE;
             write("resd 1");
+            break;
         default: 
             break;    
     }
@@ -224,7 +225,7 @@ void CodeGenerator::allocate_space_for_const(Token_pointer& identifier, Token_po
         case CHAR:
 
             this->memory_counter += constant->get_tamanho();
-            write(format("db %s,%d", constant->get_lexema().c_str(), constant->get_tamanho()));
+            write(format("db %s,0", constant->get_lexema().c_str()));
 
             break;
 
@@ -289,12 +290,12 @@ void CodeGenerator::store_token_on_data_section(Token_pointer& t, Token_pointer&
 
         case TEXTO:
 
-            t->set_endereco(this->memory_counter);
+            t->set_endereco(this->memory_counter - L_STRING_SIZE + constant->get_lexema().size() - 1);
             this->memory_counter += constant->get_tamanho();
             
             start_data_section();
      
-            write(format("db %s,%d", constant->get_lexema().c_str(), constant->get_lexema().size()));
+            write(format("db %s,0", constant->get_lexema().c_str(), 0));
 
             start_text_section();
             break;
@@ -561,7 +562,7 @@ void CodeGenerator::write_into_terminal(Token_pointer& t) {
 
     } else if (t->get_tipo() == TEXTO ) {
 
-        write(format("mov rsi, M + %d - 1", t->get_endereco()));
+        write(format("mov rsi, M + %d", t->get_endereco()));
         write("mov rdx, 100h");
         write("mov rax, 1");
         write("mov rdi, 1");
@@ -935,8 +936,9 @@ void CodeGenerator::char_operation(Token_pointer& p, Token_pointer& o, const Tok
 /**
  * @brief Make a operation with the numbers
  * 
- * @param p is the first number
- * @param o is the second number
+ * @param m is the token where the result from the boolean will be stored
+ * @param n1 is the firs tnumber
+ * @param n2 is the second number
  * @param operation is the operation that is going to be made
  */
 void CodeGenerator::number_operation(Token_pointer& m, Token_pointer& n1, Token_pointer& n2, const TokenID operation) {
@@ -986,33 +988,33 @@ void CodeGenerator::number_operation(Token_pointer& m, Token_pointer& n1, Token_
         case MAIOR:
 
             if (n1->get_tipo() == INTEIRO) 
-                write(format("ja l%ld", label));
+                write(format("jb l%ld", label));
             else 
-                write(format("jg l%ld", label));
+                write(format("jl l%ld", label));
             
             break;
         case MAIOR_IGUAL:
 
             if (n1->get_tipo() == INTEIRO) 
-                write(format("jge l%ld", label));
+                write(format("jbe l%ld", label));
             else 
-                write(format("jae l%ld", label));
+                write(format("jle l%ld", label));
 
             break;
         case MENOR:
 
             if (n1->get_tipo() == INTEIRO) 
-                write(format("jl l%ld", label));
+                write(format("jg l%ld", label));
             else 
-                write(format("jb l%ld", label));
+                write(format("ja l%ld", label));
 
             break;
         case MENOR_IGUAL:
 
             if (n1->get_tipo() == INTEIRO) 
-                write(format("jle l%ld", label));
+                write(format("jge l%ld", label));
             else 
-                write(format("jbe l%ld", label));
+                write(format("jae l%ld", label));
             break;
 
         default:
