@@ -205,7 +205,6 @@ void CodeGenerator::reset_temporary_counter() {
  */
 void CodeGenerator::allocate_space_for_const(Token_pointer& identifier, Token_pointer& constant) {
 
-    identifier->set_tipo(constant->get_tipo());
     identifier->set_endereco(this->memory_counter);
 
     start_data_section();
@@ -418,8 +417,6 @@ void CodeGenerator::read_line(Token_pointer& p) {
     }
 
     else if ( p->get_tipo() == INTEIRO) {
-
-        std::cout << p->get_endereco() << "\n";
 
         // Criar variavel temporaria
 

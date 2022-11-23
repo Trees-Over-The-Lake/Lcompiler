@@ -9,47 +9,47 @@
 
 class Parser
 {
-private:
-    SymbolTable symbol_table;
-    Token_pointer curr_token;
-    TokenID curr_token_id;
-    TokenClass curr_class;
+    private:
+        SymbolTable symbol_table;
+        Token_pointer curr_token;
+        TokenID curr_token_id;
+        TokenClass curr_class;
 
-    bool token_error;
-    CErrorType cerror_type;
-    std::string error_information;
-    std::string curr_line;
-    
-    Token prev_token;
+        bool token_error;
+        CErrorType cerror_type;
+        std::string error_information;
+        std::string curr_line;
+        
+        Token prev_token;
 
-    LexicalAnalyzer* la;
-    CodeGenerator* cg;
-public:
-    Parser(LexicalAnalyzer* la, CodeGenerator* cg);
-    ~Parser();
-    void set_curr_token(Token_pointer curr_token, int curr_line);
-    void casa_token(TokenID token_id);
-    bool tokens_are_a_match(const TokenID* token_id);
-    bool is_basic_const(const TokenID* id);
-    void producaoS();
-    void producaoA();
-    void producaoB();
-    void producaoC();
-    void producaoD();
-    void producaoE();
-    void producaoF();
-    void producaoG();
-    void producaoH();
-    void producaoI();
-    void producaoJ();
-    void producaoK();
-    void producaoL();
-    Token_pointer producaoM();
-    Token_pointer producaoN();
-    Token_pointer producaoO();
-    Token_pointer producaoP();
-    Token_pointer producaoQ();
-    Token_pointer producaoR();
+        LexicalAnalyzer* la;
+        CodeGenerator* cg;
+    public:
+        Parser(LexicalAnalyzer* la, CodeGenerator* cg);
+        ~Parser();
+        void set_curr_token(Token_pointer curr_token, int curr_line);
+        void casa_token(TokenID token_id);
+        bool tokens_are_a_match(const TokenID* token_id);
+        bool is_basic_const(const TokenID* id);
+        void producaoS();
+        void producaoA();
+        void producaoB();
+        void producaoC();
+        void producaoD();
+        void producaoE();
+        void producaoF();
+        void producaoG();
+        void producaoH();
+        void producaoI();
+        void producaoJ();
+        void producaoK();
+        void producaoL();
+        Token_pointer producaoM();
+        Token_pointer producaoN();
+        Token_pointer producaoO();
+        Token_pointer producaoP();
+        Token_pointer producaoQ();
+        Token_pointer producaoR();
 };
 
 Parser::Parser(LexicalAnalyzer* la, CodeGenerator* cg)
@@ -66,9 +66,14 @@ Parser::~Parser()
 
 }
 
-void Parser::casa_token(TokenID token_id) {
+/**
+ * @brief Verify if the curr_token matches the expected_id
+ * 
+ * @param expected_id, is the current id being verified in the parser's grammar
+*/
+void Parser::casa_token(TokenID expected_id) {
 
-    if (tokens_are_a_match(&token_id))
+    if (tokens_are_a_match(&expected_id))
     {
         if(curr_class == VARIAVEL || curr_class == CONSTANTE) {
             prev_token = curr_token->clone();
@@ -93,14 +98,34 @@ void Parser::casa_token(TokenID token_id) {
     
 }
 
+/**
+ * @brief Verify if the received id matches the current id
+ * 
+ * Obs.: There is also the case where is the curr_token is a basic const (True or False)
+ * 
+ * @param token_id the token to be verified
+ * @return true if the tokens are a match, false if it does not
+*/
 bool Parser::tokens_are_a_match(const TokenID* token_id) {
     return *token_id == curr_token_id || (*token_id == CONST && is_basic_const(&curr_token_id));
 }
 
+/**
+ * @brief Check if the id is a basic const (True or False)
+ * 
+ * @param id is to be verified
+ * @return true if the id is a basic const, false if it is not
+*/
 bool Parser::is_basic_const(const TokenID* id) {
     return (*id == TRUE || *id == FALSE);
 }
 
+/**
+ * @brief update the parser with lexical analyzer information
+ * 
+ * @param curr_token, is the lastest token read by the lexical analyzer
+ * @param curr_line, the line in which the token was read from.
+*/
 void Parser::set_curr_token(Token_pointer curr_token, int curr_line) {
     this->curr_token = curr_token;
     this->curr_class = this->curr_token->get_classe();
@@ -108,7 +133,9 @@ void Parser::set_curr_token(Token_pointer curr_token, int curr_line) {
     this->curr_line = std::to_string(curr_line);
 }
 
-// S -> {(A | E)}* fim_arquivo
+/**
+ * @brief S -> {(A | E)}* fim_arquivo
+*/
 void Parser::producaoS() {
 
     while(curr_token_id != FIM_DE_ARQUIVO) {
@@ -135,7 +162,9 @@ void Parser::producaoS() {
 
 }
 
-// A -> (B | D)
+/**
+ * @brief A -> (B | D)
+*/
 void Parser::producaoA() {
     switch (curr_token_id)
     {
@@ -150,7 +179,9 @@ void Parser::producaoA() {
 
 }
 
-//
+/**
+ * @brief B -> C identifier [:= [-]basicConst]{, identifier [:= [-]basicConst]}*; 
+*/
 void Parser::producaoB() {
 
     CErrorType error = NenhumErro;
@@ -163,6 +194,7 @@ void Parser::producaoB() {
 
     casa_token(IDENTIFICADOR);
 
+    // [1] [6]
     error = verify_token_identification(identification,VARIAVEL);
     if (error != NenhumErro) 
         throw_compiler_error(error,{curr_line,identification->get_lexema()});
@@ -179,10 +211,12 @@ void Parser::producaoB() {
             
             casa_token(curr_token_id);
 
+            // [7]
             negate = true;
 
             constant = curr_token;
             
+            // [8]
             error = verify_token_is_number(constant);
             if(error != NenhumErro){
                 throw_compiler_error(error,{curr_line,constant->get_lexema()});
@@ -193,6 +227,7 @@ void Parser::producaoB() {
 
         casa_token(CONST);
 
+        // [9]
         error = compare_tokens(identification,constant);
         if(error != NenhumErro)
             throw_compiler_error(error,{curr_line,curr_token->get_lexema()});
@@ -209,6 +244,7 @@ void Parser::producaoB() {
             
         casa_token(IDENTIFICADOR);
 
+        // [1] [6]
         error = verify_token_identification(identification,VARIAVEL);
         if (error != NenhumErro) 
             throw_compiler_error(error,{curr_line,identification->get_lexema()});
@@ -225,10 +261,12 @@ void Parser::producaoB() {
                 
                 casa_token(curr_token_id);
 
+                // [7]
                 negate = true;
                 
                 constant = curr_token;
                 
+                // [8]
                 error = verify_token_is_number(constant);
                 if(error != NenhumErro)
                     throw_compiler_error(error,{curr_line,constant->get_lexema()});
@@ -239,6 +277,7 @@ void Parser::producaoB() {
 
             casa_token(CONST);
 
+            // [9]
             error = compare_tokens(identification,constant);
             if(error != NenhumErro)
                 throw_compiler_error(error,{curr_line,curr_token->get_lexema()});
@@ -251,9 +290,12 @@ void Parser::producaoB() {
     casa_token(PONTO_VIRGULA);
 }
 
-//
+/**
+ * @brief C -> (int | float | string | boolean | char)
+*/
 void Parser::producaoC() {
 
+    // [5]
     switch (curr_token_id)
     {
         case INT:
@@ -282,10 +324,13 @@ void Parser::producaoC() {
 
 }
 
-//
+/**
+ * @brief D -> const identifier = [-]basicConst; // declaracao const
+*/
 void Parser::producaoD() {
 
     CErrorType error = NenhumErro;
+    bool negate = false;
 
     casa_token(CONST);
 
@@ -293,6 +338,7 @@ void Parser::producaoD() {
 
     casa_token(IDENTIFICADOR);
 
+    // [2]
     error = verify_token_identification(identifier,CONSTANTE);
     if (error != NenhumErro) 
         throw_compiler_error(error,{curr_line,identifier->get_lexema()});
@@ -305,8 +351,12 @@ void Parser::producaoD() {
                 
         casa_token(curr_token_id);
 
+        // [7]
+        negate = true;
+
         constant = curr_token;
         
+        // [8]
         error = verify_token_is_number(constant);
         if(error != NenhumErro){
             throw_compiler_error(error,{curr_line,curr_token->get_lexema()});
@@ -317,12 +367,16 @@ void Parser::producaoD() {
 
     casa_token(CONST);
 
+    // [10]
+    identifier->set_tipo(constant->get_tipo());
     cg->allocate_space_for_const(identifier,constant);
 
     casa_token(PONTO_VIRGULA);
 }
 
-// E -> [(F | G | I | K | L | S)];
+/**
+ * @brief E -> [(F | G | I | K | L | S)];
+*/
 void Parser::producaoE() {
 
 
@@ -353,11 +407,13 @@ void Parser::producaoE() {
 
 }
 
-//
+/**
+ * @brief identifier[[M]] := M // atribuicao
+*/
 void Parser::producaoF(){
 
-    Token_pointer f_token = std::make_shared <Token>();
-    Token_pointer f1_token = std::make_shared <Token>();
+    Token_pointer m_token = std::make_shared <Token>();
+    Token_pointer m1_token = std::make_shared <Token>();
     CErrorType error = NenhumErro;
     bool is_accessing_string_index = false;
 
@@ -385,59 +441,64 @@ void Parser::producaoF(){
             is_accessing_string_index = true;
         
 
-        f_token = producaoM();
+        m_token = producaoM();
         
         cg->reset_temporary_counter();
 
-        error = verify_type_compatibility(f_token, INTEIRO);
+        error = verify_type_compatibility(m_token, INTEIRO);
         if (error != NenhumErro) 
-            throw_compiler_error(error,{curr_line,f_token->get_lexema()});
+            throw_compiler_error(error,{curr_line,m_token->get_lexema()});
 
         casa_token(FECHA_COLCHETES);
     }
 
     casa_token(WALRUS);
 
-    f1_token = producaoM();
+    m1_token = producaoM();
 
     cg->reset_temporary_counter();
 
     if (is_accessing_string_index) {
 
-        error = verify_type_compatibility(f1_token, CARACTERE);
+        error = verify_type_compatibility(m1_token, CARACTERE);
         if (error != NenhumErro) 
-            throw_compiler_error(error,{curr_line,f1_token->get_lexema()});
+            throw_compiler_error(error,{curr_line,m1_token->get_lexema()});
     
     } else {
 
-        error = compare_tokens(identifier,f1_token);
+        error = compare_tokens(identifier,m1_token);
         if (error != NenhumErro) 
-            throw_compiler_error(error,{curr_line,f_token->get_lexema()});
+            throw_compiler_error(error,{curr_line,m_token->get_lexema()});
+
     }
 
-    cg->variable_atribution(identifier,f_token,f1_token,is_accessing_string_index);
+    cg->variable_atribution(identifier,m_token,m1_token,is_accessing_string_index);
 
     casa_token(PONTO_VIRGULA);
 }
+
+/**
+ * @brief G -> while (M) H // while
+*/
 void Parser::producaoG(){
 
     CErrorType error = NenhumErro;
-    Token_pointer g_token = std::make_shared <Token>();
+    Token_pointer m_token = std::make_shared <Token>();
 
     casa_token(WHILE);
 
     casa_token(ABRE_PARANTESES);
 
-    g_token = producaoM();
+    m_token = producaoM();
 
     int begin = cg->new_label();
     int end = cg->new_label();
 
-    error = verify_type_compatibility(g_token, LOGICO);
+    error = verify_type_compatibility(m_token, LOGICO);
     if (error != NenhumErro) 
-        throw_compiler_error(error,{curr_line,g_token->get_lexema()});
+        throw_compiler_error(error,{curr_line,m_token->get_lexema()});
 
-    cg->start_while_loop(g_token, begin, end);
+    cg->start_while_loop(m_token, begin, end);
     
     producaoH();
 
@@ -447,7 +508,9 @@ void Parser::producaoG(){
 
 }
 
-// H -> (E | {{E}*})
+/**
+ * @brief H -> (E | {{E}*})
+*/
 void Parser::producaoH(){
 
     if (curr_token_id == ABRE_CHAVES) {
@@ -463,28 +526,32 @@ void Parser::producaoH(){
     }
 
 }
+
+/**
+ * @brief I -> if (M) J [else J] // if
+*/
 void Parser::producaoI(){
 
     CErrorType error = NenhumErro;
     bool is_else = false;
-    Token_pointer i_token = std::make_shared <Token>();
+    Token_pointer m_token = std::make_shared <Token>();
 
     casa_token(IF);
 
     casa_token(ABRE_PARANTESES);
 
-    i_token = producaoM();
+    m_token = producaoM();
     
     cg->reset_temporary_counter();
 
     int begin = cg->new_label();
     int end = cg->new_label();
 
-    error = verify_type_compatibility(i_token, LOGICO);
+    error = verify_type_compatibility(m_token, LOGICO);
     if (error != NenhumErro) 
-        throw_compiler_error(error,{curr_line,i_token->get_lexema()});
+        throw_compiler_error(error,{curr_line,m_token->get_lexema()});
     
-    cg->start_if(i_token, begin);
+    cg->start_if(m_token, begin);
     
     casa_token(FECHA_PARANTESES);
 
@@ -501,6 +568,10 @@ void Parser::producaoI(){
 
     cg->end_conditional_chain(is_else,begin,end);    
 }
+
+/**
+ * @brief J -> (E | {{E}*}) // comando / sequencia de comandos
+*/
 void Parser::producaoJ(){
     if (curr_token_id == ABRE_CHAVES) {
         
@@ -514,6 +585,10 @@ void Parser::producaoJ(){
         producaoE();
     
 }
+
+/**
+ * @brief K -> readln(identifier) // readln
+*/
 void Parser::producaoK(){
 
     CErrorType error = NenhumErro;
@@ -538,17 +613,21 @@ void Parser::producaoK(){
     if (error != NenhumErro) 
         throw_compiler_error(error,{curr_line,identifier->get_lexema()});
 
-    cg->read_line();
+    cg->read_line(identifier);
 
     casa_token(FECHA_PARANTESES);
 
     casa_token(PONTO_VIRGULA);
 }
+
+/**
+ * @brief L -> (write(M {, M}*) | writeln(M {, M}*)) // write / writeln
+*/
 void Parser::producaoL(){
 
     CErrorType error = NenhumErro;
     bool writeln_flag = false;
-    Token_pointer l_token = std::make_shared <Token>();
+    Token_pointer m_token = std::make_shared <Token>();
 
     if (curr_token_id == WRITE) {
         casa_token(curr_token_id);
@@ -560,27 +639,27 @@ void Parser::producaoL(){
 
     casa_token(ABRE_PARANTESES);
 
-    l_token = producaoM();
+    m_token = producaoM();
 
     cg->reset_temporary_counter();
 
-    error = verify_type_incompatibility(l_token, LOGICO);
+    error = verify_type_incompatibility(m_token, LOGICO);
     if (error != NenhumErro) 
-        throw_compiler_error(error,{curr_line,l_token->get_lexema()});
+        throw_compiler_error(error,{curr_line,m_token->get_lexema()});
 
-    cg->write_into_terminal(l_token);
+    cg->write_into_terminal(m_token);
 
     while(curr_token_id == VIRGULA) {
 
         casa_token(curr_token_id);
 
-        l_token = producaoM();
+        m_token = producaoM();
 
-        error = verify_type_incompatibility(l_token, LOGICO);
+        error = verify_type_incompatibility(m_token, LOGICO);
         if (error != NenhumErro) 
-            throw_compiler_error(error,{curr_line,l_token->get_lexema()});
+            throw_compiler_error(error,{curr_line,m_token->get_lexema()});
 
-        cg->write_into_terminal(l_token);
+        cg->write_into_terminal(m_token);
     }
 
     casa_token(FECHA_PARANTESES);
@@ -588,14 +667,21 @@ void Parser::producaoL(){
 
     cg->write_line_break(writeln_flag);
 }
+
+/**
+ * @brief M -> N {(= | != | < | <= | > | >=) N}* // expressao precedencia 6
+*/
 Token_pointer Parser::producaoM(){
 
     Token_pointer m_token = std::make_shared <Token>();
     Token_pointer n_token = std::make_shared <Token>();
+    Token_pointer n1_token = std::make_shared <Token>();
 
     TokenID operation;
 
-    m_token = producaoN();
+    n_token = producaoN();
+
+    attribute_tokens(m_token,n_token);
 
     while(curr_token_id == IGUAL || curr_token_id == DIFERENTE || curr_token_id == MENOR || curr_token_id == MENOR_IGUAL || curr_token_id == MAIOR || curr_token_id == MAIOR_IGUAL) {
 
@@ -603,35 +689,39 @@ Token_pointer Parser::producaoM(){
 
         casa_token(curr_token_id);
         
-        n_token = producaoN();
+        n1_token = producaoN();
 
-        if (operation == IGUAL && m_token->get_tipo() == TEXTO && n_token->get_tipo() == TEXTO) {
+        if (operation == IGUAL && m_token->get_tipo() == TEXTO && n1_token->get_tipo() == TEXTO) {
 
-            cg->compare_string(m_token,n_token);
+            cg->compare_string(m_token,n1_token);
 
-        } else if (m_token->get_tipo() == CARACTERE && n_token->get_tipo() == CARACTERE) {
+        } else if (m_token->get_tipo() == CARACTERE && n1_token->get_tipo() == CARACTERE) {
 
-            cg->char_operation(m_token, n_token, operation);
+            cg->char_operation(m_token, n1_token, operation);
 
         } else if ((m_token->get_tipo() == REAL || m_token->get_tipo() == INTEIRO) && 
-        (n_token->get_tipo() == REAL || n_token->get_tipo() == INTEIRO)) {
+        (n1_token->get_tipo() == REAL || n1_token->get_tipo() == INTEIRO)) {
 
-            cg->number_operation(m_token, n_token, operation);
+            cg->number_operation(m_token, n1_token, operation);
 
         } else {
 
             throw_compiler_error(TiposIncompativeis,{curr_line});
         }
-
+        
     }
 
     return m_token;
 }
 
+/**
+ * @brief N -> [+ | -]O {(+ | - | ||) O}* // expressao precedencia 5
+*/
 Token_pointer Parser::producaoN(){
 
     Token_pointer n_token = std::make_shared <Token>();
-    Token_pointer n1_token = std::make_shared <Token>();
+    Token_pointer o_token = std::make_shared <Token>();
+    Token_pointer o1_token = std::make_shared <Token>();
     CErrorType error = NenhumErro;
     bool negate = false;
     bool is_number = false;
@@ -646,15 +736,16 @@ Token_pointer Parser::producaoN(){
             negate = true;
     }
 
-    n_token = producaoO();
+    o_token = producaoO();
 
     if (is_number) {
 
-        error = verify_token_is_number(n_token);
-        if (error != NenhumErro) 
+        error = verify_token_is_number(o_token);
+        if (error != NenhumErro)
             throw_compiler_error(TiposIncompativeis,{curr_line});
-
     }
+
+    attribute_tokens(n_token,o_token);
 
     if (negate) 
         cg->negate_expression(n_token);
@@ -664,24 +755,24 @@ Token_pointer Parser::producaoN(){
         operation = curr_token->get_id();
 
         casa_token(curr_token_id);
-        n1_token = producaoO();
+        o1_token = producaoO();
 
         if (operation == OR) {
-            if (n_token->get_tipo() != LOGICO || n1_token->get_tipo() != LOGICO) 
+            if (n_token->get_tipo() != LOGICO || o1_token->get_tipo() != LOGICO) 
                 throw_compiler_error(TiposIncompativeis,{curr_line});
 
-            cg->or_operation(n_token,n1_token);
+            cg->or_operation(n_token,o1_token);
 
         }else {
             if ((n_token->get_tipo() != REAL && n_token->get_tipo() != INTEIRO) 
-            || (n1_token->get_tipo() != REAL && n1_token->get_tipo() != INTEIRO)) 
+            || (o1_token->get_tipo() != REAL && o1_token->get_tipo() != INTEIRO)) 
                 throw_compiler_error(TiposIncompativeis,{curr_line});
 
             
             if(operation == SOMA)
-                cg->add_operation(n_token,n1_token);
+                cg->add_operation(n_token,o1_token);
             else 
-                cg->sub_operation(n_token,n1_token);
+                cg->sub_operation(n_token,o1_token);
         }
         
     }
@@ -689,14 +780,20 @@ Token_pointer Parser::producaoN(){
     return n_token;
 }
 
+/**
+ * @brief O -> P {(* | / | mod | div | &&) P}* // expressao precedencia 4
+*/
 Token_pointer Parser::producaoO(){
 
+    Token_pointer p_token = std::make_shared <Token>();
     Token_pointer o_token = std::make_shared <Token>();
-    Token_pointer o1_token = std::make_shared <Token>();
+    Token_pointer p1_token = std::make_shared <Token>();
     CErrorType error = NenhumErro;
     TokenID operation;
 
-    o_token = producaoP();
+    p_token = producaoP();
+
+    attribute_tokens(o_token,p_token);
 
     while(curr_token_id == MULTIPLICACAO || curr_token_id == DIVISAO || curr_token_id == MOD || curr_token_id == DIVISAO || curr_token_id == DIV) {
 
@@ -704,31 +801,31 @@ Token_pointer Parser::producaoO(){
 
         casa_token(curr_token_id);
 
-        o1_token = producaoP();
+        p1_token = producaoP();
 
         switch (operation) {
             case AND:
-                if (o_token->get_tipo() != LOGICO || o1_token->get_tipo() != LOGICO) 
+                if (o_token->get_tipo() != LOGICO || p1_token->get_tipo() != LOGICO) 
                     throw_compiler_error(TiposIncompativeis,{curr_line});
 
-                cg->and_operation(o_token,o1_token);
+                cg->and_operation(o_token,p1_token);
                 break;
             
             case MULTIPLICACAO:
             case DIVISAO:
 
                 if((o_token->get_tipo() != REAL && o_token->get_tipo() != INTEIRO) 
-                || (o1_token->get_tipo() != REAL && o1_token->get_tipo() != INTEIRO)) 
+                || (p1_token->get_tipo() != REAL && p1_token->get_tipo() != INTEIRO)) 
                     throw_compiler_error(TiposIncompativeis,{curr_line});
 
-                if (o_token->get_tipo() != o1_token->get_tipo()) {
+                if (o_token->get_tipo() != p1_token->get_tipo()) {
                     o_token->set_tipo(REAL);
 
                     if (operation == MULTIPLICACAO) 
-                        cg->multiple_numbers(o_token,o1_token);
+                        cg->multiple_numbers(o_token,p1_token);
 
                     else 
-                        cg->divide_numbers(o_token,o1_token);
+                        cg->divide_numbers(o_token,p1_token);
 
                 } else {
 
@@ -737,57 +834,70 @@ Token_pointer Parser::producaoO(){
                     
                     if (operation == MULTIPLICACAO) 
 
-                        cg->multiple_float(o_token,o1_token);
+                        cg->multiple_float(o_token,p1_token);
                     else 
-                        cg->divide_float(o_token,o1_token);
+                        cg->divide_float(o_token,p1_token);
                     
                 }
 
                 break;
             default:
 
-                if (o_token->get_tipo() != INTEIRO || o1_token->get_tipo() != INTEIRO ) 
+                if (o_token->get_tipo() != INTEIRO || p1_token->get_tipo() != INTEIRO ) 
                     throw_compiler_error(TiposIncompativeis,{curr_line});
 
-                cg->module_or_div(o_token,o1_token,operation == MOD);
+                cg->module_or_div(o_token,p1_token,operation == MOD);
                 break;
         }
     }
     return o_token;
 }
 
+/**
+ * @brief P -> (Q | !Q) // expressao precedencia 3
+*/
 Token_pointer Parser::producaoP(){
 
     CErrorType error = NenhumErro;
     Token_pointer p_token = std::make_shared <Token>();
+    Token_pointer q_token = std::make_shared <Token>();
 
     if (curr_token_id == NEGACAO) {
         casa_token(curr_token_id);
 
-        p_token = producaoQ();
+        q_token = producaoQ();
+        attribute_tokens(p_token,q_token);
 
-        error = verify_type_compatibility(p_token,LOGICO);
+        error = verify_type_compatibility(q_token,LOGICO);
         if (error != NenhumErro) 
             throw_compiler_error(error,{curr_line});
 
-        cg->negate_boolean(p_token);
+        cg->negate_boolean(q_token);
 
     } else {
-        p_token = producaoQ();
+        q_token = producaoQ();
+        attribute_tokens(p_token,q_token);
     }
 
     return p_token;
 }
+
+/**
+ * @brief Q -> (R | float(M) | int(M)) // expressao precedencia 2
+*/
 Token_pointer Parser::producaoQ(){
 
     Token_pointer q_token = std::make_shared <Token>();
+    Token_pointer m_token = std::make_shared <Token>();
+    Token_pointer r_token = std::make_shared <Token>();
 
     if (curr_token_id == FLOAT) {
 
         casa_token(FLOAT);
         casa_token(ABRE_PARANTESES);
 
-        q_token = producaoM();
+        m_token = producaoM();
+        attribute_tokens(q_token,m_token);
 
         if(q_token->get_tipo() != REAL && q_token->get_tipo() != INTEIRO) {
             throw_compiler_error(TiposIncompativeis,{curr_line});
@@ -806,7 +916,8 @@ Token_pointer Parser::producaoQ(){
         casa_token(INT);
         casa_token(ABRE_PARANTESES);
 
-        q_token = producaoM();
+        m_token = producaoM();
+        attribute_tokens(q_token,m_token);
 
         if(q_token->get_tipo() != REAL && q_token->get_tipo() != INTEIRO) {
             throw_compiler_error(TiposIncompativeis,{curr_line});
@@ -823,32 +934,42 @@ Token_pointer Parser::producaoQ(){
     }  
     else {
 
-        q_token = producaoR();
+        r_token = producaoR();
+        attribute_tokens(q_token,r_token);
     }
 
     return q_token;
 }
+
+/**
+ * @brief (basicConst | identifier[[M]] | (M)) // expressao precedencia 1
+*/
 Token_pointer Parser::producaoR(){
 
     CErrorType error = NenhumErro;
+
     Token_pointer r_token = std::make_shared <Token>();
     Token_pointer constant = std::make_shared <Token>();
+    Token_pointer m_token = std::make_shared <Token>();
+
     bool identifier_is_string = false;
 
     if (curr_token_id == ABRE_PARANTESES) {
         
         casa_token(curr_token_id);
 
-        r_token = producaoM();
+        m_token = producaoM();
+        attribute_tokens(r_token,m_token);
 
         casa_token(FECHA_PARANTESES);
+
     } else if( curr_token_id == CONST || is_basic_const(&curr_token_id)) {
 
         constant = curr_token;
 
         casa_token(curr_token_id);
 
-        r_token = constant;
+        attribute_tokens(r_token,constant);
 
         cg->store_token_on_data_section(r_token,constant,false);
     } else {
@@ -871,22 +992,21 @@ Token_pointer Parser::producaoR(){
 
             identifier_is_string = true;
 
-            r_token = producaoM();
+            m_token = producaoM();
+            attribute_tokens(r_token,m_token);
 
-            error = verify_type_compatibility(r_token, INTEIRO);
+            error = verify_type_compatibility(m_token, INTEIRO);
             if (error != NenhumErro) 
-                throw_compiler_error(error,{curr_line,r_token->get_lexema()});
+                throw_compiler_error(error,{curr_line,m_token->get_lexema()});
 
             casa_token(FECHA_COLCHETES);
         }
 
-        if(identifier_is_string) {
+        if(identifier_is_string)
             cg->add_character(r_token,identifier);
         
-        } else {
-            r_token = identifier;
-        }
-
+        else 
+            attribute_tokens(r_token,identifier);
     }
 
     return r_token;
